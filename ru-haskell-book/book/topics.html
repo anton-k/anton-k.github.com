@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<h1 id="тематический-указатель"><a href="home.html"><img src="../pic/logo.jpeg" /></a> Тематический указатель</h1>
+<h2 id="синтаксис">Синтаксис</h2>
+<ul>
+<li>Программы
+<ul>
+<li><a href="1.html#общая-картина">Модули <code><font color="#b2590f">module</font></code></a></li>
+<li><a href="8.html#как-пишутся-программы">Компиляция программ</a></li>
+<li><a href="18.html#пакеты">Программы и библиотеки</a></li>
+</ul></li>
+<li><a href="1.html#типы">Типы</a>
+<ul>
+<li><a href="1.html#типы">Определение типов <code><font color="#b2590f">data</font></code> или <code><font color="#b2590f">type</font></code></a></li>
+<li><a href="2.html#типы">Кортежи</a></li>
+<li><a href="7.html#записи">Записи, структуры с полями</a></li>
+<li><a href="7.html#тип-обёртка-newtype">Тип-обёртка <code><font color="#b2590f">newtype</font></code></a></li>
+</ul></li>
+<li><a href="1.html#значения">Значения</a>
+<ul>
+<li><a href="1.html#значения">Определение значений</a></li>
+<li><a href="4.html#локальные-переменные">Локальные переменные (<code><font color="#b2590f">let</font></code> и <code><font color="#b2590f">where</font></code>)</a></li>
+<li><a href="4.html#условные-выражения">Условные выражения</a>
+<ul>
+<li><a href="4.html#if-выражения"><code><font color="#b2590f">if</font> <font color="#b2590f">then</font> <font color="#b2590f">else</font></code></a></li>
+<li><a href="4.html#охранные-выражения">охранные выражения</a></li>
+<li><a href="4.html#case-выражения"><code><font color="#b2590f">case</font></code>-выражения</a></li>
+</ul></li>
+<li><a href="4.html#декомпозиция">Сопоставление с образцом</a>
+<ul>
+<li><a href="11.html#ленивее-некуда">Ленивые образцы</a></li>
+<li><a href="9.html#энергичные-образцы">Энергичные образцы</a></li>
+<li><a href="4.html#сопоставление-с-образцом"><code><font color="#b2590f">@</font></code>-образцы</a></li>
+</ul></li>
+<li><a href="4.html#безымянные-функции">Лямбда-функции или безымянные функции</a></li>
+</ul></li>
+<li><a href="1.html#классы-типов">Классы</a>
+<ul>
+<li><a href="1.html#классы-типов">Определение классов <code><font color="#b2590f">class</font></code></a></li>
+<li><a href="1.html#экземпляры-классов-типов">Экземпляры классов <code><font color="#b2590f">instance</font></code></a></li>
+<li><a href="1.html#суперклассы">Суперклассы</a></li>
+</ul></li>
+<li><a href="17.html#сахар-для-монад-do-нотация"><code><font color="#b2590f">do</font></code>-нотация</a></li>
+<li><a href="17.html#генераторы-списков">Генераторы списков</a></li>
+<li><a href="17.html#расширения">Расширения</a></li>
+</ul>
+<h2 id="типы">Типы</h2>
+<ul>
+<li><a href="3.html#рекурсивные-типы">Списки <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code></a></li>
+<li><a href="2.html#типы">Примитивные типы: строки, символы, числа</a></li>
+<li><a href="6.html">Монады</a>
+<ul>
+<li><a href="8.html"><code><font color=Green>IO</font></code></a></li>
+<li><a href="6.html#многозначные-функции"><code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code></a></li>
+<li><a href="6.html#частично-определённые-функции"><code><font color=Green>Maybe</font></code></a></li>
+<li><a href="6.html#функции-с-состоянием"><code><font color=Green>State</font></code></a></li>
+<li><a href="6.html#функции-накопители"><code><font color=Green>Writer</font></code></a></li>
+<li><a href="6.html#функции-с-окружением"><code><font color=Green>Reader</font></code></a></li>
+<li><a href="7.html#монада-изменяемых-значений-st"><code><font color=Green>ST</font></code></a></li>
+</ul></li>
+<li><a href="7.html#тип-map">Ассоциативные массивы <code><font color=Green>Map</font></code></a></li>
+<li>Множества
+<ul>
+<li><a href="19.html#алгоритм-эвристического-поиска-а"><code><font color=Green>Set</font></code></a></li>
+<li><a href="19.html#оценка-быстродействия-с-помощью-criterion"><code><font color=Green>HashSet</font></code></a></li>
+</ul></li>
+<li><a href="7.html#накопление-списков">Деревья <code><font color=Green>Tree</font></code></a></li>
+<li><a href="19.html#алгоритм-эвристического-поиска-а">Очереди с приритетом</a></li>
+</ul>
+<h2 id="классы">Классы</h2>
+<ul>
+<li><a href="1.html#классы-типов">Печать значений <code><font color=Green>Show</font></code></a></li>
+<li>Сравнение значений
+<ul>
+<li><a href="2.html#класс-eq.-сравнение-на-равенство"><code><font color=Green>Eq</font></code></a></li>
+<li><a href="4.html#какой-стиль-лучше"><code><font color=Green>Ord</font></code></a></li>
+</ul></li>
+<li>Перечисления
+<ul>
+<li><a href="17.html#перечисления"><code><font color=Green>Enum</font></code></a></li>
+</ul></li>
+<li><a href="2.html#арифметика">Арифметика</a>
+<ul>
+<li><a href="2.html#класс-num.-сложение-и-умножение"><code><font color=Green>Num</font></code></a></li>
+<li><a href="2.html#класс-fractional.-деление"><code><font color=Green>Fractional</font></code></a></li>
+<li><a href="2.html#преобразование-численных-типов"><code><font color=Green>Real</font></code></a></li>
+<li><a href="2.html#преобразование-численных-типов"><code><font color=Green>RealFrac</font></code></a></li>
+</ul></li>
+<li><a href="6.html">Функторы и монады</a>
+<ul>
+<li><a href="6.html#функторы"><code><font color=Green>Functor</font></code></a></li>
+<li><a href="6.html#аппликативные-функторы"><code><font color=Green>Applicative</font></code></a></li>
+<li><a href="6.html#монады"><code><font color=Green>Monad</font></code></a></li>
+<li><a href="8.html#композиция-монад">Монадные трансформеры</a></li>
+</ul></li>
+<li><a href="6.html#класс-monoid"><code><font color=Green>Monoid</font></code></a></li>
+</ul>
+<h2 id="функциональное-программирование">Функциональное программирование</h2>
+<ul>
+<li><a href="5.html">Функции высшего порядка</a></li>
+<li><a href="8.html#чистота-и-побочные-эффекты">Чистота функций</a></li>
+<li><a href="1.html#типы">Строгая типизация</a></li>
+<li>Стратегии редукции выражений
+<ul>
+<li><a href="9.html#стратегии-вычислений">Нормальная (по имени) и энергичная (по значению)</a></li>
+<li><a href="9.html#вычисление-по-необходимости">Ленивая (по необходимости)</a><br /></li>
+</ul></li>
+<li><a href="14.html">Лямбда исчисление</a></li>
+<li>Алгебраические типы данных
+<ul>
+<li><a href="3.html">основы</a></li>
+<li><a href="16.html#индуктивные-и-коиндуктивные-типы">подход из теории категорий</a></li>
+</ul></li>
+</ul>
+<h2 id="оптимизация-программ">Оптимизация программ</h2>
+<ul>
+<li><a href="10.html">Вычисление программ в GHC</a></li>
+<li><a href="10.html#статистика-выполнения-программы">Профилирование</a></li>
+<li><a href="10.html#представление-значений-в-памяти.-оценка-занимаемой-памяти">Оценка расхода памяти</a></li>
+<li><a href="19.html#оценка-быстродействия-с-помощью-criterion">Оценка быстродействия в criterion</a></li>
+<li><a href="19.html#тестирование-с-помощью-quickcheck">Проверка свойств программы в QuickCheck</a></li>
+<li><a href="9.html#аннотации-строгости">Аннотации строгости, ограничение лени</a></li>
+<li>Прагмы оптимизации
+<ul>
+<li><a href="10.html#прагма-inline">Встраивание выражений INLINE</a></li>
+<li><a href="10.html#прагма-unpack">Встраивание значений UNPACK</a></li>
+<li><a href="10.html#прагма-rules">Преобразование программ RULES</a></li>
+</ul></li>
+</ul>
+<h2 id="средства-разработки">Средства разработки</h2>
+<ul>
+<li><a href="appendix.html#Начало%20работы%20с%20Haskell">Начало работы с Haskell</a></li>
+<li><a href="10.html">Компилятор GHC</a></li>
+<li><a href="2.html#интерпретатор">Интерпретатор ghci</a></li>
+<li><a href="18.html#пакеты">Установка и создание библиотек в Cabal</a></li>
+<li><a href="18.html#установка-пакета">Репозиторий библиотек Hackage</a></li>
+<li><a href="18.html#создание-документации-с-помощью-haddock">Создание документации в Haddock</a></li>
+<li><a href="2.html#документация">Поисковик алгоритмов Hoogle</a></li>
+<li><a href="19.html#оценка-быстродействия-с-помощью-criterion">Оценка быстродействия в criterion</a></li>
+<li><a href="19.html#тестирование-с-помощью-quickcheck">Проверка свойств программы в QuickCheck</a></li>
+<li><a href="appendix.html#стандартные-библиотеки">Стандартные структуры данных и алгоритмы</a></li>
+</ul>
+</body>
+</html>

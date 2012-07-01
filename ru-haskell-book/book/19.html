@@ -1,0 +1,528 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#ориентируемся-по-карте">Ориентируемся по карте</a><ul>
+<li><a href="#алгоритм-эвристического-поиска-а">Алгоритм эвристического поиска А*</a><ul>
+<li><a href="#поиск-маршрутов-в-метро">Поиск маршрутов в метро</a></li>
+</ul></li>
+<li><a href="#тестирование-с-помощью-quickcheck">Тестирование с помощью QuickCheck</a><ul>
+<li><a href="#формирование-тестовой-выборки">Формирование тестовой выборки</a></li>
+<li><a href="#классификация-тестовых-случаев">Классификация тестовых случаев</a></li>
+</ul></li>
+<li><a href="#оценка-быстродействия-с-помощью-criterion">Оценка быстродействия с помощью criterion</a><ul>
+<li><a href="#основные-типы-criterion">Основные типы criterion</a></li>
+</ul></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="18.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="20.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="ориентируемся-по-карте"><a href="#TOC">Ориентируемся по карте</a></h1>
+<p>Рассмотрим задачу поиска маршрута на карте. У нас есть карта метро и нам нужно проложить маршрут от одной станции к другой. Карта метро~– это граф, узлы обозначают станции, а рёбра соединяют соседние станции. Предположим, что мы знаем расстояния между всеми станциями и нам надо найти кратчайший путь от станции площадь Баха до станции Таинственный лес .</p>
+<div>
+<img src="../pic/19/metro.png" alt="Схема метрополитена" />
+</div>
+
+<p></p>
+<p>Давайте переведём этот рисунок на Haskell. Сначала опишем имена линий и станций:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Metro</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">data</font> <font color=Green>Station</font> <font color="#b2590f">=</font> <font color=Green>St</font> <font color=Green>Way</font> <font color=Green>Name</font>
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font>
+
+<font color="#b2590f">data</font> <font color=Green>Way</font> <font color="#b2590f">=</font> <font color=Green>Blue</font> <font color="#b2590f">|</font> <font color=Green>Black</font> <font color="#b2590f">|</font> <font color=Green>Green</font> <font color="#b2590f">|</font> <font color=Green>Red</font> <font color="#b2590f">|</font> <font color=Green>Orange</font>
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font>
+
+<font color="#b2590f">data</font> <font color=Green>Name</font> <font color="#b2590f">=</font> <font color=Green>Kosmodrom</font> <font color="#b2590f">|</font> <font color=Green>UlBylichova</font> <font color="#b2590f">|</font> <font color=Green>Zvezda</font> 
+          <font color="#b2590f">|</font> <font color=Green>Zapad</font> <font color="#b2590f">|</font> <font color=Green>Ineva</font> <font color="#b2590f">|</font> <font color=Green>De</font> <font color="#b2590f">|</font> <font color=Green>Krest</font> <font color="#b2590f">|</font> <font color=Green>Rodnik</font> <font color="#b2590f">|</font> <font color=Green>Vostok</font> 
+          <font color="#b2590f">|</font> <font color=Green>Yug</font> <font color="#b2590f">|</font> <font color=Green>Sirius</font> <font color="#b2590f">|</font> <font color=Green>Til</font> <font color="#b2590f">|</font> <font color=Green>TrollevMost</font> <font color="#b2590f">|</font> <font color=Green>Prizrak</font> <font color="#b2590f">|</font> <font color=Green>TainstvenniyLes</font> 
+          <font color="#b2590f">|</font> <font color=Green>DnoBolota</font> <font color="#b2590f">|</font> <font color=Green>PlBakha</font> <font color="#b2590f">|</font> <font color=Green>Lao</font> <font color="#b2590f">|</font> <font color=Green>Sever</font>
+          <font color="#b2590f">|</font> <font color=Green>PlShekspira</font>
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font></pre>
+<p>Предположим, что нам известны координаты каждой из станций. По ним мы можем вычислять расстояние между станциями по прямой:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Point</font> <font color="#b2590f">=</font> <font color=Green>Point</font> 
+    <font color=Black>{</font> px <font color="#b2590f">::</font> <font color=Green>Double</font>
+    <font color=Black>,</font> py <font color="#b2590f">::</font> <font color=Green>Double</font>
+    <font color=Black>}</font> <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font>
+
+<font color=Black>place</font> <font color="#b2590f">::</font> <font color=Green>Name</font> <font color="#b2590f">-&gt;</font> <font color=Green>Point</font>
+<font color=Black>place</font> x <font color="#b2590f">=</font> uncurry <font color=Green>Point</font> <font color=Black>$</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Green>Kosmodrom</font>           <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">7</font><font color=Black>)</font>
+    <font color=Green>UlBylichova</font>         <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>)</font> 
+    <font color=Green>Zvezda</font>              <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font><font color="#0000ee">1</font><font color=Black>)</font>
+    <font color=Green>Zapad</font>               <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">7</font><font color=Black>)</font>
+    <font color=Green>Ineva</font>               <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0.5</font><font color=Black>,</font> <font color="#0000ee">4</font><font color=Black>)</font>
+    <font color=Green>De</font>                  <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font>
+    <font color=Green>Krest</font>               <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">3</font><font color=Black>)</font>
+    <font color=Green>Rodnik</font>              <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">5</font><font color=Black>)</font>
+    <font color=Green>Vostok</font>              <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">7</font><font color=Black>)</font>
+    <font color=Green>Yug</font>                 <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">7</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font>
+    <font color=Green>Sirius</font>              <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">0</font><font color=Black>)</font>
+    <font color=Green>Til</font>                 <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>)</font>
+    <font color=Green>TrollevMost</font>         <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>)</font>
+    <font color=Green>Prizrak</font>             <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">8</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>)</font>
+    <font color=Green>TainstvenniyLes</font>     <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">11</font><font color=Black>,</font><font color="#0000ee">7</font><font color=Black>)</font>
+    <font color=Green>DnoBolota</font>           <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">7</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">4</font><font color=Black>)</font>
+    <font color=Green>PlBakha</font>             <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">3</font><font color=Black>)</font>
+    <font color=Green>Lao</font>                 <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">3.5</font><font color=Black>,</font><font color="#0000ee">0</font><font color=Black>)</font>
+    <font color=Green>Sever</font>               <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">1</font><font color=Black>)</font>
+    <font color=Green>PlShekspira</font>         <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">3</font><font color=Black>)</font>
+
+
+<font color=Black>dist</font> <font color="#b2590f">::</font> <font color=Green>Point</font> <font color="#b2590f">-&gt;</font> <font color=Green>Point</font> <font color="#b2590f">-&gt;</font> <font color=Green>Double</font>
+<font color=Black>dist</font> a b <font color="#b2590f">=</font> sqrt <font color=Black>$</font> <font color=Black>(</font>px a <font color="#2149c1">-</font> px b<font color=Black>)</font><font color=Black>^</font><font color="#0000ee">2</font> <font color=Black>+</font> <font color=Black>(</font>py a <font color="#2149c1">-</font> py b<font color=Black>)</font><font color=Black>^</font><font color="#0000ee">2</font>
+
+<font color=Black>stationDist</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Double</font>
+<font color=Black>stationDist</font> <font color=Black>(</font><font color=Green>St</font> n a<font color=Black>)</font> <font color=Black>(</font><font color=Green>St</font> m b<font color=Black>)</font>
+    <font color="#b2590f">|</font> n <font color=Black>/=</font> m <font color=Black>&amp;&amp;</font> a <font color=Black>==</font> b  <font color="#b2590f">=</font> penalty
+    <font color="#b2590f">|</font> otherwise         <font color="#b2590f">=</font> dist <font color=Black>(</font>place a<font color=Black>)</font> <font color=Black>(</font>place b<font color=Black>)</font>
+    <font color="#b2590f">where</font> penalty <font color="#b2590f">=</font> <font color="#0000ee">1</font></pre>
+<p>Расстояние между точками вычисляется по формуле Евклида (<code><font color=Black>dist</font></code>). Если у станций одинаковые имена, но они расположены на разных линиях мы будем считать, что расстояние между ними равно единице. Теперь нам необходимо описать связность станций. Мы опишем связность в виде функции, которая для данной станции возвращает список всех соседних с ней станций:</p>
+<pre><font color=Black>metroMap</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Station</font><font color="#b2590f">]</font>
+<font color=Black>metroMap</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Green>St</font> <font color=Green>Black</font> <font color=Green>Kosmodrom</font>          <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Black</font> <font color=Green>UlBylichova</font><font color="#b2590f">]</font>
+    <font color=Green>St</font> <font color=Green>Black</font> <font color=Green>UlBylichova</font>        <font color="#b2590f">-&gt;</font> 
+            <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Black</font> <font color=Green>Kosmodrom</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Black</font> <font color=Green>Zvezda</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Red</font> <font color=Green>UlBylichova</font><font color="#b2590f">]</font>  
+    <font color=Green>St</font> <font color=Green>Black</font>  <font color=Green>Zvezda</font>            <font color="#b2590f">-&gt;</font> 
+            <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Black</font> <font color=Green>UlBylichova</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Blue</font>  <font color=Green>Zvezda</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Zvezda</font><font color="#b2590f">]</font>
+    <font color=Black>...</font></pre>
+<p>Приведён пример заполнения только для одной линии. Остальные линии заполняются аналогично. Обратите внимание на то, что некоторые станции имеют одинаковые имена, но находятся на разных линиях.</p>
+<p>Всё готово для того чтобы написать функцию поиска маршрута. Для этого мы воспользуемся алгоритмом A*.</p>
+<h2 id="алгоритм-эвристического-поиска-а"><a href="#TOC">Алгоритм эвристического поиска А*</a></h2>
+<p>Наша задача относится к задачам поиска путей на графе. Путём на графе называют такую последовательность узлов, в которой для любых двух соседних узлов существует ребро, которое их соединяет. В нашем случае графом является карта метро, узлами~– станции, рёбрами~– линии между станциями, а путями~– маршруты.</p>
+<p>Представим, что мы находимся в узле <code><font color=Green>A</font></code> и нам необходимо попасть в узел <code><font color=Green>B</font></code> и единственное, что нам известно~– это все соседние узлы с тем, в котором мы находимся. У нас есть возможность перейти в один из соседних узлов и посмотреть нет ли среди их соседей узла <code><font color=Green>B</font></code>. В этом случае нам ничего не остаётся кроме того как бродить по карте от станции к станции в случайном порядке, пока мы не натолкнёмся на узел <code><font color=Green>B</font></code> или все узлы не кончатся. Такой поиск называют слепым.</p>
+<p>Вот если бы у нас был компас, который в каждой точке указывал в сторону цели нам было бы гораздо проще. Такой компас принято называть <em>эвристикой</em>. Это функция, которая принимает узел и возвращает число. Чем меньше число, тем ближе узел к цели. Обычно эвристика указывает не точное расстояние до цели, поскольку мы не знаем где цель, а приблизительную оценку. Мы не знаем расстояние до цели, но догадываемся, нам кажется, что она где-то там, ещё чуть-чуть и мы найдём её. Примером эвристики для поиска по карте может быть функция, которая вычисляет расстояние по прямой до цели. Предположим, что мы не знаем где находится цель (какая дорога к ней ведёт), но мы знаем её координаты. Также мы знаем координаты каждой вершины, в которой мы находимся. Тогда мы можем легко вычислить расстояние по прямой до цели и наш поиск станет гораздо более осмысленным.</p>
+<p>Так находясь в точке <code><font color=Green>A</font></code> мы можем сразу пойти в тот соседний узел, который ближе всех к цели. Такой поиск называют поиском по первому лучшему приближению. В поиске A* учитывается не только расстояние до цели, но и то расстояние, которое мы уже прошли. Мы выбираем не ту вершину, которая ближе к цели, а ту для которой полный путь до цели будет минимальным. Ведь пока мы идём мы можем запоминать какое расстояние мы уже прошли. Прибавив к этому значению, то которое мы получим с помощью эвристики мы получим полный (предполагаемый) путь до цели.</p>
+<p>Поиск А* гораздо лучше поиска по первому лучшему приближению. Его часто применяют в компьютерных играх для поиска пути или принятия решений.</p>
+<p>Принято разделять поиск на графе и поиск на дереве. Если мы идём по графу, то вершины могут повторятся (они образуют циклы). В случае поиска на дереве мы считаем, что все вершины уникальны. При поиске на графе очень важно запоминать те вершины, в которых мы уже побывали. Иначе мы будем очень часто ходить кругами.</p>
+<p>В Haskell очень удобно работать с данными, которые имеют иерархическую структуру. Их можно представить в виде дерева, обычно в таких типах у нас есть конструкторы-константы и конструкторы, которые собирают составные значения. Граф выходит за рамки этого класса данных, потому что рёбра графов могут образовывать циклы. Но мы схитрим и представим граф поиска в виде дерева. Корнем нашего дерева будет начальная точка поиска, а поддеревьями для данной вершины узла будут все вершины-соседи. В таком дереве будет очень много повторяющихся узлов, так например мы можем пойти в соседнюю вершину, потом вернуться обратно, опять пойти в туже соседнюю вершину, и так до бесконечности. Для того, чтобы избежать подобных ситуаций мы будем запоминать те вершины, в которых мы уже побывали и не рассматривать их, если они встретятся нам ещё раз.</p>
+<p>Сформулируем задачу поиска в типах. У нас есть дерево поиска, которое содержит все возможные разветвления, также каждая вершина содержит значение эвристики, по нему мы знаем насколько близка данная вершина к цели. Также у нас есть специальный предикат, который определён на вершинах, по нему мы можем узнать является ли данная вершина целью. Нам нужно получить путь, или цепочку вершин, которая будет начинаться в корне дерева поиска и заканчиваться в целевой вершине.</p>
+<pre><font color=Black>search</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> h <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></pre>
+<p>Здесь <code><font color=Black>a</font></code> – это значение вершины и <code><font color=Black>h</font></code> – значение эвристики. Обратите внимание на зависимость <code><font color=Green>Ord</font> h</code> в контексте, ведь мы собираемся сравнивать эти значения по близости к цели. При обходе дерева мы будем запоминать повторяющиеся вершины, для этого мы воспользуемся типом множество из стандартного модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Set</font></code>. Внутри <code><font color=Green>Set</font></code> могут хранится только значения, для которых определены операции сравнения, поэтому нам придётся добавить в контекст ещё одну зависимость:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Tree</font>
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Set</font> <font color="#b2590f">as</font> <font color=Green>S</font>
+
+<font color=Black>search</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> h<font color=Black>,</font> <font color=Green>Ord</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></pre>
+<p>Поиск будет заключаться в том, что мы будем обходить дерево от корня к узлам. При этом среди всех узлов-альтернатив мы будем просматривать узлы с наименьшим значением эвристики. В этом нам поможет специальная структура данных, которая называется <em>очередью с приоритетом</em> (priority queue). Эта очередь хранит элементы с учётом их старшинства (приоритета). Мы можем добавлять в неё элементы и извлекать элементы. При этом мы всегда будем извлекать элемент с наименьшим приоритетом. Мы воспользуемся очередями из библиотеки <code><font color=Black>fingertree</font></code>. Для начала установим библиотеку:</p>
+<pre><font color=Black>cabal</font> install fingertree</pre>
+<p>Теперь посмотрим в документацию и узнаем какие функции нам доступны. Документацию к пакету можно найти на сайте <a href="http://hackage.haskell.org/package/fingertree"><code class="url">http://hackage.haskell.org/package/fingertree</code></a>. Пока отложим детальное изучение интерфейса, отметим лишь то, что мы можем добавлять элементы к очереди и извлекать элементы с учётом приоритета:</p>
+<pre><font color=Black>insert</font>  <font color="#b2590f">::</font> <font color=Green>Ord</font> k <font color="#b2590f">=&gt;</font> k <font color="#b2590f">-&gt;</font> v <font color="#b2590f">-&gt;</font> <font color=Green>PQueue</font> k v <font color="#b2590f">-&gt;</font> <font color=Green>PQueue</font> k v
+<font color=Black>minView</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> k <font color="#b2590f">=&gt;</font> <font color=Green>PQueue</font> k v <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Black>(</font>v<font color=Black>,</font> <font color=Green>PQueue</font> k v<font color=Black>)</font></pre>
+<p>Вернёмся к функции <code><font color=Black>search</font></code>. Я бы хотел обратить ваше внимание на то, как мы будем разрабатывать эту функцию. Вспомним, что Haskell – ленивый язык. Это означает, что при обработке рекурсивных типов данных, функция “углубляется” в значение лишь тогда, когда функция, которая вызвала эту функцию попросит её об этом. Это даёт нам возможность работать с потенциально бесконечными структурами данных и, что более важно, разделять сложный алгоритм на независимые составляющие.</p>
+<p>В функции <code><font color=Black>search</font></code> нам необходимо обойти все элементы в порядке значения эвристики и остановиться в вершине, на которой целевой предикат вернёт <code><font color=Green>True</font></code>. Но для начала мы добавим к вершинам их пути из корня, для того чтобы в конце мы смогли узнать как мы попали в текущую вершину. Итак наша функция разбивается на три составляющие:</p>
+<pre><font color=Black>search</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> h<font color=Black>,</font> <font color=Green>Ord</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
+<font color=Black>search</font> isGoal <font color="#b2590f">=</font>  findPath isGoal <font color=Black>.</font> flattenTree <font color=Black>.</font> addPath </pre>
+<p>выпишем типы составляющих функций и проверим код в интерпретаторе.</p>
+<pre><font color=Black>un</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>findPath</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Path</font> a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
+<font color=Black>findPath</font> <font color="#b2590f">=</font> un
+
+<font color=Black>flattenTree</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> h<font color=Black>,</font> <font color=Green>Ord</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Path</font> a<font color="#b2590f">]</font>
+<font color=Black>flattenTree</font> <font color="#b2590f">=</font> un
+
+<font color=Black>addPath</font> <font color="#b2590f">::</font> <font color=Green>Tree</font> <font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font>
+<font color=Black>addPath</font> <font color="#b2590f">=</font> un
+
+<font color="#b2590f">data</font> <font color=Green>Path</font> a <font color="#b2590f">=</font> <font color=Green>Path</font> 
+	<font color=Black>{</font> pathEnd   <font color="#b2590f">::</font> a
+	<font color=Black>,</font> path      <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
+	<font color=Black>}</font></pre>
+<p>Обратите внимание на то как поступающие на вход данные разделились между функциями. Информация о приоритете вершин не идёт дальше функции <code><font color=Black>flattenTree</font></code>, а предикат <code><font color=Black>isGoal</font></code> используется только в функции <code><font color=Black>findPath</font></code>. Модуль прошёл проверку типов и мы можем детализировать функции дальше:</p>
+<pre><font color=Black>addPath</font> <font color="#b2590f">::</font> <font color=Green>Tree</font> <font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font>
+<font color=Black>addPath</font> <font color="#b2590f">=</font> iter <font color=Green>[]</font>
+    <font color="#b2590f">where</font> iter ps t <font color="#b2590f">=</font> <font color=Green>Node</font> <font color=Black>(</font><font color=Green>Path</font> val <font color=Black>(</font>reverse ps'<font color=Black>)</font><font color=Black>,</font> h<font color=Black>)</font> <font color=Black>$</font> 
+            iter ps' <font color=Black>&lt;$&gt;</font> subForest t
+            <font color="#b2590f">where</font> <font color=Black>(</font>val<font color=Black>,</font> h<font color=Black>)</font>  <font color="#b2590f">=</font> rootLabel t
+                  ps'       <font color="#b2590f">=</font> val <font color="#b2590f">:</font> ps</pre>
+<p>В этой функции мы просто присоединяем к данной вершине все родительские вершины, так мы составляем маршрут от данной вершины до начальной, поскольку мы всё время добавляем новые вершины в начало списка, в итоге у нас получаются перевёрнутые маршруты, поэтому перед тем как обернуть значение в конструктор <code><font color=Green>Path</font></code> мы переворачиваем список. На самом деле нам нужно перевернуть только один путь. Путь, который ведёт к цели, но за счёт того, что язык у нас ленивый, функция <code><font color=Black>reverse</font></code> будет применена не сразу, а лишь тогда, когда нам действительно понадобится значение пути. Это как раз и произойдёт лишь один раз, в самом конце программы, лишь для одного значения!</p>
+<p>Давайте пока пропустим функцию <code><font color=Black>flattenTree</font></code> и сначала определим функцию <code><font color=Black>findPath</font></code>. Эта функция принимает все вершины, которые мы обошли если бы шли без цели (функции <code><font color=Black>isGoal</font></code>) и ищет среди них первую, которая удовлетворяет предикату. Для этого мы воспользуемся стандартной функцией <code><font color=Black>find</font></code> из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font></code>:</p>
+<pre><font color=Black>findPath</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Path</font> a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
+<font color=Black>findPath</font> isGoal <font color="#b2590f">=</font>  fmap path <font color=Black>.</font> find <font color=Black>(</font>isGoal <font color=Black>.</font> pathEnd<font color=Black>)</font></pre>
+<p>Напомню тип функции <code><font color=Black>find</font></code>, она принимает предикат и список, а возвращает первое значение списка, на котором предикат вернёт <code><font color=Green>True</font></code>:</p>
+<pre><font color=Black>find</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> a</pre>
+<p>Функция <code><font color=Black>fmap</font></code> применяется из-за того, что результат функции <code><font color=Black>find</font></code> завёрнут в <code><font color=Green>Maybe</font></code>, это частично определённая функция. В самом деле ведь в списке может и не оказаться подходящего значения.</p>
+<p>Осталось определить функцию <code><font color=Black>flattenTree</font></code>. Было бы хорошо определить её так, чтобы она была развёрткой для списка. Поскольку функция <code><font color=Black>find</font></code> является свёрткой (может быть определена через <code><font color=Black>fold</font></code>), вместе эти функции работали бы очень эффективно. Мы определим функцию <code><font color=Black>flattenTree</font></code> через взаимную рекурсию. Две функции будут по очереди вызывать друг друга. Одна из них будет извлекать следующее значение из очереди, а другая – проверять не встречалось ли нам уже такое значение, и добавлять новые элементы в очередь.</p>
+<pre><font color=Black>flattenTree</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> h<font color=Black>,</font> <font color=Green>Ord</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Path</font> a<font color="#b2590f">]</font>
+<font color=Black>flattenTree</font> a <font color="#b2590f">=</font> ping none <font color=Black>(</font>singleton a<font color=Black>)</font> 
+
+<font color=Black>ping</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> h<font color=Black>,</font> <font color=Green>Ord</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Visited</font> a <font color="#b2590f">-&gt;</font> <font color=Green>ToVisit</font> a h <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Path</font> a<font color="#b2590f">]</font>
+<font color=Black>ping</font> visited toVisit 
+    <font color="#b2590f">|</font> isEmpty toVisit <font color="#b2590f">=</font> <font color=Green>[]</font>
+    <font color="#b2590f">|</font> otherwise       <font color="#b2590f">=</font> pong visited toVisit' a
+    <font color="#b2590f">where</font> <font color=Black>(</font>a<font color=Black>,</font> toVisit'<font color=Black>)</font> <font color="#b2590f">=</font> next toVisit
+
+
+<font color=Black>pong</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> h<font color=Black>,</font> <font color=Green>Ord</font> a<font color=Black>)</font> 
+    <font color="#b2590f">=&gt;</font> <font color=Green>Visited</font> a <font color="#b2590f">-&gt;</font> <font color=Green>ToVisit</font> a h <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Path</font> a<font color="#b2590f">]</font>
+<font color=Black>pong</font> visited toVisit a 
+    <font color="#b2590f">|</font> inside a visited  <font color="#b2590f">=</font> ping visited toVisit
+    <font color="#b2590f">|</font> otherwise         <font color="#b2590f">=</font> getPath a <font color="#b2590f">:</font> 
+        ping <font color=Black>(</font>insert a visited<font color=Black>)</font> <font color=Black>(</font>schedule <font color=Black>(</font>subForest a<font color=Black>)</font> toVisit<font color=Black>)</font></pre>
+<p>Типы <code><font color=Green>Visited</font></code> и <code><font color=Green>ToVisit</font></code> обозначают наборы вершин, которые мы уже посетили и которые только собираемся посетить. Не вдаваясь в подробности интерфейса этих типов, давайте присмотримся к функциям <code><font color=Black>ping</font></code> и <code><font color=Black>pong</font></code> с точки зрения функции, которая их будет вызывать, а именно функции <code><font color=Black>findPath</font></code>. Эта функция ожидает на входе список. Внутри она обходит список в поисках нужного элемента, поэтому она будет применять сопоставление с образцом, разбирая список на части. Сначала она запросит сопоставление с пустым списком, запустится функция <code><font color=Black>ping</font></code> с пустым множеством посещённых вершин (<code><font color=Black>none</font></code>) и одним элементом в очереди вершин (<code><font color=Black>singleton</font> a</code>), которые предстоит посетить. Функция <code><font color=Black>ping</font></code> проверит не является ли очередь пустой, очередь содержит один элемент, поэтому она перейдёт к следующему случаю и извлечёт из очереди один элемент (<code><font color=Black>next</font></code>), который будет передан в функцию <code><font color=Black>pong</font></code>. Функция <code><font color=Black>pong</font></code> проверит нет ли в списке уже посещённых элементов того, который был только что извлечён (<code><font color=Black>inside</font> a visited</code>). Если это окажется так, то она запросит следующий элемент у функции <code><font color=Black>ping</font></code>. Если же исходный элемент окажется новым, она добавит его в список (<code><font color=Black>getPath</font> a <font color="#b2590f">:</font> <font color=Black>...</font></code>) и запланирует обход всех дочерних деревьев данного элемента (<code><font color=Black>schedule</font> <font color=Black>(</font>subForest a<font color=Black>)</font> toVisit</code>). При первом заходе исходный элемент окажется новым и функция <code><font color=Black>findPath</font></code> поймёт, что список не пустой и остановит вычисление. Она немного передохнёт и примется за следующий случай. Там она будет извлекать первый элемент списка и сопоставлять его с предикатом. При этом первый элемент уже вычислен. Мы воспользуемся этим, убедимся в том, что он не является целью и рекурсивно вызовем функцию <code><font color=Black>find</font></code> на хвосте списка. Функция <code><font color=Black>findPath</font></code> запросит следующее значение и так далее.</p>
+<p>Наша функция <code><font color=Black>flattenPath</font></code> не является развёрткой, но очень похожа на неё тем, что позволяет вычислять результирующий список частично. Например функция <code><font color=Black>length</font></code> требует полного обхода списка. Мы не можем использовать её с бесконечными списками. Теперь давайте разберёмся с подчинёнными функциями:</p>
+<pre><font color=Black>getPath</font> <font color="#b2590f">::</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Path</font> a
+<font color=Black>getPath</font> <font color="#b2590f">=</font> fst <font color=Black>.</font> rootLabel</pre>
+<p>Функции для множества вершин, которые мы уже посетили:</p>
+<pre><font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Set</font> <font color="#b2590f">as</font> <font color=Green>S</font>
+<font color=Black>...</font>
+
+<font color="#b2590f">type</font> <font color=Green>Visited</font> a   <font color="#b2590f">=</font> <font color=Green>S</font><font color=Black>.</font><font color=Green>Set</font> a
+
+<font color=Black>none</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Visited</font> a
+<font color=Black>none</font> <font color="#b2590f">=</font> <font color=Green>S</font><font color=Black>.</font>empty
+
+<font color=Black>insert</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Visited</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Visited</font> a
+<font color=Black>insert</font> <font color="#b2590f">=</font> <font color=Green>S</font><font color=Black>.</font>insert <font color=Black>.</font> pathEnd <font color=Black>.</font> getPath
+
+<font color=Black>inside</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Visited</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>inside</font> <font color="#b2590f">=</font> <font color=Green>S</font><font color=Black>.</font>member <font color=Black>.</font> pathEnd <font color=Black>.</font> getPath</pre>
+<p>Функции для очереди тех вершин, что мы только собираемся посетить:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Maybe</font>
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>PriorityQueue</font><font color=Black>.</font><font color=Green>FingerTree</font> <font color="#b2590f">as</font> <font color=Green>Q</font>
+<font color=Black>...</font>
+
+<font color="#b2590f">type</font> <font color=Green>ToVisit</font> a h <font color="#b2590f">=</font> <font color=Green>Q</font><font color=Black>.</font><font color=Green>PQueue</font> h <font color=Black>(</font><font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font><font color=Black>)</font>
+
+<font color=Black>priority</font> t <font color="#b2590f">=</font> <font color=Black>(</font>snd <font color=Black>$</font> rootLabel t<font color=Black>,</font> t<font color=Black>)</font>
+
+<font color=Black>singleton</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> h <font color="#b2590f">=&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>ToVisit</font> a h
+<font color=Black>singleton</font> <font color="#b2590f">=</font> uncurry <font color=Green>Q</font><font color=Black>.</font>singleton <font color=Black>.</font> priority 
+
+<font color=Black>next</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> h <font color="#b2590f">=&gt;</font> <font color=Green>ToVisit</font> a h <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font><font color=Black>,</font> <font color=Green>ToVisit</font> a h<font color=Black>)</font>
+<font color=Black>next</font> <font color="#b2590f">=</font> fromJust <font color=Black>.</font> <font color=Green>Q</font><font color=Black>.</font>minView
+
+<font color=Black>isEmpty</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> h <font color="#b2590f">=&gt;</font> <font color=Green>ToVisit</font> a h <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>isEmpty</font> <font color="#b2590f">=</font> <font color=Green>Q</font><font color=Black>.</font>null
+
+<font color=Black>schedule</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> h <font color="#b2590f">=&gt;</font> <font color="#b2590f">[</font><font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Path</font> a<font color=Black>,</font> h<font color=Black>)</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>ToVisit</font> a h <font color="#b2590f">-&gt;</font> <font color=Green>ToVisit</font> a h
+<font color=Black>schedule</font> <font color="#b2590f">=</font> <font color=Green>Q</font><font color=Black>.</font>union <font color=Black>.</font> <font color=Green>Q</font><font color=Black>.</font>fromList <font color=Black>.</font> fmap priority</pre>
+<p>Эти функции очень простые, они специализируют более общие функции для типов <code><font color=Green>Set</font></code> и <code><font color=Green>PQueue</font></code>, вы наверняка легко разберётесь с ними, заглянув в документацию к модулям <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Set</font></code> и <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>PriorityQueue</font><font color=Black>.</font><font color=Green>FingerTree</font></code>.</p>
+<p>Осталось только написать функцию, которая будет составлять дерево поиска для алгоритма A*. Она принимает функцию ветвления, а также функцию расстояния до цели и строит по ним дерево поиска:</p>
+<pre><font color=Black>astarTree</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Num</font> h<font color=Black>,</font> <font color=Green>Ord</font> h<font color=Black>)</font> 
+    <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font><font color="#b2590f">]</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> h<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font>a<font color=Black>,</font> h<font color=Black>)</font>
+<font color=Black>astarTree</font> alts distToGoal s0 <font color="#b2590f">=</font> unfoldTree f <font color=Black>(</font>s0<font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+    <font color="#b2590f">where</font> f <font color=Black>(</font>s<font color=Black>,</font> h<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>(</font>s<font color=Black>,</font> heur h s<font color=Black>)</font><font color=Black>,</font> next h <font color=Black>&lt;$&gt;</font> alts s<font color=Black>)</font>
+          heur h s <font color="#b2590f">=</font> h <font color=Black>+</font> distToGoal s  
+          next h <font color=Black>(</font>a<font color=Black>,</font> d<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>a<font color=Black>,</font> d <font color=Black>+</font> h<font color=Black>)</font></pre>
+<h3 id="поиск-маршрутов-в-метро"><a href="#TOC">Поиск маршрутов в метро</a></h3>
+<p>Теперь давайте посмотрим как наша функция справится с задачей поиска маршрутов в метро:</p>
+<pre><font color=Black>metroTree</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Tree</font> <font color=Black>(</font><font color=Green>Station</font><font color=Black>,</font> <font color=Green>Double</font><font color=Black>)</font>
+<font color=Black>metroTree</font> init goal <font color="#b2590f">=</font> astarTree distMetroMap <font color=Black>(</font>stationDist goal<font color=Black>)</font> init
+
+<font color=Black>connect</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font><font color=Green>Station</font><font color="#b2590f">]</font>
+<font color=Black>connect</font> a b <font color="#b2590f">=</font> search <font color=Black>(</font><font color=Black>==</font> b<font color=Black>)</font> <font color=Black>$</font> metroTree a b
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>$</font> connect <font color=Black>(</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Sirius</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Prizrak</font><font color=Black>)</font></pre>
+<p>К примеру найдём маршрут от станции “Дно Болота” до станции “Призрак”:</p>
+<pre><font color=Black>*</font><font color=Green>Metro</font><font color=Black>&gt;</font> connect <font color=Black>(</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>DnoBolota</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Prizrak</font><font color=Black>)</font>
+<font color=Green>Just</font> <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>DnoBolota</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>PlBakha</font><font color=Black>,</font>
+    <font color=Green>St</font> <font color=Green>Red</font> <font color=Green>PlBakha</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Sirius</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Sirius</font><font color=Black>,</font>
+    <font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Zvezda</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Til</font><font color=Black>,</font>
+    <font color=Green>St</font> <font color=Green>Green</font> <font color=Green>TrollevMost</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Prizrak</font><font color="#b2590f">]</font>
+<font color=Black>*</font><font color=Green>Metro</font><font color=Black>&gt;</font> connect <font color=Black>(</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>PlShekspira</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color=Black>)</font>
+<font color=Green>Just</font> <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>PlShekspira</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Rodnik</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>Rodnik</font><font color=Black>,</font>
+    <font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>Krest</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color="#b2590f">]</font>
+<font color=Black>*</font><font color=Green>Metro</font><font color=Black>&gt;</font> connect <font color=Black>(</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>PlShekspira</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>De</font><font color=Black>)</font>
+<font color=Green>Nothing</font></pre>
+<p>В третьем случае маршрут не был найден, поскольку у нас нет станции <code><font color=Green>De</font></code> на оранжевой ветке.</p>
+<h2 id="тестирование-с-помощью-quickcheck"><a href="#TOC">Тестирование с помощью QuickCheck</a></h2>
+<p>Мы проверили три случая, ещё три случая, ещё три случая, ожидаемый результат сходится с тем, что возвращает нам интерпретатор, но можем ли мы быть уверены в том, что алгоритм действительно работает? Для Haskell была разработана специальная библиотека тестирования <code><font color=Green>QuickCheck</font></code>, которая упрощает процесс проверки программ. Мы можем сформулировать свойства, которые обязательно должны выполняться, а <code><font color=Green>QuickCheck</font></code> сгенерирует случайный набор данных и проверит наши свойства на них.</p>
+<p>Например в нашей задаче путь из <code><font color=Green>A</font></code> в <code><font color=Green>B</font></code> должен совпадать с перевёрнутым путём из <code><font color=Green>B</font></code> в <code><font color=Green>A</font></code>. Также все станции в маршруте должны быть соседними. Давайте проверим эти свойства. Для этого нам нужно сформулировать их в виде предикатов:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Test</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font> 
+
+<font color="#b2590f">import</font> <font color=Green>Metro</font>
+
+<font color=Black>prop1</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>prop1</font> a b <font color="#b2590f">=</font> connect a b <font color=Black>==</font> <font color=Black>(</font>fmap reverse <font color=Black>$</font> connect b a<font color=Black>)</font>
+
+<font color=Black>prop2</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>prop2</font> a b <font color="#b2590f">=</font> maybe <font color=Green>True</font> <font color=Black>(</font>all <font color=Black>(</font>uncurry near<font color=Black>)</font> <font color=Black>.</font> pairs<font color=Black>)</font> <font color=Black>$</font> connect a b
+
+<font color=Black>pairs</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Black>(</font>a<font color=Black>,</font> a<font color=Black>)</font><font color="#b2590f">]</font>
+<font color=Black>pairs</font> xs <font color="#b2590f">=</font> zip xs <font color=Black>(</font>drop <font color="#0000ee">1</font> xs<font color=Black>)</font>
+
+<font color=Black>near</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>near</font> a b <font color="#b2590f">=</font> a <font color=Black>`elem`</font> <font color=Black>(</font>fst <font color=Black>&lt;$&gt;</font> distMetroMap b<font color=Black>)</font></pre>
+<p>Установим <code><font color=Green>QuickCheck</font></code>:</p>
+<pre><font color=Black>cabal</font> install <font color=Green>QuickCheck</font></pre>
+<p>Теперь нам нужно подсказать <code><font color=Green>QuickCheck</font></code> как генерировать случайные значения типа <code><font color=Green>Station</font></code>. <code><font color=Green>QuickCheck</font></code> тестирует функции, которые принимают значения из класса <code><font color=Green>Arbitrary</font></code> и возвращают <code><font color=Green>Bool</font></code>. Класс <code><font color=Green>Arbitrary</font></code> отвечает за генерацию случайных значений.</p>
+<p>Основной метод <code><font color=Black>arbitrary</font></code> возвращает генератор случайных значений:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Arbitrary</font> a <font color="#b2590f">where</font>
+    arbitrary <font color="#b2590f">::</font> <font color=Green>Gen</font> a</pre>
+<p>Мы воспользуемся тем, что этот класс уже определён для многих стандартных типов. Кроме того класс <code><font color=Green>Gen</font></code> явялется монадой. Мы сгенерируем случайное целое число и отобразим его в одну из станций. Сделать это можно разными способами, мы начнём из одной станции и будем случайно блуждать по карте:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Test</font><font color=Black>.</font><font color=Green>QuickCheck</font>
+<font color=Black>...</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Arbitrary</font> <font color=Green>Station</font> <font color="#b2590f">where</font>
+    arbitrary <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>$</font> s0<font color=Black>)</font> <font color=Black>.</font> foldr <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> id <font color=Black>.</font> fmap select <font color=Black>&lt;$&gt;</font> ints
+        <font color="#b2590f">where</font> ints <font color="#b2590f">=</font> vector <font color=Black>=&lt;&lt;</font> choose <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">100</font><font color=Black>)</font>
+              s0 <font color="#b2590f">=</font> <font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font>
+
+<font color=Black>select</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font>
+<font color=Black>select</font> i s <font color="#b2590f">=</font> <font color="#b2590f">as</font> <font color=Black>!!</font> mod i <font color=Black>(</font>length <font color="#b2590f">as</font><font color=Black>)</font>
+    <font color="#b2590f">where</font> <font color="#b2590f">as</font> <font color="#b2590f">=</font> fst <font color=Black>&lt;$&gt;</font> distMetroMap s</pre>
+<p>Мы воспользовались двумя функциями из бибилотеки <code><font color=Green>QuickCheck</font></code>. Это <code><font color=Black>vector</font></code> и <code><font color=Black>choose</font></code>. Первая строит список случайных чисел заданной длины, а вторая выбирает случайное число из заданного диапазона. Теперь мы можем протетстировать наши предикаты с помощью функции <code><font color=Black>quickCheck</font></code>:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> quickCheck prop1
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Test</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> quickCheck prop2
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Test</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> </pre>
+<p>Свойства прошли тестирование на выборке из 100 комбинаций аргументов. Если нам интересно, мы можем с помощью функции <code><font color=Black>verboseCheck</font></code> посмотреть на каких именно значениях проводилось тестирование:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> verboseCheck prop2
+<font color=Green>Passed</font><font color="#b2590f">:</font>  
+<font color=Green>St</font> <font color=Green>Black</font> <font color=Green>Kosmodrom</font>
+<font color=Green>St</font> <font color=Green>Red</font> <font color=Green>UlBylichova</font>
+<font color=Green>Passed</font><font color="#b2590f">:</font> 
+<font color=Green>St</font> <font color=Green>Black</font> <font color=Green>UlBylichova</font>
+<font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>Sever</font>
+<font color=Green>Passed</font><font color="#b2590f">:</font>  
+<font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Sirius</font>
+<font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>Krest</font>
+<font color=Black>...</font></pre>
+<p>Если бы свойство не выполнилось, <code><font color=Green>QuickCheck</font></code> сообщил бы нам об этом и показал бы те элементы, для которых свойство не выполнилось. Давайте составим такое свойство искусственно. Например, проверим, находятся ли все станции на одной линии:</p>
+<pre><font color=Black>fakeProp</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>fakeProp</font> <font color=Black>(</font><font color=Green>St</font> a <font color="#b2590f">_</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>St</font> b <font color="#b2590f">_</font><font color=Black>)</font> <font color="#b2590f">=</font> a <font color=Black>==</font> b</pre>
+<p>Посмотрим, что на это скажет <code><font color=Green>QuickCheck</font></code>:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> quickCheck fakeProp
+<font color=Black>***</font> <font color=Green>Failed</font><font color=Black>!</font> <font color=Green>Falsifiable</font> <font color=Black>(</font>after <font color="#0000ee">1</font> test<font color=Black>)</font><font color="#b2590f">:</font>  
+<font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Sirius</font>
+<font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>Rodnik</font></pre>
+<p>По умолчанию <code><font color=Green>QuickCheck</font></code> проверит свойство сто раз. Для изменения этих настроек, мы можем воспользоваться функцией <code><font color=Black>quickCheckWith</font></code>, дополнительным параметром она принимает значение типа <code><font color=Green>Arg</font></code>, которое содержит параметры тестирования. Например протестируем первое свойство 500 раз:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> quickCheckWith <font color=Black>(</font>stdArgs<font color=Black>{</font> maxSuccess <font color="#b2590f">=</font> <font color="#0000ee">500</font> <font color=Black>}</font><font color=Black>)</font> prop1
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">500</font> tests<font color=Black>.</font></pre>
+<p>Мы воспользовались стандартными настройками (<code><font color=Black>stdArgs</font></code>) и изменили один параметр.</p>
+<h3 id="формирование-тестовой-выборки"><a href="#TOC">Формирование тестовой выборки</a></h3>
+<p>Предположим, что мы уверены в правильной работе алгоритма для голубой и чёрной ветки метро, но сомневаемся в остальных. Как раз для этого случая в <code><font color=Green>QuickCheck</font></code> предусмотрена функция <code><font color=Black>a</font><font color=Black>==&gt;</font>b</code>. Это функция обозначает условную проверку, свойство <code><font color=Black>b</font></code> будет протестировано только в том случае, если свойство <code><font color=Black>a</font></code> окажется верным. Иначе тестовые данные будут отброшены.</p>
+<pre><font color=Black>notBlueAndBlack</font> a b <font color="#b2590f">=</font> cond a <font color=Black>&amp;&amp;</font> cond b <font color=Black>==&gt;</font> prop1 a b 
+    <font color="#b2590f">where</font> cond <font color=Black>(</font><font color=Green>St</font> a <font color="#b2590f">_</font><font color=Black>)</font> <font color="#b2590f">=</font> a <font color=Black>/=</font> <font color=Green>Blue</font> <font color=Black>&amp;&amp;</font> a <font color=Black>/=</font> <font color=Green>Black</font></pre>
+<p>Далее тестируем как обычно:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> quickCheck notBlueAndBlack 
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color=Black>.</font></pre>
+<p>Также с помощью функции <code><font color=Black>forAll</font></code> мы можем подсказать <code><font color=Green>QuickCheck</font></code> на каких данных тестировать свойство.</p>
+<pre><font color=Black>forAll</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Show</font> a<font color=Black>,</font> <font color=Green>Testable</font> prop<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Gen</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> prop<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Property</font></pre>
+<p>Эта функция принимает генератор случайных значений и свойство, которое зависит от тех значений, которые создаются этим генератором. К примеру, пусть нас интересуют только все возможные пути между четырьмя станциями: <code><font color=Black>(</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color=Black>)</font></code>, <code><font color=Black>(</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>)</font></code>, <code><font color=Black>(</font><font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Til</font><font color=Black>)</font></code> и <code><font color=Black>(</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>Sever</font><font color=Black>)</font></code>. Воспользуемся функцией <code><font color=Black>elements</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Gen</font> a</code>, она как раз принимает список значений, и возвращает генератор, который случайным образом выбирает любое значение из этого списка.</p>
+<pre><font color=Black>testFor</font> <font color="#b2590f">=</font> forAll <font color=Black>(</font>liftA2 <font color=Green>(,)</font> gen gen<font color=Black>)</font> <font color=Black>$</font> uncurry prop1
+    <font color="#b2590f">where</font> gen <font color="#b2590f">=</font> elements <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>,</font> 
+                    <font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Til</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>Sever</font><font color="#b2590f">]</font></pre>
+<p>Проверим, те ли значения попали в выборку:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> verboseCheckWith <font color=Black>(</font>stdArgs<font color=Black>{</font> maxSuccess <font color="#b2590f">=</font> <font color="#0000ee">3</font> <font color=Black>}</font><font color=Black>)</font> testFor
+<font color=Green>Passed</font><font color="#b2590f">:</font>  
+<font color=Black>(</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>Sever</font><font color=Black>)</font>
+<font color=Green>Passed</font><font color="#b2590f">:</font> 
+<font color=Black>(</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>Sever</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>)</font>
+<font color=Green>Passed</font><font color="#b2590f">:</font>  
+<font color=Black>(</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>,</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>)</font>
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">3</font> tests<font color=Black>.</font></pre>
+<p>Мы можем настроить формирование выборки ещё одним способом. Для этого мы сделаем специальный тип обёртку над <code><font color=Green>Station</font></code> и определим для ненго свой экземпляр класса <code><font color=Green>Arbitrary</font></code>:</p>
+<pre><font color="#b2590f">newtype</font> <font color=Green>OnlyOrange</font> <font color="#b2590f">=</font> <font color=Green>OnlyOrange</font> <font color=Green>Station</font>
+<font color="#b2590f">newtype</font> <font color=Green>Only4</font>      <font color="#b2590f">=</font> <font color=Green>Only4</font>       <font color=Green>Station</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Arbitrary</font> <font color=Green>OnlyOrange</font> <font color="#b2590f">where</font>
+    arbitrary <font color="#b2590f">=</font> <font color=Green>OnlyOrange</font> <font color=Black>.</font> <font color=Green>St</font> <font color=Green>Orange</font> <font color=Black>&lt;$&gt;</font> 
+        elements <font color="#b2590f">[</font><font color=Green>DnoBolota</font><font color=Black>,</font> <font color=Green>PlBakha</font><font color=Black>,</font> <font color=Green>Krest</font><font color=Black>,</font> <font color=Green>Lao</font><font color=Black>,</font> <font color=Green>Sever</font><font color="#b2590f">]</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Arbitrary</font> <font color=Green>Only4</font> <font color="#b2590f">where</font>
+    arbitrary <font color="#b2590f">=</font> <font color=Green>Only4</font> <font color=Black>&lt;$&gt;</font> elements <font color="#b2590f">[</font><font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>,</font> 
+                    <font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Til</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>Sever</font><font color="#b2590f">]</font></pre>
+<p>После этого мы можем очень легко комбинировать различные выборки при тестировании.</p>
+<pre><font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> quickCheck <font color=Black>$</font> <font color="#b2590f">\</font><font color=Black>(</font><font color=Green>Only4</font> a<font color=Black>)</font> <font color=Black>(</font><font color=Green>Only4</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> prop1 a b
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> quickCheck <font color=Black>$</font> <font color="#b2590f">\</font><font color=Black>(</font><font color=Green>Only4</font> a<font color=Black>)</font> <font color=Black>(</font><font color=Green>OnlyOrange</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> prop1 a b
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> quickCheck <font color=Black>$</font> <font color="#b2590f">\</font>a <font color=Black>(</font><font color=Green>OnlyOrange</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> prop2 a b
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color=Black>.</font></pre>
+<h3 id="классификация-тестовых-случаев"><a href="#TOC">Классификация тестовых случаев</a></h3>
+<p>Мы можем попросить у <code><font color=Green>QuickCheck</font></code>, чтобы он разбил тестовую выборку на классы и в конце тестирования сообщил бы нам сколько элементов в какой класс попали. Это делается с помощью функции <code><font color=Black>classify</font></code>:</p>
+<pre><font color=Black>classify</font> <font color="#b2590f">::</font> <font color=Green>Testable</font> prop <font color="#b2590f">=&gt;</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> prop <font color="#b2590f">-&gt;</font> <font color=Green>Property</font></pre>
+<p>Она принимает условие классификации, метку класса и свойство. Например так мы можем разбить выборку по типам линий:</p>
+<pre><font color=Black>prop3</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Property</font>
+<font color=Black>prop3</font> a<font color="#b2590f">@</font><font color=Black>(</font><font color=Green>St</font> wa <font color="#b2590f">_</font><font color=Black>)</font> b<font color="#b2590f">@</font><font color=Black>(</font><font color=Green>St</font> wb <font color="#b2590f">_</font><font color=Black>)</font> <font color="#b2590f">=</font> 
+    classify <font color=Black>(</font>wa <font color=Black>==</font> <font color=Green>Orange</font> <font color=Black>||</font> wb <font color=Black>==</font> <font color=Green>Orange</font><font color=Black>)</font> <font color=Black>"Orange"</font> <font color=Black>$</font>
+    classify <font color=Black>(</font>wa <font color=Black>==</font> <font color=Green>Black</font>  <font color=Black>||</font> wb <font color=Black>==</font> <font color=Green>Black</font><font color=Black>)</font>  <font color=Black>"Black"</font>  <font color=Black>$</font>
+    classify <font color=Black>(</font>wa <font color=Black>==</font> <font color=Green>Red</font>    <font color=Black>||</font> wb <font color=Black>==</font> <font color=Green>Red</font><font color=Black>)</font>    <font color=Black>"Red"</font>    <font color=Black>$</font> prop1 a b</pre>
+<p>Протестируем:</p>
+<pre><font color=Black>*</font><font color=Green>Test</font><font color=Black>&gt;</font> quickCheck prop3
+<font color=Black>+++</font> <font color=Green>OK</font><font color=Black>,</font> passed <font color="#0000ee">100</font> tests<font color="#b2590f">:</font>
+<font color="#0000ee">34</font><font color=Black>%</font> <font color=Green>Red</font>
+<font color="#0000ee">15</font><font color=Black>%</font> <font color=Green>Orange</font>
+ <font color="#0000ee">9</font><font color=Black>%</font> <font color=Green>Black</font>
+ <font color="#0000ee">8</font><font color=Black>%</font> <font color=Green>Orange</font><font color=Black>,</font> <font color=Green>Red</font>
+ <font color="#0000ee">6</font><font color=Black>%</font> <font color=Green>Black</font><font color=Black>,</font> <font color=Green>Red</font>
+ <font color="#0000ee">5</font><font color=Black>%</font> <font color=Green>Orange</font><font color=Black>,</font> <font color=Green>Black</font></pre>
+<h2 id="оценка-быстродействия-с-помощью-criterion"><a href="#TOC">Оценка быстродействия с помощью criterion</a></h2>
+<p>Недавно появилась библиотека <code><font color=Black>unordered</font><font color="#2149c1">-</font>containers</code>. Она предлагает более эффективную реализацию нескольких структур из стандартной библиотеки <code><font color=Black>containers</font></code>. Например там мы можем найти тип <code><font color=Green>HashSet</font></code>. Почему бы нам не заменить на него стандартный тип <code><font color=Green>Set</font></code>?</p>
+<pre><font color=Black>cabal</font> install unordered<font color="#2149c1">-</font>containers</pre>
+<p>Изменения отразятся лишь на контекстах объявлений типов. Элементы принадлжежащие множеству <code><font color=Green>HashSet</font></code> должны быть экземплярами классов <code><font color=Green>Eq</font></code> и <code><font color=Green>Hashable</font></code>. Новый класс <code><font color=Green>Hashable</font></code> нужен для ускорения работы с данными. Давайте посмотрим на этот класс:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>m <font color=Green>Data</font><font color=Black>.</font><font color=Green>Hashable</font>
+<font color=Green>Prelude</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Hashable</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Green>Hashable</font>
+<font color="#b2590f">class</font> <font color=Green>Hashable</font> a <font color="#b2590f">where</font>
+  hash <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+  hashWithSalt <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+  	<font color="#2149c1">-- Defined in `Data.Hashable'</font>
+<font color=Black>...</font>
+<font color=Black>...</font> много экземпляров</pre>
+<p>Обязательный метод класса <code><font color=Black>hash</font></code> даёт нам возможность преобразовать элемент в целое число. Это число называют хеш-ключом. Хеш-ключи используеются для хранения элементов в хеш-таблицах. Мы не будем подробно на них останавливаться, отметим лишь то, что они позволяют очень быстро извлекать данные из контейнеров и обновлять данные.</p>
+<p>Теперь просто скопируйте модуль <code><font color=Green>Astar</font><font color=Black>.</font>hs</code> измените одну строчку, и добавьте ещё одну (в шапке модуля):</p>
+<pre><font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>HashSet</font> <font color="#b2590f">as</font> <font color=Green>S</font>
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Hashable</font></pre>
+<p>Попробуйте загрузить модуль в интерпретатор. <code><font color=Black>ghci</font></code> выдаст длинный список ошибок, это – хорошо. По ним вы сможете легко догадать в каких местах необходимо заменить <code><font color=Green>Ord</font> a</code> на <code><font color=Black>(</font><font color=Green>Hashable</font> a<font color=Black>,</font> <font color=Green>Eq</font> a<font color=Black>)</font></code>.</p>
+<p>Теперь для поиска маршрутов нам необходимо определить экземпляр класса <code><font color=Green>Hashable</font></code> для типа <code><font color=Green>Station</font></code>. В модуле <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Hashable</font></code> уже определены экземпляры для многих стандартных типов. Мы воспользуемся экземпляром для целых чисел.</p>
+<p>Добавим в <code><font color=Black>driving</font></code> подчинённых типов класс <code><font color=Green>Enum</font></code> и воспользуемся им в экземпляре для <code><font color=Green>Hashable</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Hashable</font> <font color=Green>Station</font> <font color="#b2590f">where</font>
+    hash <font color=Black>(</font><font color=Green>St</font> a b<font color=Black>)</font> <font color="#b2590f">=</font> hash <font color=Black>(</font>fromEnum a<font color=Black>,</font> fromEnum b<font color=Black>)</font></pre>
+<p>Теперь определим две функции определения маршрута:</p>
+<pre><font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>AstarSet</font>       <font color="#b2590f">as</font> <font color=Green>S</font>
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>AstarHashSet</font>   <font color="#b2590f">as</font> <font color=Green>H</font>
+<font color=Black>...</font>
+
+<font color=Black>connectSet</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font><font color=Green>Station</font><font color="#b2590f">]</font>
+<font color=Black>connectSet</font> a b <font color="#b2590f">=</font> <font color=Green>S</font><font color=Black>.</font>search <font color=Black>(</font><font color=Black>==</font> b<font color=Black>)</font> <font color=Black>$</font> metroTree a b
+
+<font color=Black>connectHashSet</font> <font color="#b2590f">::</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font><font color=Green>Station</font><font color="#b2590f">]</font>
+<font color=Black>connectHashSet</font> a b <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font>search <font color=Black>(</font><font color=Black>==</font> b<font color=Black>)</font> <font color=Black>$</font> metroTree a b</pre>
+<p>Как нам сравнить быстродействие двух алгоримтов? Оценка быстродействия программ, написанных на Haskell, может таить в себе подвохи. Например если мы запустим оба алгоритма в одной программе, возможно случится такая ситуация, что часть данных, одинаковая для каждого из методов будет вычислена один раз, а во втором алгоритме переиспользована, и нам может показаться, что второй алгоритм гораздо быстрее первого. Также необходимо учитывать внешние факторы. Тестовая программа вычисляется на одном компьютере, и если алгоритмы тестируются в разное время, может статься так, что мы сидели-сидели и ждали пока тест завершится, в это время работал первый алгоритм, потом нам надоело ждать, мы решили включить музыку, проверить почту, и второму алгоритмку досталось меньше вычислительных ресурсов. Все эти факторы необходимо учитывать при тестировании. Как раз для этого и существует замечательная бибилиотека <code><font color=Black>criterion</font></code>.</p>
+<p>Она проводит серию тестов и по ним оценивает показатели быстродействия. При этом учитывается достоверность тестов. По результатам тестирования показатели сверяются между собой, и если разброс оказывается слишком большим, программа сообщает нам: что-то тут не чисто, данным не стоит доверять. Более того результаты оформляются в наглядные графики, мы можем на глаз оценить распределения и разброс показателей.</p>
+<h3 id="основные-типы-criterion"><a href="#TOC">Основные типы criterion</a></h3>
+<p>Центральным элементом бибилиотеки является класс <code><font color=Green>Benchmarkable</font></code>. Он объединяет данные, которые можно тестировать. Среди них чистые функции (тип <code><font color=Green>Pure</font></code>) и значения с побочными эффектами (тип <code><font color=Green>IO</font> a</code>).</p>
+<p>Мы можем превращать данные в тесты (тип <code><font color=Green>Benchmark</font></code>) с помощью функции <code><font color=Black>bench</font></code>:</p>
+<pre><font color=Black>benchSource</font> <font color="#b2590f">::</font> <font color=Green>Benchmarkable</font> b <font color="#b2590f">=&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> <font color=Green>Benchmark</font></pre>
+<p>Она добавляет к данным комментарий и превращает их в тесты. Как было отмечено, существует одна тонкость при тестировании чистых функций: чистые функции в <code><font color=Green>Haskell</font></code> могут разделять данные между собой, поэтому для независимого тестирования мы оборачиваем функции в специальный тип <code><font color=Green>Pure</font></code>. У нас есть два варианта тестирования:</p>
+<p>Мы можем протестировать приведение результата к заголовочной нормальной форме (вспомните главу о ленивых вычислениях):</p>
+<pre><font color=Black>nf</font> <font color="#b2590f">::</font> <font color=Green>NFData</font> b <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font></pre>
+<p>или к слабой заголовочной нормальной форме:</p>
+<pre><font color=Black>whnf</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font></pre>
+<p>Аналогичные функции (<code><font color=Black>nfIO</font></code>, <code><font color=Black>whnfIO</font></code>) есть и для данных с побочными эффектами. Класс <code><font color=Green>NFData</font></code> обозначает все значения, для которых заголовочная нормальная форма определена. Этот класс пришёл в бибилиотеку <code><font color=Black>criterion</font></code> из библиотеки <code><font color=Black>deepseq</font></code>. Стоит отметить эту бибилотеку. В ней определён аналог функции <code><font color=Black>seq</font></code>. Функция <code><font color=Black>seq</font></code> приводит значения к слабой заголовочной нормальной форме (мы заглядываем вглюбь значения лишь на один конструктор), а функция <code><font color=Black>deepseq</font></code> проводит полное вычисление значения. Значение приводится к заголовочной нормальной форме.</p>
+<p>Также нам пригодится функция группировки тестов:</p>
+<pre><font color=Black>bgroup</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Benchmark</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Benchmark</font></pre>
+<p>С её помощью мы объединяем список тестов в один, под некоторым именем. Тестирование проводится с помощью функции <code><font color=Black>defaultMain</font></code>:</p>
+<pre><font color=Black>defaultMain</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Benchmark</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Она принимает список тестов и выполняет их. Выполнение тестов заключается в компиляции программы. После компиляции мы получим исполняемый файл который проводит тестирование в зависимости от параметров, указываемых фланами. До них мы ещё доберёмся, а пока опишем наши тесты:</p>
+<pre><font color="#2149c1">-- | Module: Speed.hs</font>
+<font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Criterion</font><font color=Black>.</font><font color=Green>Main</font>
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>DeepSeq</font>
+
+<font color="#b2590f">import</font> <font color=Green>Metro</font>
+
+<font color="#b2590f">instance</font> <font color=Green>NFData</font> <font color=Green>Station</font> <font color="#b2590f">where</font>
+    rnf <font color=Black>(</font><font color=Green>St</font> a b<font color=Black>)</font> <font color="#b2590f">=</font> rnf <font color=Black>(</font>rnf a<font color=Black>,</font> rnf b<font color=Black>)</font>
+
+<font color="#b2590f">instance</font> <font color=Green>NFData</font> <font color=Green>Way</font>  <font color="#b2590f">where</font>
+<font color="#b2590f">instance</font> <font color=Green>NFData</font> <font color=Green>Name</font> <font color="#b2590f">where</font>
+
+<font color=Black>pair1</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Green>St</font> <font color=Green>Orange</font> <font color=Green>DnoBolota</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Green</font> <font color=Green>Prizrak</font><font color=Black>)</font>
+<font color=Black>pair2</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Green>St</font> <font color=Green>Red</font> <font color=Green>Lao</font><font color=Black>,</font> <font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font><font color=Black>)</font>
+
+<font color=Black>test</font> name search <font color="#b2590f">=</font> bgroup name <font color=Black>$</font> <font color="#b2590f">[</font>
+            bench <font color=Black>"1"</font> <font color=Black>$</font> nf <font color=Black>(</font>uncurry search<font color=Black>)</font> pair1<font color=Black>,</font>
+            bench <font color=Black>"2"</font> <font color=Black>$</font> nf <font color=Black>(</font>uncurry search<font color=Black>)</font> pair2<font color="#b2590f">]</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> defaultMain <font color="#b2590f">[</font>        
+        test <font color=Black>"Set"</font>  connectSet<font color=Black>,</font>
+        test <font color=Black>"Hash"</font> connectHashSet<font color="#b2590f">]</font></pre>
+<p>Экземпляр для класса <code><font color=Green>NFData</font></code> похож на экземпляр для <code><font color=Green>Hashable</font></code>. Мы также определили метод значения через методы для типов, из которых он состоит. Класс <code><font color=Green>NFData</font></code> устроен так, что для типов из класса <code><font color=Green>Enum</font></code> мы можем воспользоваться определением по умолчанию (как в случае для <code><font color=Green>Way</font></code> и <code><font color=Green>Name</font></code>).</p>
+<p>Теперь перейдём в командную строку, переключимся на директорию с нашим модулем и скомпилируем его:</p>
+<pre>$ ghc -O --make Speed.hs</pre>
+<p>Флаг <code><font color="#2149c1">-</font><font color=Green>O</font></code> говорит <code><font color=Black>ghc</font></code>, что не обходимо провести оптимизацию кода. Появится исполняемый файл <code><font color=Green>Speed</font></code>. Что мы можем делать с этим файлом? Узнать это можно, запустив его с флагом <code><font color=Black>--help</font></code>:</p>
+<p>Мы можем узнать какие функции нам доступны, набрав:</p>
+<pre>$ ./Speed --help
+I don't know what version I am.
+Usage: Speed [OPTIONS] [BENCHMARKS]
+  -h, -?       --help               print help, then exit
+  -G           --no-gc              do not collect garbage between iterations
+  -g           --gc                 collect garbage between iterations
+  -I CI        --ci=CI              bootstrap confidence interval
+  -l           --list               print only a list of benchmark names
+  -o FILENAME  --output=FILENAME    report file to write to
+  -q           --quiet              print less output
+               --resamples=N        number of bootstrap resamples to perform
+  -s N         --samples=N          number of samples to collect
+  -t FILENAME  --template=FILENAME  template file to use
+  -u FILENAME  --summary=FILENAME   produce a summary CSV file of all results
+  -V           --version            display version, then exit
+  -v           --verbose            print more output
+If no benchmark names are given, all are run
+Otherwise, benchmarks are run by prefix match</pre>
+<p>Из этих настроек самые интресные, это <code><font color="#2149c1">-</font>s</code> и <code><font color="#2149c1">-</font>o</code>. <code><font color="#2149c1">-</font>s</code> указывает число сэмплов выборке (столько раз будет запущен каждый тест). а <code><font color="#2149c1">-</font>o</code> говорит, о том в какой файл поместить результаты. Результаты представлены в виде графиков, формируется файл, который можно открыть в любом браузере. Записать данные в таблицу (например для отчёта) можно с помощью флага <code><font color="#2149c1">-</font>u</code>.</p>
+<p>Проверим результаты:</p>
+<pre><font color=Black>./</font><font color=Green>Speed</font> <font color="#2149c1">-</font>o res<font color=Black>.</font>html <font color="#2149c1">-</font>s <font color="#0000ee">100</font> </pre>
+<p>Откроем файл <code><font color=Black>res</font><font color=Black>.</font>html</code> и посмотрим на графики. Оказалось, что для данных двух случаев первый алгоритм работал немного лучше. Но выборку из двух вариантов вряд ли можно считать убедительной. Давайте расширим выборку с помощью <code><font color=Green>QuickCheck</font></code>. Мы запустим проверку какого-нибудь свойства тем и другим методом. В итоге <code><font color=Green>QuickCheck</font></code> сам сгенерирует достаточное число случайных данных, а <code><font color=Black>criterion</font></code> оценит быстродействие. Мы проверим самое первое свойство (о перевёрнутых маршрутах) на том и другом алгоритме.</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+
+<font color="#b2590f">import</font> <font color=Green>Test</font><font color=Black>.</font><font color=Green>QuickCheck</font>
+<font color="#b2590f">import</font> <font color=Green>Metro</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Arbitrary</font> <font color=Green>Station</font> <font color="#b2590f">where</font>
+    arbitrary <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>$</font> s0<font color=Black>)</font> <font color=Black>.</font> foldr <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> id <font color=Black>.</font> fmap select <font color=Black>&lt;$&gt;</font> ints
+        <font color="#b2590f">where</font> ints <font color="#b2590f">=</font> vector <font color=Black>=&lt;&lt;</font> choose <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">100</font><font color=Black>)</font>
+              s0 <font color="#b2590f">=</font> <font color=Green>St</font> <font color=Green>Blue</font> <font color=Green>De</font>
+
+<font color=Black>select</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font>
+<font color=Black>select</font> i s <font color="#b2590f">=</font> <font color="#b2590f">as</font> <font color=Black>!!</font> mod i <font color=Black>(</font>length <font color="#b2590f">as</font><font color=Black>)</font>
+    <font color="#b2590f">where</font> <font color="#b2590f">as</font> <font color="#b2590f">=</font> fst <font color=Black>&lt;$&gt;</font> distMetroMap s
+
+<font color=Black>prop</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color="#b2590f">[</font><font color=Green>Station</font><font color="#b2590f">]</font><font color=Black>)</font> 
+	<font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Station</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>prop</font> search a b <font color="#b2590f">=</font> search a b <font color=Black>==</font> <font color=Black>(</font>reverse <font color=Black>&lt;$&gt;</font> search b a<font color=Black>)</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> defaultMain <font color="#b2590f">[</font>
+	bench <font color=Black>"Set"</font>  <font color=Black>$</font> quickCheck <font color=Black>(</font>prop connectSet<font color=Black>)</font><font color=Black>,</font>
+	bench <font color=Black>"Hash"</font> <font color=Black>$</font> quickCheck <font color=Black>(</font>prop connectHashSet<font color=Black>)</font><font color="#b2590f">]</font></pre>
+<p>В этом тесте метод <code><font color=Green>Set</font></code> также оказался совсем немного быстрее.</p>
+<p>Как интерпретировать результаты? С левой стороны мы видим оценку плотности вероятности распределения быстродействия. Под графиком мы видим среднее (mean) и дисперсию значения (std dev). Показаны три числа. Это нижняя грань доверительного интервала, оценка величины и верхняя грань доверительного интервала (ci, confidence interval). Среднее значение показывает оценку величины, мы говорим, что алгоритм работает примерно 100 миллисекунд. Дисперсия – это разброс результатов вокруг среднего значения. С правой стороны мы видим графики с точками. Каждая точка обозначает отдельный запуск алгоритма. Количество запусков соответствует флагу <code><font color="#2149c1">-</font>s</code>. В последнеё строке под графиком <code><font color=Black>criterion</font></code> сообщает степень недоверия к результатам. В последнем опыте этот показатель достаточно высок. Возможно это связано с тем, что наш алгоритм выбора случайных станций имеет сильный разброс по времени. Ведь сначала мы генерируем слуайное число <code><font color=Black>n</font></code> от 0 до 100, и затем начинаем блуждать по карте от начальной точке <code><font color=Black>n</font></code> раз. Также может влиять то, что время работы алгоритма зависит от положения станций.</p>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>В этой главе мы реализовали алгоритм эвристического поиска А*. Также мы узнали несколько стандартных структур данных. Это множества и очереди с приоритетом и освежили в памяти ленивые вычисления.</p>
+<p>Мы научились проверять свойства программ (<code><font color=Green>QuickCheck</font></code>), а также оценивать быстродействие программ (<code><font color=Black>criterion</font></code>).</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<ul>
+<li><p>Я говорил о том, что два варианта алгоритмов дают одинаковые результаты, но так ли это на самом деле? Проверьте это в <code><font color=Green>QuickCheck</font></code>.</p></li>
+<li><p>Алгоритм эвристического поиска может применятся не только для поиска маршрутов на карте. Часто алгоритм А* применяется в играх. Встройте этот алгоритм в игру пятнашки (глава 13). Если игрок запутался и не знает как ходить, он может попросить у компьютера совет. В этой задаче альтернативы~– это вершины графа, соседние вершины~– это те вершины, в которые мы можем попасть за один ход.</p>
+<p>Подсказка: воспользуйтесь манхэттенским расстоянием.</p></li>
+<li><p>Оцените эффективность двух алгоритмов поиска в игре пятнашки. Рассмотрите зависимость быстродействия от степени сложности игры.</p></li>
+</ul>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="18.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="20.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="18" style="list-style-type: decimal">
+<li>Средства разработки
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="20" style="list-style-type: decimal">
+<li>Императивное программирование
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

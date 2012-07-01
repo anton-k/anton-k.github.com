@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#приложения">Приложения</a><ul>
+<li><a href="#начало-работы-с-haskell">Начало работы с Haskell</a><ul>
+<li><a href="#компилятор">Компилятор</a></li>
+<li><a href="#среда-разработки">Среда разработки</a></li>
+</ul></li>
+<li><a href="#литература">Литература</a><ul>
+<li><a href="#книги">Книги</a></li>
+<li><a href="#тематический-сборник">Тематический сборник</a><ul>
+<li><a href="#основы">Основы</a></li>
+<li><a href="#разработка-программ-сверху-вниз">Разработка программ сверху-вниз</a></li>
+<li><a href="#функторы-и-монады">Функторы и монады</a></li>
+<li><a href="#ленивые-вычисления">Ленивые вычисления</a></li>
+<li><a href="#структурная-рекурсия">Структурная рекурсия</a></li>
+<li><a href="#лямбда-исчисление-и-функциональное-программирование">Лямбда-исчисление и функциональное программирование</a></li>
+<li><a href="#теория-категорий">Теория категорий</a></li>
+<li><a href="#практика">Практика</a></li>
+<li><a href="#как-работает-ghc">Как работает GHC</a></li>
+</ul></li>
+<li><a href="#и-все-все-все">И все-все-все</a></li>
+</ul></li>
+<li><a href="#обзор-hackage">Обзор Hackage</a><ul>
+<li><a href="#стандартные-библиотеки">Стандартные библиотеки</a></li>
+<li><a href="#эффективные-типы-данных">Эффективные типы данных</a></li>
+<li><a href="#разработка-программ">Разработка программ</a></li>
+<li><a href="#и-все-все-все-1">И все-все-все</a></li>
+</ul></li>
+<li><a href="#места">Места</a><ul>
+<li><a href="#университеты">Университеты</a></li>
+<li><a href="#компании">Компании</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="21.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="preface.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<div>
+<h1 id="приложения"><a href="#TOC">Приложения</a></h1>
+</div>
+
+<p></p>
+<div>
+<h2 id="начало-работы-с-haskell"><a href="#TOC">Начало работы с Haskell</a></h2>
+</div>
+
+<h4 id="компилятор"><a href="#TOC">Компилятор</a></h4>
+<p>Для программирования в Haskell нам понадобится компилятор. Мы будем пользоваться наиболее развитым компилятором~– GHC. Лучше всего устанавливать его вместе с Haskell Platform:</p>
+<blockquote>
+<p><a href="http://hackage.haskell.org/platform/"><code class="url">http://hackage.haskell.org/platform/</code></a></p>
+</blockquote>
+<p>Haskell Platform содержит стабильную версию компилятора и много хороших, проверенных временем библиотек. Если по каким-то причинам установить Haskell Platform не удалось. Не отчаивайтесь, можно загрузить компилятор с сайта GHC:</p>
+<blockquote>
+<p><a href="http://www.haskell.org/ghc/"><code class="url">http://www.haskell.org/ghc/</code></a></p>
+</blockquote>
+<p>И далее установить все необходимые библиотеки с Hackage с помощью <code><font color=Black>cabal</font></code>.</p>
+<h4 id="среда-разработки"><a href="#TOC">Среда разработки</a></h4>
+<p>Для Haskell существует очень мало сред разработки. Обычно на Haskell программируют в каких-нибудь продвинутых текстовых редакторах (vim, Emacs, scite, kate, notepad++). Отметим всё же среду разработки Leksah (<a href="http://leksah.org/"><code class="url">http://leksah.org/</code></a>), она написана на Haskell и её можно установить с Hackage. Также отметим редактор yi. Он написан на Haskell и его также можно установить с Hackage.</p>
+<p>Если вы не хотите разбираться с новым текстовым редактором или средой разработки, и вам нужна лишь подсветка синтаксиса можно воспользоваться gedit. Пишем код в gedit, сохраняем, переключаемся на ghci, пробуем, обновляем, пробуем, при случае компилируем или собираем в пакет. Всё это можно делать и в gedit.</p>
+<p></p>
+<p></p>
+<div>
+<h2 id="литература"><a href="#TOC">Литература</a></h2>
+</div>
+
+<p>О Haskell написано много интересных книг и статей, но все они на английском. На русском языке выходит электронный журнал “Практика функционального программирования” (<fprog.ru>). Пока в нём доминируют два языка – это Erlang и Haskell.</p>
+<p>Я бы хотел рассказать о тех книгах и статьях, которые мне помогли. Все они приняли активное участие в создании этой книги.</p>
+<p></p>
+<div>
+<h3 id="книги"><a href="#TOC">Книги</a></h3>
+</div>
+
+<ul>
+<li><p>Miran Lipovaa. Learn You A Haskell For A Great Good.</p>
+<p>Очень хорошая книга для начинающих, Haskell в картинках. Весёлая и познавательная книга<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup></p>
+<blockquote>
+<p><a href="http://learnyouahaskell.com/"><code class="url">http://learnyouahaskell.com/</code></a></p>
+</blockquote></li>
+<li><p>Hal Daume III. Yet Another Haskell Tutorial.</p>
+<p>Ещё одна очень хорошая книга для начинающих. Без картинок, но всё по делу.</p>
+<www.cs.utah.edu/~hal/docs/daume02yaht.pdf></li>
+<li><p>Paul Hudak. Haskell School of Expression.</p>
+<p>Книга, которая иллюстрирует основные принципы функционального программирования на примере Haskell. Главные достоинства – много текста об общих принципах и интересные приложения, картинки, музыка, анимация, управление роботами и всё это на Haskell.</p></li>
+<li><p>Paul Hudak. Haskell School of Music.</p>
+<p>Пол Хьюдак увлекается не только Haskell, но и музыкой. Он написал книгу, которая целиком посвящена описанию музыки в Haskell:</p>
+<blockquote>
+<p><a href="http://www.cs.yale.edu/homes/hudak/Papers/HSoM.pdf"><code class="url">http://www.cs.yale.edu/homes/hudak/Papers/HSoM.pdf</code></a></p>
+</blockquote>
+<blockquote>
+<p><a href="http://haskell.cs.yale.edu/"><code class="url">http://haskell.cs.yale.edu/</code></a></p>
+</blockquote></li>
+<li><p>Bryan O’Sullivan, Don Stewart, John Goerzen. Real World Haskell.</p>
+<p>Очень полезная книга в помощь тем, кто хочет научиться писать настоящие, серьёзные программы. Авторы подробно изучают вопросы, связанные с применением Haskell на практике.</p>
+<blockquote>
+<p><a href="http://book.realworldhaskell.org/"><code class="url">http://book.realworldhaskell.org/</code></a></p>
+</blockquote></li>
+<li><p>Готовится к выходу к книга Саймона Марлоу о параллельных вычислениях в Haskell. Обещает быть очень интересной, уже известно, что книга будет доступна в интернете.</p></li>
+</ul>
+<p></p>
+<div>
+<h3 id="тематический-сборник"><a href="#TOC">Тематический сборник</a></h3>
+</div>
+
+<h4 id="основы"><a href="#TOC">Основы</a></h4>
+<ul>
+<li><p>John Hughes. Why Functional Programming Matters.</p></li>
+<li><p>Paul Hudak, John Hughes, Simon Peyton Jones, Philip Wadler. A History of Haskell: Being Lazy With Class.</p></li>
+<li><p>Mark P. Jones. Functional Programming with Overloading and Higher-Order Polymorphism.</p></li>
+<li><p>Евгений Кирпичев. Элементы функциональных языков программирования, журнал Практика функционального программирования.</p></li>
+<li><p>Simon Thompson. Programming It in Haskell.</p></li>
+<li><p>Justin Bailey. Haskell Cheat Sheet.</p>
+<blog.codeslower.com/static/CheatSheet.pdf></li>
+</ul>
+<h4 id="разработка-программ-сверху-вниз"><a href="#TOC">Разработка программ сверху-вниз</a></h4>
+<ul>
+<li>Дмитрий Астапов. Давно не брал я в руки шашек, журнал Практика функционального программирования.</li>
+</ul>
+<h4 id="функторы-и-монады"><a href="#TOC">Функторы и монады</a></h4>
+<ul>
+<li><p>Conor McBride, Ross Paterson. Applicative programming with effects. Статья об аппликативных функторах.</p></li>
+<li><p>Philip Wadler. The Essence of Functional Programming.</p>
+<p>Статья, в которой впервые зашла речь о применении монад в Haskell.</p></li>
+<li><p>Tarmo Uustalu, Varmo Vene. The Essence of Dataflow Programming.</p>
+<p>Статья о комонадах, но есть много интересного и о монадах.</p></li>
+<li><p>Bulat Ziganshin. Haskell I/O inside: Down the Rabbit’s Hole. Статья на HaskellWiki.</p></li>
+<li><p>John Launchbury, Simon Peyton Jones. Lazy functional state threads.</p>
+<p>Статья о типе <code><font color=Green>ST</font></code>.</p></li>
+<li><p>Simon Peyton Jones. Tackling the Awkward Squad: monadic input/output, concurrency, exceptions, and foreign-language calls in Haskell.</p></li>
+</ul>
+<h4 id="ленивые-вычисления"><a href="#TOC">Ленивые вычисления</a></h4>
+<ul>
+<li><p>Douglas McIlroy. Power Series, Power Serious.</p></li>
+<li><p>Дмитрий Астапов. Реурсия+мемоизация=динамическое программирование, журнал Практика функционального программирования.</p></li>
+<li><p>Сергей Зефиров. Лень бояться, журнал Практика функционального программирования.</p></li>
+<li><p>Jerzy Karczmarczuk. Specific “scientific” data structures, and their processing.</p></li>
+</ul>
+<h4 id="структурная-рекурсия"><a href="#TOC">Структурная рекурсия</a></h4>
+<ul>
+<li><p>Graham Hutton. A tutorial on the universality and expressiveness of fold</p></li>
+<li><p>Jeremy Gibbons. Origami Programming.</p></li>
+<li><p>Jeremy Gibbons, Geraint Jones. The Under-Appreciated Unfold.</p></li>
+</ul>
+<h4 id="лямбда-исчисление-и-функциональное-программирование"><a href="#TOC">Лямбда-исчисление и функциональное программирование</a></h4>
+<ul>
+<li><p>Шалак В.И. Шейнфинкель и комбинаторная логика.</p></li>
+<li><p>Paul Hudak: Conception, Evolution, and Application of Functional Programming Languages.</p>
+<p>Длинная статья о развитии функциональных языков. Там есть главы о лямбда-исчислении.</p></li>
+<li><p>Бенджамин Пирс. Типы в языках программирования.</p>
+<p>Большая книга о теории типов.</p>
+<blockquote>
+<p><a href="http://newstar.rinet.ru/~goga/tapl/"><code class="url">http://newstar.rinet.ru/~goga/tapl/</code></a></p>
+</blockquote></li>
+<li><p>Денис Москвин. Системы типизации лямбда-исчисления.</p>
+<p>Курс видео-лекций.</p>
+<blockquote>
+<p><a href="http://www.lektorium.tv/course/?id=22797"><code class="url">http://www.lektorium.tv/course/?id=22797</code></a></p>
+</blockquote></li>
+<li><p>John Harrison. Introduction to Functional Programming.</p>
+<p>Курс лекций по функциональному программированию, который читался в Университете Кэмбридж.</p></li>
+<li><p>А. Филд, П. Харрисон, Функциональное программирование, Москва “Мир”, 1993.</p>
+<p>Большая книга для читателей, всерьёз заинтересовавшихся функциональным программированием. Прочитав её, вы сможете не только пользоваться ФП-языками но и написать такой язык самостоятельно.</p></li>
+<li><p>Rinus Plasmeijer and Marko van Eekelen. Functional Programming and Parallel Graph Rewriting.</p>
+<p>В этой книге исследуются вопросы распараллеливания функциональных программ, построение компиляторов для функциональных языков.</p></li>
+</ul>
+<h4 id="теория-категорий"><a href="#TOC">Теория категорий</a></h4>
+<p>Две очень хорошие книги для начинающих:</p>
+<ul>
+<li><p>Maarten M. Fokkinga. Gentle Introduction to Category Theory.</p>
+<blockquote>
+<www.home.cs.utwente.nl/~fokkinga/mmf92b.pdf>
+</blockquote></li>
+</ul>
+<p>Также где-то в сети есть и перевод на русский.</p>
+<ul>
+<li><p>Steve Awodey. Category Theory.</p></li>
+<li><p>Eugenia Cheng, Simon Willerton aka TheCatsters. Курс видео-лекций на youtube.</p>
+<blockquote>
+<p><a href="http://www.scss.tcd.ie/Edsko.de.Vries/ct/catsters/linear.php"><code class="url">http://www.scss.tcd.ie/Edsko.de.Vries/ct/catsters/linear.php</code></a></p>
+</blockquote>
+<blockquote>
+<p><a href="http://www.youtube.com/user/TheCatsters"><code class="url">http://www.youtube.com/user/TheCatsters</code></a></p>
+</blockquote></li>
+</ul>
+<p>Статьи по категориальным типам:</p>
+<ul>
+<li><p>Varmo Vene. Categorical Programming with Inductive and Coinductive Types. Phd-диссертация.</p></li>
+<li><p>Erik Meijer, Graham Hutton. Bananas in Space: Extending Fold and Unfold to Exponential Types.</p></li>
+<li><p>Martin Erwig. Categorical Programming with Abstract Data Types.</p></li>
+<li><p>Martin Erwig. Metamorphic Programming: Structured Recursion for Abstract Data Types.</p></li>
+</ul>
+<h4 id="практика"><a href="#TOC">Практика</a></h4>
+<ul>
+<li><p>Conal Elliott. Denotational design with type class morphisms.</p></li>
+<li><p>Johan Tibell. High Performance Haskell. Слайды с выступления.</p></li>
+<li><p>Simon Marlow. Parallel and Concurrent Programming in Haskell.</p></li>
+<li><p>Edward Z. Yang. Блог о Haskell в картинках. Много полезной информации о лени и устройстве ghc. <a href="http://blog.ezyang.com/about/"><code class="url">http://blog.ezyang.com/about/</code></a></p></li>
+<li><p>Oleg Kiselyov. Блог в том числе и о Haskell. Много решений интересных и нетривиальных задач. <a href="http://okmij.org/ftp/"><code class="url">http://okmij.org/ftp/</code></a></p></li>
+</ul>
+<h4 id="как-работает-ghc"><a href="#TOC">Как работает GHC</a></h4>
+<ul>
+<li><p>Документация GHC:</p>
+<blockquote>
+<p><a href="http://hackage.haskell.org/trac/ghc/wiki/Commentary"><code class="url">http://hackage.haskell.org/trac/ghc/wiki/Commentary</code></a></p>
+</blockquote></li>
+<li><p>Don Stewart. Multi-paradigm Just-In-Time Compilation. BS Thesis, 2002.</p>
+<p>Автор пробует компилировать Haskell-код в Java-код. При этом очень доступно объясняеются внутренности STG.</p></li>
+<li><p>Simon Marlow, Simon Peyton Jones. The Glasgow Haskell Compiler. The Architecture of Open Source Application, Volume 2, 2012.</p></li>
+<li><p>Simon Marlow, Simon Peyton Jones. Making a Fast Curry: Push/Enter vs. Eval/Apply for Higher-order Languages. ICFP’04.</p></li>
+<li><p>Simon Peyton Jones. Implementing lazy functional languages on stock hardware: the Spineless Tagless G-machine.</p></li>
+<li><p>Simon Marlow, Tim Harris, Roshan P. James, Simon Peyton Jones. Parallel Generational-Copying Garbage Collection with a Block-Structured Heap. ISMM’08.</p></li>
+<li><p>Simon Peyton Jones, Andre Santos. A transformation-based optimizer for Haskell. Science of computer programming, 1998.</p></li>
+<li><p>Simon Peyton Jones, John Launchbury. Unboxed values as first citizens in a non-strict functional programming language. 1991.</p></li>
+<li><p>Simon Marlow, Simon Peyton Jones. Secrets of Glasgow Haskell Compiler inliner. 1999</p>
+<p>Статья о тонкостях реализации прагмы <code><font color=Green>INLINE</font></code>.</p></li>
+<li><p>Simon Peyton Jones, Andrew Tolmach, Tony Hoare. Playing by the Rules, ICFP 2001</p>
+<p>Статья о прагме <code><font color=Green>RULES</font></code>.</p></li>
+</ul>
+<p></p>
+<div>
+<h3 id="и-все-все-все"><a href="#TOC">И все-все-все</a></h3>
+</div>
+
+<p>Если вдруг у вас возникли вопросы по Haskell, и рядом с вами не оказалось того, кто мог бы на них ответить, и в книгах нет ответа, вы можете спросить у сообщества Haskell, в haskell-cafe, там вам быстро и с радостью ответят:</p>
+<blockquote>
+<p><a href="http://www.haskell.org/mailman/listinfo/haskell-cafe"><code class="url">http://www.haskell.org/mailman/listinfo/haskell-cafe</code></a></p>
+</blockquote>
+<p>Сообщество Haskell славится радушием и терпимостью к начинающим. Там много информации о выпусках новых библиотек, конференциях, обучающих программах и просто разговоры о том-о-сём.</p>
+<p>Также стоит отметить журнал <em>Monad.Reader</em>:</p>
+<blockquote>
+<p><a href="http://themonadreader.wordpress.com/"><code class="url">http://themonadreader.wordpress.com/</code></a></p>
+</blockquote>
+<p></p>
+<p></p>
+<div>
+<h2 id="обзор-hackage"><a href="#TOC">Обзор Hackage</a></h2>
+</div>
+
+<p>Число пакетов, загруженных на Hackage, уже перевалило за 2000. В Hackage легко заблудиться. Очень часто не разберёшься какой из пакетов выбрать. К тому же многие из них заброшены или просто не подходят для использования в серьёзных приложениях. Но среди них есть и очень хорошие пакеты. Некоторые из них включены в <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code>. Ниже приведён тематический обзор наиболее популярных пакетов.</p>
+<p></p>
+<div>
+<h3 id="стандартные-библиотеки"><a href="#TOC">Стандартные библиотеки</a></h3>
+</div>
+
+<p>Все приведённые в этом подразделе библиотеки включены в <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code>.</p>
+<p>Полный список библиотек для <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code> можно посмотреть на сайте <a href="http://lambda.haskell.org/hp-tmp/docs"><code class="url">http://lambda.haskell.org/hp-tmp/docs</code></a>.</p>
+<ul>
+<li><p><strong>Начало-всех-начал</strong>: <code><font color=Black>base</font></code></p>
+<p>Библиотека включает в себя все стандартные определения, например модули <code><font color=Green>Prelude</font></code>, <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font></code>, <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font></code> и многие другие.</p></li>
+<li><p><strong>Стандартные монады</strong>: <code><font color=Black>transformers</font></code>, <code><font color=Black>mtl</font></code></p>
+<p>Включает монады <code><font color=Green>State</font></code>, <code><font color=Green>Writer</font></code>, <code><font color=Green>Reader</font></code> и другие.</p></li>
+<li><p><strong>Контейнеры</strong>: <code><font color=Black>containers</font></code></p>
+<p>Ассоциативные массивы, множества, последовательности, деревья.</p></li>
+<li><p><strong>Массивы</strong>: <code><font color=Black>array</font></code></p></li>
+<li><p><strong>Графы</strong>: <code><font color=Black>fgl</font></code></p></li>
+<li><p><strong>Архиваторы</strong>: <code><font color=Black>zlib</font></code></p></li>
+<li><p><strong>Вычисление по значению</strong>: <code><font color=Black>deepseq</font></code></p>
+<p>Обычная функция <code><font color=Black>seq</font></code>, позволяет привести данное выражение к слабой заголовочной нормальной форме, если нам всё же необходимо вычислить значение полностью, мы можем воспользоваться функцией <code><font color=Black>deepseq</font></code> из одноимённой библиотеки.</p></li>
+<li><p><strong>Параллельное программирование</strong>: <code><font color=Black>stm</font></code> и <code><font color=Black>parallel</font></code></p></li>
+<li><p><strong>Временная арифметика, календарь</strong>: <code><font color=Black>time</font></code></p></li>
+<li><p><strong>Парсинг</strong>: <code><font color=Black>parsec</font></code></p></li>
+<li><p><strong>Регулярные выражения</strong>: <code><font color=Black>regex</font><font color="#2149c1">-</font>base</code>, <code><font color=Black>regex</font><font color="#2149c1">-</font>posix</code></p></li>
+<li><p><strong>Построение структурированного текста</strong>: <code><font color=Black>pretty</font></code></p></li>
+<li><p><strong>Тестирование программ</strong>: <code><font color=Green>HUnit</font></code>, <code><font color=Green>QuickCheck</font></code></p></li>
+<li><p><strong>Управление файловой системой</strong>: <code><font color=Black>directory</font></code></p></li>
+<li><p><strong>Работа с путями к файлам/директориям</strong>: <code><font color=Black>filepath</font></code></p></li>
+<li><p><strong>Сетевые библиотеки</strong>: <code><font color=Black>network</font></code>, <code><font color=Green>HTTP</font></code>, <code><font color=Black>cgi</font></code>.</p></li>
+<li><p><strong>3д Графика</strong>: <code><font color=Green>OpenGL</font></code>, <code><font color=Green>GLUT</font></code>.</p></li>
+<li><p><strong>Монадные трансформеры</strong>: <code><font color=Black>transformers</font></code></p>
+<p>Мы не коснулись этой темы, но вот краткое пояснение: монадные трансформеры позволяют комбинировать несколько монад. Например, если нам нужно использовать чтение-запись в файл совместно с изменяемым состоянием.</p></li>
+</ul>
+<p></p>
+<div>
+<h3 id="эффективные-типы-данных"><a href="#TOC">Эффективные типы данных</a></h3>
+</div>
+
+
+<ul>
+<li><p><strong>Списки</strong>: <code><font color=Black>dlist</font></code> – эффективное объединение списков.</p>
+<p>Если вы часто пользуетесь операцией <code><font color=Black>++</font></code>, то необходимо заботиться о том, чтобы скобки всегда группировались вправо. Как в <code><font color=Black>a</font><font color=Black>++</font><font color=Black>(</font>b<font color=Black>++</font><font color=Black>(</font>c<font color=Black>++</font>d<font color=Black>)</font><font color=Black>)</font></code>. Иначе время объединения из линейного превратится в квадратичное. Библиотека <code><font color=Black>dlist</font></code> предоставляет специальный тип списков, для которых не важно как группируются скобки при объединении. Время объединения всегда будет линейным.</p></li>
+<li><p><strong>Строки</strong>: <code><font color=Black>bytestring</font></code></p>
+<p>Если ваша программа загружена обработкой строк, и работает слишком медленно, рассмотрите вариант перехода со стандартных строк на тип <code><font color=Green>ByteString</font></code>, это может увеличить быстродействие на порядок.</p></li>
+<li><p><strong>Текст</strong>: <code><font color=Black>text</font></code> или <code><font color=Black>utf8</font><font color="#2149c1">-</font>string</code></p>
+<p>Работа с текстом в формате Unicode. Часто проблемы возникают при необходимости обработки русского текста закодированного в Unicode. Для решения этой проблемы можно воспользоваться одной из этих библиотек.</p></li>
+<li><p><strong>Двоичные данные</strong>: <code><font color=Black>binary</font></code> или <code><font color=Black>cereal</font></code> – Сериализация/десериализация данных.</p></li>
+<li><p><strong>Случайные числа</strong>: <code><font color=Black>mersenne</font><font color="#2149c1">-</font>random<font color="#2149c1">-</font>pure64</code></p>
+<p>Эффективный генератор случайных чисел.</p></li>
+<li><p><strong>Ввод-вывод</strong>: <code><font color=Black>iteratee</font></code></p>
+<p>Эффективная реализация ввода-вывода. Если вам нужно читать или писать данные из большого числа файлов, эта библиотека может существенно помочь.</p></li>
+<li><p><strong>Контейнеры</strong>: <code><font color=Black>unordered</font><font color="#2149c1">-</font>containers</code></p>
+<p>Альтернатива стандартной библиотеке <code><font color=Black>containers</font></code>. Эффективные типы <code><font color=Green>Map</font></code> и <code><font color=Green>Set</font></code>.</p></li>
+<li><p><strong>Последовательности</strong>: <code><font color=Black>fingertree</font></code>, <code><font color=Black>seq</font></code></p>
+<p>Используются для работы с очередями различного типа.</p></li>
+<li><p><strong>Массивы</strong>: <code><font color=Black>vector</font></code></p>
+<p>Эффективный тип для представления массивов. Замена стандартному типу <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Array</font></code>.</p></li>
+<li><p>Самые эффективные изменяемые <strong>хэш-таблицы</strong>: <code><font color=Black>hashtables</font></code></p></li>
+<li><p><strong>Матрицы</strong>: <code><font color=Black>hmatrix</font></code>, <code><font color=Black>repa</font></code></p></li>
+</ul>
+<p></p>
+<div>
+<h3 id="разработка-программ"><a href="#TOC">Разработка программ</a></h3>
+</div>
+
+<ul>
+<li><p>Тестирование, проверка инвариантов: <code><font color=Green>QuickCheck</font></code></p></li>
+<li><p>Оценка быстродействия: <code><font color=Black>criterion</font></code></p></li>
+<li><p>Просмотр Core в человеческом виде: <code><font color=Black>ghc</font><font color="#2149c1">-</font>core</code></p></li>
+<li><p>Настройка сборки мусора: <code><font color=Black>ghc</font><font color="#2149c1">-</font>gc<font color="#2149c1">-</font>tune</code></p></li>
+<li><p>Трассировка программ: <code><font color=Black>hat</font></code></p></li>
+</ul>
+<p></p>
+<div>
+<h3 id="и-все-все-все-1"><a href="#TOC">И все-все-все</a></h3>
+</div>
+
+<ul>
+<li><p><strong>Парсинг</strong>: <code><font color=Black>parsec</font></code> или <code><font color=Black>attoparsec</font></code></p></li>
+<li><p><strong>Языки разметки</strong>: <code><font color=Black>pandoc</font></code>, <code><font color=Black>xhtml</font></code>, <code><font color=Black>tagsoup</font></code>, <code><font color=Black>blaze</font><font color="#2149c1">-</font>html</code>, <code><font color=Black>html</font></code></p></li>
+<li><p><strong>XML</strong>: <code><font color=Black>xml</font></code>, <code><font color=Green>HaXml</font></code></p></li>
+<li><p><strong>JSON</strong>: <code><font color=Black>json</font></code>, <code><font color=Black>aeson</font></code></p></li>
+<li><p><strong>Web</strong>: <code><font color=Black>happstack</font></code>, <code><font color=Black>snap</font></code>, <code><font color=Black>yesod</font></code>, <code><font color=Black>hakyll</font></code></p></li>
+<li><p><strong>Сетевые библиотеки</strong>: <code><font color=Black>network</font></code>, <code><font color=Green>HTTP</font></code>, <code><font color=Black>cgi</font></code>, <code><font color=Black>curl</font></code></p></li>
+<li><p><strong>Графика</strong>: <code><font color=Black>diagrams</font></code>, <code><font color=Black>gnuplot</font></code>, <code><font color=Green>SDL</font></code></p></li>
+<li><p><strong>3д графика</strong>: <code><font color=Green>OpenGL</font></code>, <code><font color=Green>GLFW</font></code>, <code><font color=Green>GLUT</font></code></p></li>
+<li><p><strong>Базы данных</strong>: <code><font color=Green>HDBC</font></code></p></li>
+<li><p><strong>Встраиваемые приложения реального времени с жёсткими ограничениями</strong>: <code><font color=Black>atom</font></code></p></li>
+<li><p><strong>GUI</strong>: <code><font color=Black>wxHaskell</font></code>, <code><font color=Black>gtk2hs</font></code></p></li>
+<li><p><strong>Оценка производительности программ</strong>: <code><font color=Black>criterion</font></code></p></li>
+<li><p><strong>Статистика</strong>: <code><font color=Black>statistics</font></code></p></li>
+<li><p><strong>Парсинг и генерация кода Haskell</strong>: haskell-src-exts</p></li>
+<li><p><strong>FRP</strong>: <code><font color=Black>reactive</font></code>, <code><font color=Black>reactive</font><font color="#2149c1">-</font>banana</code>, <code><font color=Black>yampa</font></code></p></li>
+<li><p><strong>Линейная алгебра</strong>: <code><font color=Black>vector</font><font color="#2149c1">-</font>space</code>, <code><font color=Black>hmatrix</font></code></p></li>
+</ul>
+<p></p>
+<p></p>
+<div>
+<h2 id="места"><a href="#TOC">Места</a></h2>
+</div>
+
+<p>Где культивируется Haskell?</p>
+<p></p>
+<div>
+<h3 id="университеты"><a href="#TOC">Университеты</a></h3>
+</div>
+
+<p>Посмотрим на университеты, в которых Haskell преподают, развивают и применяют:</p>
+<ul>
+<li><p>Британия: Эдинбург, Ноттингем, Оксфорд (лаборатория информатики), Глазго.</p></li>
+<li><p>Америка: Йельский, Коннектикут, Техас, Оклахома, Портлэнд, Канзас</p></li>
+<li><p>Нидерланды: Утрехт</p></li>
+<li><p>Швеция: Технологический Чалмерса, Гёттинген.</p></li>
+<li><p>Австралия: Новый Южный Уэльс, Западной Австралии</p></li>
+<li><p>и другие, полный список на <a href="http://www.haskell.org/haskellwiki/Haskell_in_education"><code class="url">http://www.haskell.org/haskellwiki/Haskell_in_education</code></a>.</p></li>
+</ul>
+<p></p>
+<div>
+<h3 id="компании"><a href="#TOC">Компании</a></h3>
+</div>
+
+
+<ul>
+<li><p>Microsoft Research – разрабатывают GHC.</p></li>
+<li><p>Galios – ведут исследования и решают практические задачи на ФП-языках, особенно на Haskell.</p></li>
+<li><p>Well-Typed – решают практические задачи, консультируют и всё на Haskell. Также занимаются организацией Haskell-слётов, поддержкой стандартных библиотек.</p></li>
+<li><p>и другие, полный список на <a href="http://www.haskell.org/haskellwiki/Haskell_in_industry"><code class="url">http://www.haskell.org/haskellwiki/Haskell_in_industry</code></a></p></li>
+</ul>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="21.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="preface.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="21" style="list-style-type: decimal">
+<li>Музыкальный пример
+</div> <div id="wrap-next-name"><div id="next-name">
+Предисловие
+</div></div></div>  
+ </div> 
+</li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Обновление: книга переведена на русский, вышла в издательстве ДМК Пресс.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+</body>
+</html>

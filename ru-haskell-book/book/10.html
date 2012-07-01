@@ -1,0 +1,1019 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+  <script type="text/javascript">/*<![CDATA[*/
+  /*
+  LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
+  Adapted by Jeff Knisely and Douglas Woodall from ASCIIMathML.js v. 1.4.7,
+  (c) 2005 Peter Jipsen http://www.chapman.edu/~jipsen.
+  Released under the GNU General Public License version 2 or later.
+  See the GNU General Public License (at http://www.gnu.org/copyleft/gpl.html)
+  for more details.
+  */
+  var checkForMathML=true;var notifyIfNoMathML=true;var alertIfNoMathML=false;var mathcolor="";var mathfontfamily="";var showasciiformulaonhover=true;var isIE=document.createElementNS==null;if(document.getElementById==null)
+  alert("This webpage requires a recent browser such as \nMozilla/Netscape 7+ or Internet Explorer 6+MathPlayer")
+  function AMcreateElementXHTML(t){if(isIE)return document.createElement(t);else return document.createElementNS("http://www.w3.org/1999/xhtml",t);}
+  function AMnoMathMLNote(){var nd=AMcreateElementXHTML("h3");nd.setAttribute("align","center")
+  nd.appendChild(AMcreateElementXHTML("p"));nd.appendChild(document.createTextNode("To view the "));var an=AMcreateElementXHTML("a");an.appendChild(document.createTextNode("LaTeXMathML"));an.setAttribute("href","http://www.maths.nott.ac.uk/personal/drw/lm.html");nd.appendChild(an);nd.appendChild(document.createTextNode(" notation use Internet Explorer 6+"));an=AMcreateElementXHTML("a");an.appendChild(document.createTextNode("MathPlayer"));an.setAttribute("href","http://www.dessci.com/en/products/mathplayer/download.htm");nd.appendChild(an);nd.appendChild(document.createTextNode(" or Netscape/Mozilla/Firefox"));nd.appendChild(AMcreateElementXHTML("p"));return nd;}
+  function AMisMathMLavailable(){if(navigator.appName.slice(0,8)=="Netscape")
+  if(navigator.appVersion.slice(0,1)>="5")return null;else return AMnoMathMLNote();else if(navigator.appName.slice(0,9)=="Microsoft")
+  try{var ActiveX=new ActiveXObject("MathPlayer.Factory.1");return null;}catch(e){return AMnoMathMLNote();}
+  else return AMnoMathMLNote();}
+  var AMcal=[0xEF35,0x212C,0xEF36,0xEF37,0x2130,0x2131,0xEF38,0x210B,0x2110,0xEF39,0xEF3A,0x2112,0x2133,0xEF3B,0xEF3C,0xEF3D,0xEF3E,0x211B,0xEF3F,0xEF40,0xEF41,0xEF42,0xEF43,0xEF44,0xEF45,0xEF46];var AMfrk=[0xEF5D,0xEF5E,0x212D,0xEF5F,0xEF60,0xEF61,0xEF62,0x210C,0x2111,0xEF63,0xEF64,0xEF65,0xEF66,0xEF67,0xEF68,0xEF69,0xEF6A,0x211C,0xEF6B,0xEF6C,0xEF6D,0xEF6E,0xEF6F,0xEF70,0xEF71,0x2128];var AMbbb=[0xEF8C,0xEF8D,0x2102,0xEF8E,0xEF8F,0xEF90,0xEF91,0x210D,0xEF92,0xEF93,0xEF94,0xEF95,0xEF96,0x2115,0xEF97,0x2119,0x211A,0x211D,0xEF98,0xEF99,0xEF9A,0xEF9B,0xEF9C,0xEF9D,0xEF9E,0x2124];var CONST=0,UNARY=1,BINARY=2,INFIX=3,LEFTBRACKET=4,RIGHTBRACKET=5,SPACE=6,UNDEROVER=7,DEFINITION=8,TEXT=9,BIG=10,LONG=11,STRETCHY=12,MATRIX=13;var AMsqrt={input:"\\sqrt",tag:"msqrt",output:"sqrt",ttype:UNARY},AMroot={input:"\\root",tag:"mroot",output:"root",ttype:BINARY},AMfrac={input:"\\frac",tag:"mfrac",output:"/",ttype:BINARY},AMover={input:"\\stackrel",tag:"mover",output:"stackrel",ttype:BINARY},AMatop={input:"\\atop",tag:"mfrac",output:"",ttype:INFIX},AMchoose={input:"\\choose",tag:"mfrac",output:"",ttype:INFIX},AMsub={input:"_",tag:"msub",output:"_",ttype:INFIX},AMsup={input:"^",tag:"msup",output:"^",ttype:INFIX},AMtext={input:"\\mathrm",tag:"mtext",output:"text",ttype:TEXT},AMmbox={input:"\\mbox",tag:"mtext",output:"mbox",ttype:TEXT};var AMsymbols=[{input:"\\alpha",tag:"mi",output:"\u03B1",ttype:CONST},{input:"\\beta",tag:"mi",output:"\u03B2",ttype:CONST},{input:"\\gamma",tag:"mi",output:"\u03B3",ttype:CONST},{input:"\\delta",tag:"mi",output:"\u03B4",ttype:CONST},{input:"\\epsilon",tag:"mi",output:"\u03B5",ttype:CONST},{input:"\\varepsilon",tag:"mi",output:"\u025B",ttype:CONST},{input:"\\zeta",tag:"mi",output:"\u03B6",ttype:CONST},{input:"\\eta",tag:"mi",output:"\u03B7",ttype:CONST},{input:"\\theta",tag:"mi",output:"\u03B8",ttype:CONST},{input:"\\vartheta",tag:"mi",output:"\u03D1",ttype:CONST},{input:"\\iota",tag:"mi",output:"\u03B9",ttype:CONST},{input:"\\kappa",tag:"mi",output:"\u03BA",ttype:CONST},{input:"\\lambda",tag:"mi",output:"\u03BB",ttype:CONST},{input:"\\mu",tag:"mi",output:"\u03BC",ttype:CONST},{input:"\\nu",tag:"mi",output:"\u03BD",ttype:CONST},{input:"\\xi",tag:"mi",output:"\u03BE",ttype:CONST},{input:"\\pi",tag:"mi",output:"\u03C0",ttype:CONST},{input:"\\varpi",tag:"mi",output:"\u03D6",ttype:CONST},{input:"\\rho",tag:"mi",output:"\u03C1",ttype:CONST},{input:"\\varrho",tag:"mi",output:"\u03F1",ttype:CONST},{input:"\\varsigma",tag:"mi",output:"\u03C2",ttype:CONST},{input:"\\sigma",tag:"mi",output:"\u03C3",ttype:CONST},{input:"\\tau",tag:"mi",output:"\u03C4",ttype:CONST},{input:"\\upsilon",tag:"mi",output:"\u03C5",ttype:CONST},{input:"\\phi",tag:"mi",output:"\u03C6",ttype:CONST},{input:"\\varphi",tag:"mi",output:"\u03D5",ttype:CONST},{input:"\\chi",tag:"mi",output:"\u03C7",ttype:CONST},{input:"\\psi",tag:"mi",output:"\u03C8",ttype:CONST},{input:"\\omega",tag:"mi",output:"\u03C9",ttype:CONST},{input:"\\Gamma",tag:"mo",output:"\u0393",ttype:CONST},{input:"\\Delta",tag:"mo",output:"\u0394",ttype:CONST},{input:"\\Theta",tag:"mo",output:"\u0398",ttype:CONST},{input:"\\Lambda",tag:"mo",output:"\u039B",ttype:CONST},{input:"\\Xi",tag:"mo",output:"\u039E",ttype:CONST},{input:"\\Pi",tag:"mo",output:"\u03A0",ttype:CONST},{input:"\\Sigma",tag:"mo",output:"\u03A3",ttype:CONST},{input:"\\Upsilon",tag:"mo",output:"\u03A5",ttype:CONST},{input:"\\Phi",tag:"mo",output:"\u03A6",ttype:CONST},{input:"\\Psi",tag:"mo",output:"\u03A8",ttype:CONST},{input:"\\Omega",tag:"mo",output:"\u03A9",ttype:CONST},{input:"\\frac12",tag:"mo",output:"\u00BD",ttype:CONST},{input:"\\frac14",tag:"mo",output:"\u00BC",ttype:CONST},{input:"\\frac34",tag:"mo",output:"\u00BE",ttype:CONST},{input:"\\frac13",tag:"mo",output:"\u2153",ttype:CONST},{input:"\\frac23",tag:"mo",output:"\u2154",ttype:CONST},{input:"\\frac15",tag:"mo",output:"\u2155",ttype:CONST},{input:"\\frac25",tag:"mo",output:"\u2156",ttype:CONST},{input:"\\frac35",tag:"mo",output:"\u2157",ttype:CONST},{input:"\\frac45",tag:"mo",output:"\u2158",ttype:CONST},{input:"\\frac16",tag:"mo",output:"\u2159",ttype:CONST},{input:"\\frac56",tag:"mo",output:"\u215A",ttype:CONST},{input:"\\frac18",tag:"mo",output:"\u215B",ttype:CONST},{input:"\\frac38",tag:"mo",output:"\u215C",ttype:CONST},{input:"\\frac58",tag:"mo",output:"\u215D",ttype:CONST},{input:"\\frac78",tag:"mo",output:"\u215E",ttype:CONST},{input:"\\pm",tag:"mo",output:"\u00B1",ttype:CONST},{input:"\\mp",tag:"mo",output:"\u2213",ttype:CONST},{input:"\\triangleleft",tag:"mo",output:"\u22B2",ttype:CONST},{input:"\\triangleright",tag:"mo",output:"\u22B3",ttype:CONST},{input:"\\cdot",tag:"mo",output:"\u22C5",ttype:CONST},{input:"\\star",tag:"mo",output:"\u22C6",ttype:CONST},{input:"\\ast",tag:"mo",output:"\u002A",ttype:CONST},{input:"\\times",tag:"mo",output:"\u00D7",ttype:CONST},{input:"\\div",tag:"mo",output:"\u00F7",ttype:CONST},{input:"\\circ",tag:"mo",output:"\u2218",ttype:CONST},{input:"\\bullet",tag:"mo",output:"\u2022",ttype:CONST},{input:"\\oplus",tag:"mo",output:"\u2295",ttype:CONST},{input:"\\ominus",tag:"mo",output:"\u2296",ttype:CONST},{input:"\\otimes",tag:"mo",output:"\u2297",ttype:CONST},{input:"\\bigcirc",tag:"mo",output:"\u25CB",ttype:CONST},{input:"\\oslash",tag:"mo",output:"\u2298",ttype:CONST},{input:"\\odot",tag:"mo",output:"\u2299",ttype:CONST},{input:"\\land",tag:"mo",output:"\u2227",ttype:CONST},{input:"\\wedge",tag:"mo",output:"\u2227",ttype:CONST},{input:"\\lor",tag:"mo",output:"\u2228",ttype:CONST},{input:"\\vee",tag:"mo",output:"\u2228",ttype:CONST},{input:"\\cap",tag:"mo",output:"\u2229",ttype:CONST},{input:"\\cup",tag:"mo",output:"\u222A",ttype:CONST},{input:"\\sqcap",tag:"mo",output:"\u2293",ttype:CONST},{input:"\\sqcup",tag:"mo",output:"\u2294",ttype:CONST},{input:"\\uplus",tag:"mo",output:"\u228E",ttype:CONST},{input:"\\amalg",tag:"mo",output:"\u2210",ttype:CONST},{input:"\\bigtriangleup",tag:"mo",output:"\u25B3",ttype:CONST},{input:"\\bigtriangledown",tag:"mo",output:"\u25BD",ttype:CONST},{input:"\\dag",tag:"mo",output:"\u2020",ttype:CONST},{input:"\\dagger",tag:"mo",output:"\u2020",ttype:CONST},{input:"\\ddag",tag:"mo",output:"\u2021",ttype:CONST},{input:"\\ddagger",tag:"mo",output:"\u2021",ttype:CONST},{input:"\\lhd",tag:"mo",output:"\u22B2",ttype:CONST},{input:"\\rhd",tag:"mo",output:"\u22B3",ttype:CONST},{input:"\\unlhd",tag:"mo",output:"\u22B4",ttype:CONST},{input:"\\unrhd",tag:"mo",output:"\u22B5",ttype:CONST},{input:"\\sum",tag:"mo",output:"\u2211",ttype:UNDEROVER},{input:"\\prod",tag:"mo",output:"\u220F",ttype:UNDEROVER},{input:"\\bigcap",tag:"mo",output:"\u22C2",ttype:UNDEROVER},{input:"\\bigcup",tag:"mo",output:"\u22C3",ttype:UNDEROVER},{input:"\\bigwedge",tag:"mo",output:"\u22C0",ttype:UNDEROVER},{input:"\\bigvee",tag:"mo",output:"\u22C1",ttype:UNDEROVER},{input:"\\bigsqcap",tag:"mo",output:"\u2A05",ttype:UNDEROVER},{input:"\\bigsqcup",tag:"mo",output:"\u2A06",ttype:UNDEROVER},{input:"\\coprod",tag:"mo",output:"\u2210",ttype:UNDEROVER},{input:"\\bigoplus",tag:"mo",output:"\u2A01",ttype:UNDEROVER},{input:"\\bigotimes",tag:"mo",output:"\u2A02",ttype:UNDEROVER},{input:"\\bigodot",tag:"mo",output:"\u2A00",ttype:UNDEROVER},{input:"\\biguplus",tag:"mo",output:"\u2A04",ttype:UNDEROVER},{input:"\\int",tag:"mo",output:"\u222B",ttype:CONST},{input:"\\oint",tag:"mo",output:"\u222E",ttype:CONST},{input:":=",tag:"mo",output:":=",ttype:CONST},{input:"\\lt",tag:"mo",output:"<",ttype:CONST},{input:"\\gt",tag:"mo",output:">",ttype:CONST},{input:"\\ne",tag:"mo",output:"\u2260",ttype:CONST},{input:"\\neq",tag:"mo",output:"\u2260",ttype:CONST},{input:"\\le",tag:"mo",output:"\u2264",ttype:CONST},{input:"\\leq",tag:"mo",output:"\u2264",ttype:CONST},{input:"\\leqslant",tag:"mo",output:"\u2264",ttype:CONST},{input:"\\ge",tag:"mo",output:"\u2265",ttype:CONST},{input:"\\geq",tag:"mo",output:"\u2265",ttype:CONST},{input:"\\geqslant",tag:"mo",output:"\u2265",ttype:CONST},{input:"\\equiv",tag:"mo",output:"\u2261",ttype:CONST},{input:"\\ll",tag:"mo",output:"\u226A",ttype:CONST},{input:"\\gg",tag:"mo",output:"\u226B",ttype:CONST},{input:"\\doteq",tag:"mo",output:"\u2250",ttype:CONST},{input:"\\prec",tag:"mo",output:"\u227A",ttype:CONST},{input:"\\succ",tag:"mo",output:"\u227B",ttype:CONST},{input:"\\preceq",tag:"mo",output:"\u227C",ttype:CONST},{input:"\\succeq",tag:"mo",output:"\u227D",ttype:CONST},{input:"\\subset",tag:"mo",output:"\u2282",ttype:CONST},{input:"\\supset",tag:"mo",output:"\u2283",ttype:CONST},{input:"\\subseteq",tag:"mo",output:"\u2286",ttype:CONST},{input:"\\supseteq",tag:"mo",output:"\u2287",ttype:CONST},{input:"\\sqsubset",tag:"mo",output:"\u228F",ttype:CONST},{input:"\\sqsupset",tag:"mo",output:"\u2290",ttype:CONST},{input:"\\sqsubseteq",tag:"mo",output:"\u2291",ttype:CONST},{input:"\\sqsupseteq",tag:"mo",output:"\u2292",ttype:CONST},{input:"\\sim",tag:"mo",output:"\u223C",ttype:CONST},{input:"\\simeq",tag:"mo",output:"\u2243",ttype:CONST},{input:"\\approx",tag:"mo",output:"\u2248",ttype:CONST},{input:"\\cong",tag:"mo",output:"\u2245",ttype:CONST},{input:"\\Join",tag:"mo",output:"\u22C8",ttype:CONST},{input:"\\bowtie",tag:"mo",output:"\u22C8",ttype:CONST},{input:"\\in",tag:"mo",output:"\u2208",ttype:CONST},{input:"\\ni",tag:"mo",output:"\u220B",ttype:CONST},{input:"\\owns",tag:"mo",output:"\u220B",ttype:CONST},{input:"\\propto",tag:"mo",output:"\u221D",ttype:CONST},{input:"\\vdash",tag:"mo",output:"\u22A2",ttype:CONST},{input:"\\dashv",tag:"mo",output:"\u22A3",ttype:CONST},{input:"\\models",tag:"mo",output:"\u22A8",ttype:CONST},{input:"\\perp",tag:"mo",output:"\u22A5",ttype:CONST},{input:"\\smile",tag:"mo",output:"\u2323",ttype:CONST},{input:"\\frown",tag:"mo",output:"\u2322",ttype:CONST},{input:"\\asymp",tag:"mo",output:"\u224D",ttype:CONST},{input:"\\notin",tag:"mo",output:"\u2209",ttype:CONST},{input:"\\begin{eqnarray}",output:"X",ttype:MATRIX,invisible:true},{input:"\\begin{array}",output:"X",ttype:MATRIX,invisible:true},{input:"\\\\",output:"}&{",ttype:DEFINITION},{input:"\\end{eqnarray}",output:"}}",ttype:DEFINITION},{input:"\\end{array}",output:"}}",ttype:DEFINITION},{input:"\\big",tag:"mo",output:"X",atval:"1.2",ieval:"2.2",ttype:BIG},{input:"\\Big",tag:"mo",output:"X",atval:"1.6",ieval:"2.6",ttype:BIG},{input:"\\bigg",tag:"mo",output:"X",atval:"2.2",ieval:"3.2",ttype:BIG},{input:"\\Bigg",tag:"mo",output:"X",atval:"2.9",ieval:"3.9",ttype:BIG},{input:"\\left",tag:"mo",output:"X",ttype:LEFTBRACKET},{input:"\\right",tag:"mo",output:"X",ttype:RIGHTBRACKET},{input:"{",output:"{",ttype:LEFTBRACKET,invisible:true},{input:"}",output:"}",ttype:RIGHTBRACKET,invisible:true},{input:"(",tag:"mo",output:"(",atval:"1",ttype:STRETCHY},{input:"[",tag:"mo",output:"[",atval:"1",ttype:STRETCHY},{input:"\\lbrack",tag:"mo",output:"[",atval:"1",ttype:STRETCHY},{input:"\\{",tag:"mo",output:"{",atval:"1",ttype:STRETCHY},{input:"\\lbrace",tag:"mo",output:"{",atval:"1",ttype:STRETCHY},{input:"\\langle",tag:"mo",output:"\u2329",atval:"1",ttype:STRETCHY},{input:"\\lfloor",tag:"mo",output:"\u230A",atval:"1",ttype:STRETCHY},{input:"\\lceil",tag:"mo",output:"\u2308",atval:"1",ttype:STRETCHY},{input:")",tag:"mo",output:")",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"]",tag:"mo",output:"]",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rbrack",tag:"mo",output:"]",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\}",tag:"mo",output:"}",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rbrace",tag:"mo",output:"}",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rangle",tag:"mo",output:"\u232A",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rfloor",tag:"mo",output:"\u230B",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"\\rceil",tag:"mo",output:"\u2309",rtag:"mi",atval:"1",ttype:STRETCHY},{input:"|",tag:"mo",output:"\u2223",atval:"1",ttype:STRETCHY},{input:"\\|",tag:"mo",output:"\u2225",atval:"1",ttype:STRETCHY},{input:"\\vert",tag:"mo",output:"\u2223",atval:"1",ttype:STRETCHY},{input:"\\Vert",tag:"mo",output:"\u2225",atval:"1",ttype:STRETCHY},{input:"\\mid",tag:"mo",output:"\u2223",atval:"1",ttype:STRETCHY},{input:"\\parallel",tag:"mo",output:"\u2225",atval:"1",ttype:STRETCHY},{input:"/",tag:"mo",output:"/",atval:"1.01",ttype:STRETCHY},{input:"\\backslash",tag:"mo",output:"\u2216",atval:"1",ttype:STRETCHY},{input:"\\setminus",tag:"mo",output:"\\",ttype:CONST},{input:"\\!",tag:"mspace",atname:"width",atval:"-0.167em",ttype:SPACE},{input:"\\,",tag:"mspace",atname:"width",atval:"0.167em",ttype:SPACE},{input:"\\>",tag:"mspace",atname:"width",atval:"0.222em",ttype:SPACE},{input:"\\:",tag:"mspace",atname:"width",atval:"0.222em",ttype:SPACE},{input:"\\;",tag:"mspace",atname:"width",atval:"0.278em",ttype:SPACE},{input:"~",tag:"mspace",atname:"width",atval:"0.333em",ttype:SPACE},{input:"\\quad",tag:"mspace",atname:"width",atval:"1em",ttype:SPACE},{input:"\\qquad",tag:"mspace",atname:"width",atval:"2em",ttype:SPACE},{input:"\\prime",tag:"mo",output:"\u2032",ttype:CONST},{input:"'",tag:"mo",output:"\u02B9",ttype:CONST},{input:"''",tag:"mo",output:"\u02BA",ttype:CONST},{input:"'''",tag:"mo",output:"\u2034",ttype:CONST},{input:"''''",tag:"mo",output:"\u2057",ttype:CONST},{input:"\\ldots",tag:"mo",output:"\u2026",ttype:CONST},{input:"\\cdots",tag:"mo",output:"\u22EF",ttype:CONST},{input:"\\vdots",tag:"mo",output:"\u22EE",ttype:CONST},{input:"\\ddots",tag:"mo",output:"\u22F1",ttype:CONST},{input:"\\forall",tag:"mo",output:"\u2200",ttype:CONST},{input:"\\exists",tag:"mo",output:"\u2203",ttype:CONST},{input:"\\Re",tag:"mo",output:"\u211C",ttype:CONST},{input:"\\Im",tag:"mo",output:"\u2111",ttype:CONST},{input:"\\aleph",tag:"mo",output:"\u2135",ttype:CONST},{input:"\\hbar",tag:"mo",output:"\u210F",ttype:CONST},{input:"\\ell",tag:"mo",output:"\u2113",ttype:CONST},{input:"\\wp",tag:"mo",output:"\u2118",ttype:CONST},{input:"\\emptyset",tag:"mo",output:"\u2205",ttype:CONST},{input:"\\infty",tag:"mo",output:"\u221E",ttype:CONST},{input:"\\surd",tag:"mo",output:"\\sqrt{}",ttype:DEFINITION},{input:"\\partial",tag:"mo",output:"\u2202",ttype:CONST},{input:"\\nabla",tag:"mo",output:"\u2207",ttype:CONST},{input:"\\triangle",tag:"mo",output:"\u25B3",ttype:CONST},{input:"\\therefore",tag:"mo",output:"\u2234",ttype:CONST},{input:"\\angle",tag:"mo",output:"\u2220",ttype:CONST},{input:"\\diamond",tag:"mo",output:"\u22C4",ttype:CONST},{input:"\\Diamond",tag:"mo",output:"\u25C7",ttype:CONST},{input:"\\neg",tag:"mo",output:"\u00AC",ttype:CONST},{input:"\\lnot",tag:"mo",output:"\u00AC",ttype:CONST},{input:"\\bot",tag:"mo",output:"\u22A5",ttype:CONST},{input:"\\top",tag:"mo",output:"\u22A4",ttype:CONST},{input:"\\square",tag:"mo",output:"\u25AB",ttype:CONST},{input:"\\Box",tag:"mo",output:"\u25A1",ttype:CONST},{input:"\\wr",tag:"mo",output:"\u2240",ttype:CONST},{input:"\\arccos",tag:"mi",output:"arccos",ttype:UNARY,func:true},{input:"\\arcsin",tag:"mi",output:"arcsin",ttype:UNARY,func:true},{input:"\\arctan",tag:"mi",output:"arctan",ttype:UNARY,func:true},{input:"\\arg",tag:"mi",output:"arg",ttype:UNARY,func:true},{input:"\\cos",tag:"mi",output:"cos",ttype:UNARY,func:true},{input:"\\cosh",tag:"mi",output:"cosh",ttype:UNARY,func:true},{input:"\\cot",tag:"mi",output:"cot",ttype:UNARY,func:true},{input:"\\coth",tag:"mi",output:"coth",ttype:UNARY,func:true},{input:"\\csc",tag:"mi",output:"csc",ttype:UNARY,func:true},{input:"\\deg",tag:"mi",output:"deg",ttype:UNARY,func:true},{input:"\\det",tag:"mi",output:"det",ttype:UNARY,func:true},{input:"\\dim",tag:"mi",output:"dim",ttype:UNARY,func:true},{input:"\\exp",tag:"mi",output:"exp",ttype:UNARY,func:true},{input:"\\gcd",tag:"mi",output:"gcd",ttype:UNARY,func:true},{input:"\\hom",tag:"mi",output:"hom",ttype:UNARY,func:true},{input:"\\inf",tag:"mo",output:"inf",ttype:UNDEROVER},{input:"\\ker",tag:"mi",output:"ker",ttype:UNARY,func:true},{input:"\\lg",tag:"mi",output:"lg",ttype:UNARY,func:true},{input:"\\lim",tag:"mo",output:"lim",ttype:UNDEROVER},{input:"\\liminf",tag:"mo",output:"liminf",ttype:UNDEROVER},{input:"\\limsup",tag:"mo",output:"limsup",ttype:UNDEROVER},{input:"\\ln",tag:"mi",output:"ln",ttype:UNARY,func:true},{input:"\\log",tag:"mi",output:"log",ttype:UNARY,func:true},{input:"\\max",tag:"mo",output:"max",ttype:UNDEROVER},{input:"\\min",tag:"mo",output:"min",ttype:UNDEROVER},{input:"\\Pr",tag:"mi",output:"Pr",ttype:UNARY,func:true},{input:"\\sec",tag:"mi",output:"sec",ttype:UNARY,func:true},{input:"\\sin",tag:"mi",output:"sin",ttype:UNARY,func:true},{input:"\\sinh",tag:"mi",output:"sinh",ttype:UNARY,func:true},{input:"\\sup",tag:"mo",output:"sup",ttype:UNDEROVER},{input:"\\tan",tag:"mi",output:"tan",ttype:UNARY,func:true},{input:"\\tanh",tag:"mi",output:"tanh",ttype:UNARY,func:true},{input:"\\gets",tag:"mo",output:"\u2190",ttype:CONST},{input:"\\leftarrow",tag:"mo",output:"\u2190",ttype:CONST},{input:"\\to",tag:"mo",output:"\u2192",ttype:CONST},{input:"\\rightarrow",tag:"mo",output:"\u2192",ttype:CONST},{input:"\\leftrightarrow",tag:"mo",output:"\u2194",ttype:CONST},{input:"\\uparrow",tag:"mo",output:"\u2191",ttype:CONST},{input:"\\downarrow",tag:"mo",output:"\u2193",ttype:CONST},{input:"\\updownarrow",tag:"mo",output:"\u2195",ttype:CONST},{input:"\\Leftarrow",tag:"mo",output:"\u21D0",ttype:CONST},{input:"\\Rightarrow",tag:"mo",output:"\u21D2",ttype:CONST},{input:"\\Leftrightarrow",tag:"mo",output:"\u21D4",ttype:CONST},{input:"\\iff",tag:"mo",output:"~\\Longleftrightarrow~",ttype:DEFINITION},{input:"\\Uparrow",tag:"mo",output:"\u21D1",ttype:CONST},{input:"\\Downarrow",tag:"mo",output:"\u21D3",ttype:CONST},{input:"\\Updownarrow",tag:"mo",output:"\u21D5",ttype:CONST},{input:"\\mapsto",tag:"mo",output:"\u21A6",ttype:CONST},{input:"\\longleftarrow",tag:"mo",output:"\u2190",ttype:LONG},{input:"\\longrightarrow",tag:"mo",output:"\u2192",ttype:LONG},{input:"\\longleftrightarrow",tag:"mo",output:"\u2194",ttype:LONG},{input:"\\Longleftarrow",tag:"mo",output:"\u21D0",ttype:LONG},{input:"\\Longrightarrow",tag:"mo",output:"\u21D2",ttype:LONG},{input:"\\Longleftrightarrow",tag:"mo",output:"\u21D4",ttype:LONG},{input:"\\longmapsto",tag:"mo",output:"\u21A6",ttype:CONST},AMsqrt,AMroot,AMfrac,AMover,AMsub,AMsup,AMtext,AMmbox,AMatop,AMchoose,{input:"\\acute",tag:"mover",output:"\u00B4",ttype:UNARY,acc:true},{input:"\\grave",tag:"mover",output:"\u0060",ttype:UNARY,acc:true},{input:"\\breve",tag:"mover",output:"\u02D8",ttype:UNARY,acc:true},{input:"\\check",tag:"mover",output:"\u02C7",ttype:UNARY,acc:true},{input:"\\dot",tag:"mover",output:".",ttype:UNARY,acc:true},{input:"\\ddot",tag:"mover",output:"..",ttype:UNARY,acc:true},{input:"\\mathring",tag:"mover",output:"\u00B0",ttype:UNARY,acc:true},{input:"\\vec",tag:"mover",output:"\u20D7",ttype:UNARY,acc:true},{input:"\\overrightarrow",tag:"mover",output:"\u20D7",ttype:UNARY,acc:true},{input:"\\overleftarrow",tag:"mover",output:"\u20D6",ttype:UNARY,acc:true},{input:"\\hat",tag:"mover",output:"\u005E",ttype:UNARY,acc:true},{input:"\\widehat",tag:"mover",output:"\u0302",ttype:UNARY,acc:true},{input:"\\tilde",tag:"mover",output:"~",ttype:UNARY,acc:true},{input:"\\widetilde",tag:"mover",output:"\u02DC",ttype:UNARY,acc:true},{input:"\\bar",tag:"mover",output:"\u203E",ttype:UNARY,acc:true},{input:"\\overbrace",tag:"mover",output:"\uFE37",ttype:UNARY,acc:true},{input:"\\overbracket",tag:"mover",output:"\u23B4",ttype:UNARY,acc:true},{input:"\\overline",tag:"mover",output:"\u00AF",ttype:UNARY,acc:true},{input:"\\underbrace",tag:"munder",output:"\uFE38",ttype:UNARY,acc:true},{input:"\\underbracket",tag:"munder",output:"\u23B5",ttype:UNARY,acc:true},{input:"\\underline",tag:"munder",output:"\u00AF",ttype:UNARY,acc:true},{input:"\\displaystyle",tag:"mstyle",atname:"displaystyle",atval:"true",ttype:UNARY},{input:"\\textstyle",tag:"mstyle",atname:"displaystyle",atval:"false",ttype:UNARY},{input:"\\scriptstyle",tag:"mstyle",atname:"scriptlevel",atval:"1",ttype:UNARY},{input:"\\scriptscriptstyle",tag:"mstyle",atname:"scriptlevel",atval:"2",ttype:UNARY},{input:"\\textrm",tag:"mstyle",output:"\\mathrm",ttype:DEFINITION},{input:"\\mathbf",tag:"mstyle",atname:"mathvariant",atval:"bold",ttype:UNARY},{input:"\\textbf",tag:"mstyle",atname:"mathvariant",atval:"bold",ttype:UNARY},{input:"\\mathit",tag:"mstyle",atname:"mathvariant",atval:"italic",ttype:UNARY},{input:"\\textit",tag:"mstyle",atname:"mathvariant",atval:"italic",ttype:UNARY},{input:"\\mathtt",tag:"mstyle",atname:"mathvariant",atval:"monospace",ttype:UNARY},{input:"\\texttt",tag:"mstyle",atname:"mathvariant",atval:"monospace",ttype:UNARY},{input:"\\mathsf",tag:"mstyle",atname:"mathvariant",atval:"sans-serif",ttype:UNARY},{input:"\\mathbb",tag:"mstyle",atname:"mathvariant",atval:"double-struck",ttype:UNARY,codes:AMbbb},{input:"\\mathcal",tag:"mstyle",atname:"mathvariant",atval:"script",ttype:UNARY,codes:AMcal},{input:"\\mathfrak",tag:"mstyle",atname:"mathvariant",atval:"fraktur",ttype:UNARY,codes:AMfrk},{input:"\\textcolor",tag:"mstyle",atname:"mathvariant",atval:"mathcolor",ttype:BINARY},{input:"\\colorbox",tag:"mstyle",atname:"mathvariant",atval:"background",ttype:BINARY}];function compareNames(s1,s2){if(s1.input>s2.input)return 1
+  else return-1;}
+  var AMnames=[];function AMinitSymbols(){AMsymbols.sort(compareNames);for(i=0;i<AMsymbols.length;i++)AMnames[i]=AMsymbols[i].input;}
+  var AMmathml="http://www.w3.org/1998/Math/MathML";function AMcreateElementMathML(t){if(isIE)return document.createElement("m:"+t);else return document.createElementNS(AMmathml,t);}
+  function AMcreateMmlNode(t,frag){if(isIE)var node=document.createElement("m:"+t);else var node=document.createElementNS(AMmathml,t);node.appendChild(frag);return node;}
+  function newcommand(oldstr,newstr){AMsymbols=AMsymbols.concat([{input:oldstr,tag:"mo",output:newstr,ttype:DEFINITION}]);}
+  function AMremoveCharsAndBlanks(str,n){var st;st=str.slice(n);for(var i=0;i<st.length&&st.charCodeAt(i)<=32;i=i+1);return st.slice(i);}
+  function AMposition(arr,str,n){if(n==0){var h,m;n=-1;h=arr.length;while(n+1<h){m=(n+h)>>1;if(arr[m]<str)n=m;else h=m;}
+  return h;}else
+  for(var i=n;i<arr.length&&arr[i]<str;i++);return i;}
+  function AMgetSymbol(str){var k=0;var j=0;var mk;var st;var tagst;var match="";var more=true;for(var i=1;i<=str.length&&more;i++){st=str.slice(0,i);j=k;k=AMposition(AMnames,st,j);if(k<AMnames.length&&str.slice(0,AMnames[k].length)==AMnames[k]){match=AMnames[k];mk=k;i=match.length;}
+  more=k<AMnames.length&&str.slice(0,AMnames[k].length)>=AMnames[k];}
+  AMpreviousSymbol=AMcurrentSymbol;if(match!=""){AMcurrentSymbol=AMsymbols[mk].ttype;return AMsymbols[mk];}
+  AMcurrentSymbol=CONST;k=1;st=str.slice(0,1);if("0"<=st&&st<="9")tagst="mn";else tagst=(("A">st||st>"Z")&&("a">st||st>"z")?"mo":"mi");return{input:st,tag:tagst,output:st,ttype:CONST};}
+  var AMpreviousSymbol,AMcurrentSymbol;function AMparseSexpr(str){var symbol,node,result,result2,i,st,newFrag=document.createDocumentFragment();str=AMremoveCharsAndBlanks(str,0);symbol=AMgetSymbol(str);if(symbol==null||symbol.ttype==RIGHTBRACKET)
+  return[null,str,null];if(symbol.ttype==DEFINITION){str=symbol.output+AMremoveCharsAndBlanks(str,symbol.input.length);symbol=AMgetSymbol(str);if(symbol==null||symbol.ttype==RIGHTBRACKET)
+  return[null,str,null];}
+  str=AMremoveCharsAndBlanks(str,symbol.input.length);switch(symbol.ttype){case SPACE:node=AMcreateElementMathML(symbol.tag);node.setAttribute(symbol.atname,symbol.atval);return[node,str,symbol.tag];case UNDEROVER:if(isIE){if(symbol.input.substr(0,4)=="\\big"){str="\\"+symbol.input.substr(4)+str;symbol=AMgetSymbol(str);symbol.ttype=UNDEROVER;str=AMremoveCharsAndBlanks(str,symbol.input.length);}}
+  return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str,symbol.tag];case CONST:var output=symbol.output;if(isIE){if(symbol.input=="'")
+  output="\u2032";else if(symbol.input=="''")
+  output="\u2033";else if(symbol.input=="'''")
+  output="\u2033\u2032";else if(symbol.input=="''''")
+  output="\u2033\u2033";else if(symbol.input=="\\square")
+  output="\u25A1";else if(symbol.input.substr(0,5)=="\\frac"){var denom=symbol.input.substr(6,1);if(denom=="5"||denom=="6"){str=symbol.input.replace(/\\frac/,"\\frac ")+str;return[node,str,symbol.tag];}}}
+  node=AMcreateMmlNode(symbol.tag,document.createTextNode(output));return[node,str,symbol.tag];case LONG:node=AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output));node.setAttribute("minsize","1.5");node.setAttribute("maxsize","1.5");node=AMcreateMmlNode("mover",node);node.appendChild(AMcreateElementMathML("mspace"));return[node,str,symbol.tag];case STRETCHY:if(isIE&&symbol.input=="\\backslash")
+  symbol.output="\\";node=AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output));if(symbol.input=="|"||symbol.input=="\\vert"||symbol.input=="\\|"||symbol.input=="\\Vert"){node.setAttribute("lspace","0em");node.setAttribute("rspace","0em");}
+  node.setAttribute("maxsize",symbol.atval);if(symbol.rtag!=null)
+  return[node,str,symbol.rtag];else
+  return[node,str,symbol.tag];case BIG:var atval=symbol.atval;if(isIE)
+  atval=symbol.ieval;symbol=AMgetSymbol(str);if(symbol==null)
+  return[null,str,null];str=AMremoveCharsAndBlanks(str,symbol.input.length);node=AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output));if(isIE){var space=AMcreateElementMathML("mspace");space.setAttribute("height",atval+"ex");node=AMcreateMmlNode("mrow",node);node.appendChild(space);}else{node.setAttribute("minsize",atval);node.setAttribute("maxsize",atval);}
+  return[node,str,symbol.tag];case LEFTBRACKET:if(symbol.input=="\\left"){symbol=AMgetSymbol(str);if(symbol!=null){if(symbol.input==".")
+  symbol.invisible=true;str=AMremoveCharsAndBlanks(str,symbol.input.length);}}
+  result=AMparseExpr(str,true,false);if(symbol==null||(typeof symbol.invisible=="boolean"&&symbol.invisible))
+  node=AMcreateMmlNode("mrow",result[0]);else{node=AMcreateMmlNode("mo",document.createTextNode(symbol.output));node=AMcreateMmlNode("mrow",node);node.appendChild(result[0]);}
+  return[node,result[1],result[2]];case MATRIX:if(symbol.input=="\\begin{array}"){var mask="";symbol=AMgetSymbol(str);str=AMremoveCharsAndBlanks(str,0);if(symbol==null)
+  mask="l";else{str=AMremoveCharsAndBlanks(str,symbol.input.length);if(symbol.input!="{")
+  mask="l";else do{symbol=AMgetSymbol(str);if(symbol!=null){str=AMremoveCharsAndBlanks(str,symbol.input.length);if(symbol.input!="}")
+  mask=mask+symbol.input;}}while(symbol!=null&&symbol.input!=""&&symbol.input!="}");}
+  result=AMparseExpr("{"+str,true,true);node=AMcreateMmlNode("mtable",result[0]);mask=mask.replace(/l/g,"left ");mask=mask.replace(/r/g,"right ");mask=mask.replace(/c/g,"center ");node.setAttribute("columnalign",mask);node.setAttribute("displaystyle","false");if(isIE)
+  return[node,result[1],null];var lspace=AMcreateElementMathML("mspace");lspace.setAttribute("width","0.167em");var rspace=AMcreateElementMathML("mspace");rspace.setAttribute("width","0.167em");var node1=AMcreateMmlNode("mrow",lspace);node1.appendChild(node);node1.appendChild(rspace);return[node1,result[1],null];}else{result=AMparseExpr("{"+str,true,true);node=AMcreateMmlNode("mtable",result[0]);if(isIE)
+  node.setAttribute("columnspacing","0.25em");else
+  node.setAttribute("columnspacing","0.167em");node.setAttribute("columnalign","right center left");node.setAttribute("displaystyle","true");node=AMcreateMmlNode("mrow",node);return[node,result[1],null];}
+  case TEXT:if(str.charAt(0)=="{")i=str.indexOf("}");else i=0;if(i==-1)
+  i=str.length;st=str.slice(1,i);if(st.charAt(0)==" "){node=AMcreateElementMathML("mspace");node.setAttribute("width","0.33em");newFrag.appendChild(node);}
+  newFrag.appendChild(AMcreateMmlNode(symbol.tag,document.createTextNode(st)));if(st.charAt(st.length-1)==" "){node=AMcreateElementMathML("mspace");node.setAttribute("width","0.33em");newFrag.appendChild(node);}
+  str=AMremoveCharsAndBlanks(str,i+1);return[AMcreateMmlNode("mrow",newFrag),str,null];case UNARY:result=AMparseSexpr(str);if(result[0]==null)return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str];if(typeof symbol.func=="boolean"&&symbol.func){st=str.charAt(0);if(st=="^"||st=="_"||st==","){return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str,symbol.tag];}else{node=AMcreateMmlNode("mrow",AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)));if(isIE){var space=AMcreateElementMathML("mspace");space.setAttribute("width","0.167em");node.appendChild(space);}
+  node.appendChild(result[0]);return[node,result[1],symbol.tag];}}
+  if(symbol.input=="\\sqrt"){if(isIE){var space=AMcreateElementMathML("mspace");space.setAttribute("height","1.2ex");space.setAttribute("width","0em");node=AMcreateMmlNode(symbol.tag,result[0])
+  node.appendChild(space);return[node,result[1],symbol.tag];}else
+  return[AMcreateMmlNode(symbol.tag,result[0]),result[1],symbol.tag];}else if(typeof symbol.acc=="boolean"&&symbol.acc){node=AMcreateMmlNode(symbol.tag,result[0]);var output=symbol.output;if(isIE){if(symbol.input=="\\hat")
+  output="\u0302";else if(symbol.input=="\\widehat")
+  output="\u005E";else if(symbol.input=="\\bar")
+  output="\u00AF";else if(symbol.input=="\\grave")
+  output="\u0300";else if(symbol.input=="\\tilde")
+  output="\u0303";}
+  var node1=AMcreateMmlNode("mo",document.createTextNode(output));if(symbol.input=="\\vec"||symbol.input=="\\check")
+  node1.setAttribute("maxsize","1.2");if(isIE&&symbol.input=="\\bar")
+  node1.setAttribute("maxsize","0.5");if(symbol.input=="\\underbrace"||symbol.input=="\\underline")
+  node1.setAttribute("accentunder","true");else
+  node1.setAttribute("accent","true");node.appendChild(node1);if(symbol.input=="\\overbrace"||symbol.input=="\\underbrace")
+  node.ttype=UNDEROVER;return[node,result[1],symbol.tag];}else{if(!isIE&&typeof symbol.codes!="undefined"){for(i=0;i<result[0].childNodes.length;i++)
+  if(result[0].childNodes[i].nodeName=="mi"||result[0].nodeName=="mi"){st=(result[0].nodeName=="mi"?result[0].firstChild.nodeValue:result[0].childNodes[i].firstChild.nodeValue);var newst=[];for(var j=0;j<st.length;j++)
+  if(st.charCodeAt(j)>64&&st.charCodeAt(j)<91)newst=newst+
+  String.fromCharCode(symbol.codes[st.charCodeAt(j)-65]);else newst=newst+st.charAt(j);if(result[0].nodeName=="mi")
+  result[0]=AMcreateElementMathML("mo").appendChild(document.createTextNode(newst));else result[0].replaceChild(AMcreateElementMathML("mo").appendChild(document.createTextNode(newst)),result[0].childNodes[i]);}}
+  node=AMcreateMmlNode(symbol.tag,result[0]);node.setAttribute(symbol.atname,symbol.atval);if(symbol.input=="\\scriptstyle"||symbol.input=="\\scriptscriptstyle")
+  node.setAttribute("displaystyle","false");return[node,result[1],symbol.tag];}
+  case BINARY:result=AMparseSexpr(str);if(result[0]==null)return[AMcreateMmlNode("mo",document.createTextNode(symbol.input)),str,null];result2=AMparseSexpr(result[1]);if(result2[0]==null)return[AMcreateMmlNode("mo",document.createTextNode(symbol.input)),str,null];if(symbol.input=="\\textcolor"||symbol.input=="\\colorbox"){var tclr=str.match(/\{\s*([#\w]+)\s*\}/);str=str.replace(/\{\s*[#\w]+\s*\}/,"");if(tclr!=null){if(IsColorName.test(tclr[1].toLowerCase())){tclr=LaTeXColor[tclr[1].toLowerCase()];}else{tclr=tclr[1];}
+  node=AMcreateElementMathML("mstyle");node.setAttribute(symbol.atval,tclr);node.appendChild(result2[0]);return[node,result2[1],symbol.tag];}}
+  if(symbol.input=="\\root"||symbol.input=="\\stackrel")newFrag.appendChild(result2[0]);newFrag.appendChild(result[0]);if(symbol.input=="\\frac")newFrag.appendChild(result2[0]);return[AMcreateMmlNode(symbol.tag,newFrag),result2[1],symbol.tag];case INFIX:str=AMremoveCharsAndBlanks(str,symbol.input.length);return[AMcreateMmlNode("mo",document.createTextNode(symbol.output)),str,symbol.tag];default:return[AMcreateMmlNode(symbol.tag,document.createTextNode(symbol.output)),str,symbol.tag];}}
+  function AMparseIexpr(str){var symbol,sym1,sym2,node,result,tag,underover;str=AMremoveCharsAndBlanks(str,0);sym1=AMgetSymbol(str);result=AMparseSexpr(str);node=result[0];str=result[1];tag=result[2];symbol=AMgetSymbol(str);if(symbol.ttype==INFIX){str=AMremoveCharsAndBlanks(str,symbol.input.length);result=AMparseSexpr(str);if(result[0]==null)
+  result[0]=AMcreateMmlNode("mo",document.createTextNode("\u25A1"));str=result[1];tag=result[2];if(symbol.input=="_"||symbol.input=="^"){sym2=AMgetSymbol(str);tag=null;underover=((sym1.ttype==UNDEROVER)||(node.ttype==UNDEROVER));if(symbol.input=="_"&&sym2.input=="^"){str=AMremoveCharsAndBlanks(str,sym2.input.length);var res2=AMparseSexpr(str);str=res2[1];tag=res2[2];node=AMcreateMmlNode((underover?"munderover":"msubsup"),node);node.appendChild(result[0]);node.appendChild(res2[0]);}else if(symbol.input=="_"){node=AMcreateMmlNode((underover?"munder":"msub"),node);node.appendChild(result[0]);}else{node=AMcreateMmlNode((underover?"mover":"msup"),node);node.appendChild(result[0]);}
+  node=AMcreateMmlNode("mrow",node);}else{node=AMcreateMmlNode(symbol.tag,node);if(symbol.input=="\\atop"||symbol.input=="\\choose")
+  node.setAttribute("linethickness","0ex");node.appendChild(result[0]);if(symbol.input=="\\choose")
+  node=AMcreateMmlNode("mfenced",node);}}
+  return[node,str,tag];}
+  function AMparseExpr(str,rightbracket,matrix){var symbol,node,result,i,tag,newFrag=document.createDocumentFragment();do{str=AMremoveCharsAndBlanks(str,0);result=AMparseIexpr(str);node=result[0];str=result[1];tag=result[2];symbol=AMgetSymbol(str);if(node!=undefined){if((tag=="mn"||tag=="mi")&&symbol!=null&&typeof symbol.func=="boolean"&&symbol.func){var space=AMcreateElementMathML("mspace");space.setAttribute("width","0.167em");node=AMcreateMmlNode("mrow",node);node.appendChild(space);}
+  newFrag.appendChild(node);}}while((symbol.ttype!=RIGHTBRACKET)&&symbol!=null&&symbol.output!="");tag=null;if(symbol.ttype==RIGHTBRACKET){if(symbol.input=="\\right"){str=AMremoveCharsAndBlanks(str,symbol.input.length);symbol=AMgetSymbol(str);if(symbol!=null&&symbol.input==".")
+  symbol.invisible=true;if(symbol!=null)
+  tag=symbol.rtag;}
+  if(symbol!=null)
+  str=AMremoveCharsAndBlanks(str,symbol.input.length);var len=newFrag.childNodes.length;if(matrix&&len>0&&newFrag.childNodes[len-1].nodeName=="mrow"&&len>1&&newFrag.childNodes[len-2].nodeName=="mo"&&newFrag.childNodes[len-2].firstChild.nodeValue=="&"){var pos=[];var m=newFrag.childNodes.length;for(i=0;matrix&&i<m;i=i+2){pos[i]=[];node=newFrag.childNodes[i];for(var j=0;j<node.childNodes.length;j++)
+  if(node.childNodes[j].firstChild.nodeValue=="&")
+  pos[i][pos[i].length]=j;}
+  var row,frag,n,k,table=document.createDocumentFragment();for(i=0;i<m;i=i+2){row=document.createDocumentFragment();frag=document.createDocumentFragment();node=newFrag.firstChild;n=node.childNodes.length;k=0;for(j=0;j<n;j++){if(typeof pos[i][k]!="undefined"&&j==pos[i][k]){node.removeChild(node.firstChild);row.appendChild(AMcreateMmlNode("mtd",frag));k++;}else frag.appendChild(node.firstChild);}
+  row.appendChild(AMcreateMmlNode("mtd",frag));if(newFrag.childNodes.length>2){newFrag.removeChild(newFrag.firstChild);newFrag.removeChild(newFrag.firstChild);}
+  table.appendChild(AMcreateMmlNode("mtr",row));}
+  return[table,str];}
+  if(typeof symbol.invisible!="boolean"||!symbol.invisible){node=AMcreateMmlNode("mo",document.createTextNode(symbol.output));newFrag.appendChild(node);}}
+  return[newFrag,str,tag];}
+  function AMparseMath(str){var result,node=AMcreateElementMathML("mstyle");var cclr=str.match(/\\color\s*\{\s*([#\w]+)\s*\}/);str=str.replace(/\\color\s*\{\s*[#\w]+\s*\}/g,"");if(cclr!=null){if(IsColorName.test(cclr[1].toLowerCase())){cclr=LaTeXColor[cclr[1].toLowerCase()];}else{cclr=cclr[1];}
+  node.setAttribute("mathcolor",cclr);}else{if(mathcolor!="")node.setAttribute("mathcolor",mathcolor);};if(mathfontfamily!="")node.setAttribute("fontfamily",mathfontfamily);node.appendChild(AMparseExpr(str.replace(/^\s+/g,""),false,false)[0]);node=AMcreateMmlNode("math",node);if(showasciiformulaonhover)
+  node.setAttribute("title",str.replace(/\s+/g," "));if(false){var fnode=AMcreateElementXHTML("font");fnode.setAttribute("face",mathfontfamily);fnode.appendChild(node);return fnode;}
+  return node;}
+  function AMstrarr2docFrag(arr,linebreaks){var newFrag=document.createDocumentFragment();var expr=false;for(var i=0;i<arr.length;i++){if(expr)newFrag.appendChild(AMparseMath(arr[i]));else{var arri=(linebreaks?arr[i].split("\n\n"):[arr[i]]);newFrag.appendChild(AMcreateElementXHTML("span").appendChild(document.createTextNode(arri[0])));for(var j=1;j<arri.length;j++){newFrag.appendChild(AMcreateElementXHTML("p"));newFrag.appendChild(AMcreateElementXHTML("span").appendChild(document.createTextNode(arri[j])));}}
+  expr=!expr;}
+  return newFrag;}
+  function AMprocessNodeR(n,linebreaks){var mtch,str,arr,frg,i;if(n.childNodes.length==0){if((n.nodeType!=8||linebreaks)&&n.parentNode.nodeName!="form"&&n.parentNode.nodeName!="FORM"&&n.parentNode.nodeName!="textarea"&&n.parentNode.nodeName!="TEXTAREA"&&n.parentNode.nodeName!="pre"&&n.parentNode.nodeName!="PRE"){str=n.nodeValue;if(!(str==null)){str=str.replace(/\r\n\r\n/g,"\n\n");str=str.replace(/\x20+/g," ");str=str.replace(/\s*\r\n/g," ");mtch=(str.indexOf("\$")==-1?false:true);str=str.replace(/([^\\])\$/g,"$1 \$");str=str.replace(/^\$/," \$");arr=str.split(" \$");for(i=0;i<arr.length;i++)
+  arr[i]=arr[i].replace(/\\\$/g,"\$");if(arr.length>1||mtch){if(checkForMathML){checkForMathML=false;var nd=AMisMathMLavailable();AMnoMathML=nd!=null;if(AMnoMathML&&notifyIfNoMathML)
+  if(alertIfNoMathML)
+  alert("To view the ASCIIMathML notation use Internet Explorer 6 +\nMathPlayer (free from www.dessci.com)\nor Firefox/Mozilla/Netscape");else AMbody.insertBefore(nd,AMbody.childNodes[0]);}
+  if(!AMnoMathML){frg=AMstrarr2docFrag(arr,n.nodeType==8);var len=frg.childNodes.length;n.parentNode.replaceChild(frg,n);return len-1;}else return 0;}}}else return 0;}else if(n.nodeName!="math"){for(i=0;i<n.childNodes.length;i++)
+  i+=AMprocessNodeR(n.childNodes[i],linebreaks);}
+  return 0;}
+  function AMprocessNode(n,linebreaks,spanclassAM){var frag,st;if(spanclassAM!=null){frag=document.getElementsByTagName("span")
+  for(var i=0;i<frag.length;i++)
+  if(frag[i].className=="AM")
+  AMprocessNodeR(frag[i],linebreaks);}else{try{st=n.innerHTML;}catch(err){}
+  if(st==null||st.indexOf("\$")!=-1)
+  AMprocessNodeR(n,linebreaks);}
+  if(isIE){frag=document.getElementsByTagName('math');for(var i=0;i<frag.length;i++)frag[i].update()}}
+  var inAppendix=false;var sectionCntr=0;var IEcommentWarning=true;var biblist=[];var bibcntr=0;var LaTeXCounter=[];LaTeXCounter["definition"]=0;LaTeXCounter["proposition"]=0;LaTeXCounter["lemma"]=0;LaTeXCounter["theorem"]=0;LaTeXCounter["corollary"]=0;LaTeXCounter["example"]=0;LaTeXCounter["exercise"]=0;LaTeXCounter["subsection"]=0;LaTeXCounter["subsubsection"]=0;LaTeXCounter["figure"]=0;LaTeXCounter["equation"]=0;LaTeXCounter["table"]=0;var LaTeXColor=[];LaTeXColor["greenyellow"]="#D9FF4F";LaTeXColor["yellow"]="#FFFF00";LaTeXColor["goldenrod"]="#FFE529";LaTeXColor["dandelion"]="#FFB529";LaTeXColor["apricot"]="#FFAD7A";LaTeXColor["peach"]="#FF804D";LaTeXColor["melon"]="#FF8A80";LaTeXColor["yelloworange"]="#FF9400";LaTeXColor["orange"]="#FF6321";LaTeXColor["burntorange"]="#FF7D00";LaTeXColor["bittersweet"]="#C20300";LaTeXColor["redorange"]="#FF3B21";LaTeXColor["mahogany"]="#A60000";LaTeXColor["maroon"]="#AD0000";LaTeXColor["brickred"]="#B80000";LaTeXColor["red"]="#FF0000";LaTeXColor["orangered"]="#FF0080";LaTeXColor["rubinered"]="#FF00DE";LaTeXColor["wildstrawberry"]="#FF0A9C";LaTeXColor["salmon"]="#FF789E";LaTeXColor["carnationpink"]="#FF5EFF";LaTeXColor["magenta"]="#FF00FF";LaTeXColor["violetred"]="#FF30FF";LaTeXColor["rhodamine"]="#FF2EFF";LaTeXColor["mulberry"]="#A314FA";LaTeXColor["redviolet"]="#9600A8";LaTeXColor["fuchsia"]="#7303EB";LaTeXColor["lavender"]="#FF85FF";LaTeXColor["thistle"]="#E069FF";LaTeXColor["orchid"]="#AD5CFF";LaTeXColor["darkorchid"]="#9933CC";LaTeXColor["purple"]="#8C24FF";LaTeXColor["plum"]="#8000FF";LaTeXColor["violet"]="#361FFF";LaTeXColor["royalpurple"]="#401AFF";LaTeXColor["blueviolet"]="#1A0DF5";LaTeXColor["periwinkle"]="#6E73FF";LaTeXColor["cadetblue"]="#616EC4";LaTeXColor["cornflowerblue"]="#59DEFF";LaTeXColor["midnightblue"]="#007091";LaTeXColor["navyblue"]="#0F75FF";LaTeXColor["royalblue"]="#0080FF";LaTeXColor["blue"]="#0000FF";LaTeXColor["cerulean"]="#0FE3FF";LaTeXColor["cyan"]="#00FFFF";LaTeXColor["processblue"]="#0AFFFF";LaTeXColor["skyblue"]="#61FFE0";LaTeXColor["turquoise"]="#26FFCC";LaTeXColor["tealblue"]="#1FFAA3";LaTeXColor["aquamarine"]="#2EFFB2";LaTeXColor["bluegreen"]="#26FFAB";LaTeXColor["emerald"]="#00FF80";LaTeXColor["junglegreen"]="#03FF7A";LaTeXColor["seagreen"]="#4FFF80";LaTeXColor["green"]="#00FF00";LaTeXColor["forestgreen"]="#00E000";LaTeXColor["pinegreen"]="#00BF29";LaTeXColor["limegreen"]="#80FF00";LaTeXColor["yellowgreen"]="#8FFF42";LaTeXColor["springgreen"]="#BDFF3D";LaTeXColor["olivegreen"]="#009900";LaTeXColor["rawsienna"]="#8C0000";LaTeXColor["sepia"]="#4D0000";LaTeXColor["brown"]="#660000";LaTeXColor["tan"]="#DB9470";LaTeXColor["gray"]="#808080";LaTeXColor["grey"]="#808080";LaTeXColor["black"]="#000000";LaTeXColor["white"]="#FFFFFF";var IsColorName=/^(?:greenyellow|yellow|goldenrod|dandelion|apricot|peach|melon|yelloworange|orange|burntorange|bittersweet|redorange|mahogany|maroon|brickred|red|orangered|rubinered|wildstrawberry|salmon|carnationpink|magenta|violetred|rhodamine|mulberry|redviolet|fuchsia|lavender|thistle|orchid|darkorchid|purple|plum|violet|royalpurple|blueviolet|periwinkle|cadetblue|cornflowerblue|midnightblue|navyblue|royalblue|blue|cerulean|cyan|processblue|skyblue|turquoise|tealblue|aquamarine|bluegreen|emerald|junglegreen|seagreen|green|forestgreen|pinegreen|limegreen|yellowgreen|springgreen|olivegreen|rawsienna|sepia|brown|tan|gray|grey|black|white)$/;var IsCounter=/^(?:definition|proposition|lemma|theorem|corollary|example|exercise|subsection|subsubsection|figure|equation|table)$/;var IsLaTeXElement=/^(?:displayequation|title|author|address|date|abstract|keyword|section|subsection|subsubsection|ref|cite|thebibliography|definition|proposition|lemma|theorem|corollary|example|exercise|itemize|enumerate|enddefinition|endproposition|endlemma|endtheorem|endcorollary|endexample|endexercise|enditemize|endenumerate|LaTeXMathMLlabel|LaTeXMathML|smallskip|medskip|bigskip|quote|quotation|endquote|endquotation|center|endcenter|description|enddescription|inlinemath)$/;var IsTextOnlyArea=/^(?:form|textarea|pre)$/i;var tableid=0;function makeNumberString(cntr){if(sectionCntr>0){if(inAppendix){return"A"+sectionCntr+"."+cntr;}else{return sectionCntr+"."+cntr;}}else{return""+cntr;}};function LaTeXpreProcess(thebody){var TheBody=thebody;if(TheBody.hasChildNodes()){if(!(IsLaTeXElement.test(TheBody.className)))
+  {for(var i=0;i<TheBody.childNodes.length;i++){LaTeXpreProcess(TheBody.childNodes[i])}}}
+  else{if(TheBody.nodeType==3&&!(IsTextOnlyArea.test(TheBody.parentNode.nodeName)))
+  {var str=TheBody.nodeValue;if(!(str==null)){str=str.replace(/\\%/g,"<per>");str=str.replace(/%[^\n]*(?=\n)/g,"");str=str.replace(/%[^\r]*(?=\r)/g,"");str=str.replace(/%[^\n]*$/,"")
+  if(isIE&&str.match(/%/g)!=null&&IEcommentWarning){alert("Comments may not have parsed properly.  Try putting in <pre class='LaTeX><div>..</div></pre> structure.");IEcommentWarning=false;}
+  str=str.replace(/<per>/g,"%");if(str.match(/XXX[\s\S]*/)!=null){var tmp=str.match(/XXX[\s\S]*/)[0];var tmpstr=tmp.charCodeAt(7)+"::"+tmp.charCodeAt(8)+"::"+tmp.charCodeAt(9)+"::"+tmp.charCodeAt(10)+"::"+tmp.charCodeAt(11)+"::"+tmp.charCodeAt(12)+"::"+tmp.charCodeAt(13);alert(tmpstr);}
+  str=str.replace(/([^\\])\\(\s)/g,"$1\u00A0$2");str=str.replace(/\\quad/g,"\u2001");str=str.replace(/\\qquad/g,"\u2001\u2001");str=str.replace(/\\enspace/g,"\u2002");str=str.replace(/\\;/g,"\u2004");str=str.replace(/\\:/g,"\u2005");str=str.replace(/\\,/g,"\u2006");str=str.replace(/\\thinspace/g,"\u200A");str=str.replace(/([^\\])~/g,"$1\u00A0");str=str.replace(/\\~/g,"~");str=str.replace(/\\\[/g," <DEQ> $\\displaystyle{");str=str.replace(/\\\]/g,"}$ <DEQ> ");str=str.replace(/\$\$/g,"${$<DEQ>$}$");str=str.replace(/\\begin\s*\{\s*array\s*\}/g,"\\begin{array}");str=str.replace(/\\end\s*\{\s*array\s*\}/g,"\\end{array}");str=str.replace(/\\begin\s*\{\s*eqnarray\s*\}/g,"  <DEQ>eqno$\\begin{eqnarray}");str=str.replace(/\\end\s*\{\s*eqnarray\s*\}/g,"\\end{eqnarray}$<DEQ>  ");str=str.replace(/\\begin\s*\{\s*eqnarray\*\s*\}/g,"  <DEQ>$\\begin{eqnarray}");str=str.replace(/\\end\s*\{\s*eqnarray\*\s*\}/g,"\\end{eqnarray}$<DEQ>  ");str=str.replace(/\\begin\s*\{\s*displaymath\s*\}/g," <DEQ> $\\displaystyle{");str=str.replace(/\\end\s*\{\s*displaymath\s*\}/g,"}$ <DEQ> ");str=str.replace(/\\begin\s*\{\s*equation\s*\*\s*\}/g," <DEQ> $\\displaystyle{");str=str.replace(/\\end\s*\{\s*equation\s*\*\s*\}/g,"}$ <DEQ> ");str=str.replace(/\\begin\s*\{\s*equation\s*\}/g," <DEQ>eqno$\\displaystyle{");str=str.replace(/\\end\s*\{\s*equation\s*\}/g,"}$ <DEQ> ");str=str.split("<DEQ>");var newFrag=document.createDocumentFragment();for(var i=0;i<str.length;i++){if(i%2){var DEQtable=document.createElement("table");DEQtable.className='displayequation';var DEQtbody=document.createElement("tbody");var DEQtr=document.createElement("tr");var DEQtdeq=document.createElement("td");DEQtdeq.className='eq';str[i]=str[i].replace(/\$\}\$/g,"$\\displaystyle{");str[i]=str[i].replace(/\$\{\$/g,"}");var lbl=str[i].match(/\\label\s*\{\s*(\w+)\s*\}/);var ISeqno=str[i].match(/^eqno/);str[i]=str[i].replace(/^eqno/," ");str[i]=str[i].replace(/\\label\s*\{\s*\w+\s*\}/," ");DEQtdeq.appendChild(document.createTextNode(str[i]));DEQtr.appendChild(DEQtdeq);str[i]=str[i].replace(/\\nonumber/g,"");if(ISeqno!=null||lbl!=null){var DEQtdno=document.createElement("td");DEQtdno.className='eqno';LaTeXCounter["equation"]++;var eqnoString=makeNumberString(LaTeXCounter["equation"]);var DEQanchor=document.createElement("a");if(lbl!=null){DEQanchor.id=lbl[1]};DEQanchor.className="eqno";var anchorSpan=document.createElement("span");anchorSpan.className="eqno";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(eqnoString));DEQanchor.appendChild(anchorSpan);DEQtdno.appendChild(DEQanchor);var DEQspan=document.createElement("span");DEQspan.className="eqno";DEQspan.appendChild(document.createTextNode("("+eqnoString+")"));DEQtdno.appendChild(DEQspan);DEQtr.appendChild(DEQtdno);}
+  DEQtbody.appendChild(DEQtr);DEQtable.appendChild(DEQtbody);newFrag.appendChild(DEQtable);}
+  else{str[i]=str[i].replace(/\$\}\$/g,"");str[i]=str[i].replace(/\$\{\$/g,"");str[i]=str[i].replace(/\\maketitle/g,"");str[i]=str[i].replace(/\\begin\s*\{\s*document\s*\}/g,"");str[i]=str[i].replace(/\\end\s*\{\s*document\s*\}/g,"");str[i]=str[i].replace(/\\documentclass[^\}]*?\}/g,"");str[i]=str[i].replace(/\\usepackage[^\}]*?\}/g,"");str[i]=str[i].replace(/\\noindent/g,"");str[i]=str[i].replace(/\\notag/g,"");str[i]=str[i].replace(/\\ref\s*\{\s*(\w+)\}/g," \\[ref\\]$1\\[ ");str[i]=str[i].replace(/\\url\s*\{\s*([^\}\n]+)\}/g," \\[url\\]$1\\[ ");str[i]=str[i].replace(/\\href\s*\{\s*([^\}]+)\}\s*\{\s*([^\}]+)\}/g," \\[href\\]$1\\]$2\\[ ");str[i]=str[i].replace(/\\cite\s*\{\s*(\w+)\}/g," \\[cite\\]$1\\[ ");str[i]=str[i].replace(/\\qed/g,"\u220E");str[i]=str[i].replace(/\\endproof/g,"\u220E");str[i]=str[i].replace(/\\proof/g,"\\textbf{Proof: }");str[i]=str[i].replace(/\\n(?=\s)/g," \\[br\\] \\[ ");str[i]=str[i].replace(/\\newline/g," \\[br\\] \\[ ");str[i]=str[i].replace(/\\linebreak/g," \\[br\\] \\[ ");str[i]=str[i].replace(/\\smallskip/g," \\[logicalbreak\\]smallskip\\[ ");str[i]=str[i].replace(/\\medskip/g," \\[logicalbreak\\]medskip\\[ ");str[i]=str[i].replace(/\\bigskip/g," \\[logicalbreak\\]bigskip\\[ ");str[i]=str[i].replace(/[\n\r]+[ \f\n\r\t\v\u2028\u2029]*[\n\r]+/g," \\[logicalbreak\\]LaTeXMathML\\[ ");if(isIE){str[i]=str[i].replace(/\r/g," ");}
+  str[i]=str[i].replace(/\\bibitem\s*([^\{]*\{\s*\w*\s*\})/g," \\[bibitem\\]$1\\[ ");str[i]=str[i].replace(/\\bibitem\s*/g," \\[bibitem\\] \\[ ");str[i]=str[i].replace(/\\item\s*\[\s*(\w+)\s*\]/g," \\[alistitem\\]$1\\[ ");str[i]=str[i].replace(/\\item\s*/g," \\[alistitem\\] \\[ ");str[i]=str[i].replace(/\\appendix/g," \\[appendix\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*figure\s*\}([\s\S]+?)\\end\s*\{\s*figure\s*\}/g," \\[figure\\]$1\\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*table\s*\}([\s\S]+?)\\end\s*\{\s*table\s*\}/g," \\[table\\]$1\\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*theorem\s*\}/g," \\[theorem\\]Theorem \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*theorem\s*\}/g," \\[endtheorem\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*definition\s*\}/g," \\[definition\\]Definition \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*definition\s*\}/g," \\[enddefinition\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*lemma\s*\}/g," \\[lemma\\]Lemma \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*lemma\s*\}/g," \\[endlemma\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*corollary\s*\}/g," \\[corollary\\]Corollary \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*corollary\s*\}/g," \\[endcorollary\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*proposition\s*\}/g," \\[proposition\\]Proposition \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*proposition\s*\}/g," \\[endproposition\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*example\s*\}/g," \\[example\\]Example \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*example\s*\}/g," \\[endexample\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*exercise\s*\}/g," \\[exercise\\]Exercise \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*exercise\s*\}/g," \\[endexercise\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*thebibliography\s*\}\s*\{\s*\w+\s*\}/g," \\[thebibliography\\]References \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*thebibliography\s*\}/g," \\[thebibliography\\]References \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*thebibliography\s*\}/g," \\[endthebibliography\\]References \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*proof\s*\}/g," \\[proof\\]Proof: \\[ ");if(isIE){str[i]=str[i].replace(/\\end\s*\{\s*proof\s*\}/g,"\u220E \\[endproof\\] \\[ ");}else{str[i]=str[i].replace(/\\end\s*\{\s*proof\s*\}/g," \\[endproof\\] \\[ ");}
+  str[i]=str[i].replace(/\\title\s*\{\s*([^\}]+)\}/g," \\[title\\] \\[$1 \\[endtitle\\] \\[ ");str[i]=str[i].replace(/\\author\s*\{\s*([^\}]+)\}/g," \\[author\\] \\[$1 \\[endauthor\\] \\[ ");str[i]=str[i].replace(/\\address\s*\{\s*([^\}]+)\}/g," \\[address\\] \\[$1 \\[endaddress\\] \\[ ");str[i]=str[i].replace(/\\date\s*\{\s*([^\}]+)\}/g," \\[date\\] \\[$1 \\[enddate\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*keyword\s*\}/g," \\[keyword\\] \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*keyword\s*\}/g," \\[endkeyword\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*abstract\s*\}/g," \\[abstract\\] \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*abstract\s*\}/g," \\[endabstract\\] \\[ ");str[i]=str[i].replace(/\\begin\s*\{\s*(?!array|tabular)(\w+)\s*\}/g," \\[$1\\] \\[ ");str[i]=str[i].replace(/\\end\s*\{\s*(?!array|tabular)(\w+)\s*\}/g," \\[end$1\\] \\[ ");var sectionIndex=str[i].search(/\\section\s*\{\s*[\s\S]+\}/);while(sectionIndex>=0){str[i]=str[i].replace(/\\section\s*\{/," \\[section\\]");var delimcnt=1;for(var ii=sectionIndex;ii<str[i].length;ii++){if(str[i].charAt(ii)=="{"){delimcnt++};if(str[i].charAt(ii)=="}"){delimcnt--};if(delimcnt==0){str[i]=str[i].substring(0,ii)+"\\[ "+str[i].substring(ii+1,str[i].length);break;}};sectionIndex=str[i].search(/\\section\s*\{\s*[\s\S]+\}/);}
+  sectionIndex=str[i].search(/\\subsection\s*\{\s*[\s\S]+\}/);while(sectionIndex>=0){str[i]=str[i].replace(/\\subsection\s*\{/," \\[subsection\\]");var delimcnt=1;for(var ii=sectionIndex;ii<str[i].length;ii++){if(str[i].charAt(ii)=="{"){delimcnt++};if(str[i].charAt(ii)=="}"){delimcnt--};if(delimcnt==0){str[i]=str[i].substring(0,ii)+"\\[ "+str[i].substring(ii+1,str[i].length);break;}};sectionIndex=str[i].search(/\\subsection\s*\{\s*[\s\S]+\}/);}
+  sectionIndex=str[i].search(/\\subsubsection\s*\{\s*[\s\S]+\}/);while(sectionIndex>=0){str[i]=str[i].replace(/\\subsubsection\s*\{/," \\[subsubsection\\]");var delimcnt=1;for(var ii=sectionIndex;ii<str[i].length;ii++){if(str[i].charAt(ii)=="{"){delimcnt++};if(str[i].charAt(ii)=="}"){delimcnt--};if(delimcnt==0){str[i]=str[i].substring(0,ii)+"\\[ "+str[i].substring(ii+1,str[i].length);break;}};sectionIndex=str[i].search(/\\subsubsection\s*\{\s*[\s\S]+\}/);}
+  var CatToNextEven="";var strtmp=str[i].split("\\[");for(var j=0;j<strtmp.length;j++){if(j%2){var strtmparray=strtmp[j].split("\\]");switch(strtmparray[0]){case"section":var nodeTmp=document.createElement("H2");nodeTmp.className='section';sectionCntr++;for(var div in LaTeXCounter){LaTeXCounter[div]=0};var nodeAnchor=document.createElement("a");if(inAppendix){nodeAnchor.className='appendixsection';}else{nodeAnchor.className='section';}
+  var nodeNumString=makeNumberString("");var anchorSpan=document.createElement("span");anchorSpan.className="section";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(nodeNumString));nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className='section';nodeSpan.appendChild(document.createTextNode(nodeNumString+" "));nodeTmp.appendChild(nodeSpan);nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"subsection":var nodeTmp=document.createElement("H3");nodeTmp.className='subsection';LaTeXCounter["subsection"]++;LaTeXCounter["subsubsection"]=0;var nodeAnchor=document.createElement("a");nodeAnchor.className='subsection';var nodeNumString=makeNumberString(LaTeXCounter["subsection"]);var anchorSpan=document.createElement("span");anchorSpan.className="subsection";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(nodeNumString));nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className='subsection';nodeSpan.appendChild(document.createTextNode(nodeNumString+". "));nodeTmp.appendChild(nodeSpan);nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"subsubsection":var nodeTmp=document.createElement("H4");nodeTmp.className='subsubsection';LaTeXCounter["subsubsection"]++;var nodeAnchor=document.createElement("a");nodeAnchor.className='subsubsection';var nodeNumString=makeNumberString(LaTeXCounter["subsection"]+"."+LaTeXCounter["subsubsection"]);var anchorSpan=document.createElement("span");anchorSpan.className="subsubsection";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(nodeNumString));nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className='subsubsection';nodeSpan.appendChild(document.createTextNode(nodeNumString+". "));nodeTmp.appendChild(nodeSpan);nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"href":var nodeTmp=document.createElement("a");nodeTmp.className='LaTeXMathML';nodeTmp.href=strtmparray[1];nodeTmp.appendChild(document.createTextNode(strtmparray[2]));newFrag.appendChild(nodeTmp);break;case"url":var nodeTmp=document.createElement("a");nodeTmp.className='LaTeXMathML';nodeTmp.href=strtmparray[1];nodeTmp.appendChild(document.createTextNode(strtmparray[1]));newFrag.appendChild(nodeTmp);break;case"figure":var nodeTmp=document.createElement("table");nodeTmp.className='figure';var FIGtbody=document.createElement("tbody");var FIGlbl=strtmparray[1].match(/\\label\s*\{\s*(\w+)\s*\}/);strtmparray[1]=strtmparray[1].replace(/\\label\s*\{\w+\}/g,"");var capIndex=strtmparray[1].search(/\\caption\s*\{[\s\S]+\}/);var FIGcap="";if(capIndex>=0){var tmp=strtmparray[1];var delimcnt=0;var capstart=-1;for(var pos=capIndex;pos<tmp.length;pos++){if(tmp.charAt(pos)=="{"){delimcnt++};if(tmp.charAt(pos)=="}"){delimcnt--};if(delimcnt==1&&capstart<0){capstart=pos+1};if(delimcnt==0&&capstart>0){capend=pos-1;FIGcap=tmp.substring(capstart,pos);break}}}
+  var FIGtr2=document.createElement("tr");var FIGtd2=document.createElement("td");FIGtd2.className="caption";var FIGanchor=document.createElement("a");FIGanchor.className="figure";if(FIGlbl!=null){FIGanchor.id=FIGlbl[1];}
+  LaTeXCounter["figure"]++;var fignmbr=makeNumberString(LaTeXCounter["figure"]);var anchorSpan=document.createElement("span");anchorSpan.className="figure";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(fignmbr));FIGanchor.appendChild(anchorSpan);FIGtd2.appendChild(FIGanchor);var FIGspan=document.createElement("span");FIGspan.className="figure";FIGspan.appendChild(document.createTextNode("Figure "+fignmbr+". "));FIGtd2.appendChild(FIGspan);FIGtd2.appendChild(document.createTextNode(""+FIGcap));FIGtr2.appendChild(FIGtd2);FIGtbody.appendChild(FIGtr2);var IsSpecial=false;var FIGinfo=strtmparray[1].match(/\\includegraphics\s*\{([^\}]+)\}/);if(FIGinfo==null){FIGinfo=strtmparray[1].match(/\\includegraphics\s*\[[^\]]*\]\s*\{\s*([^\}]+)\s*\}/);}
+  if(FIGinfo==null){FIGinfo=strtmparray[1].match(/\\special\s*\{\s*([^\}]+)\}/);IsSpecial=true};if(FIGinfo!=null){var FIGtr1=document.createElement("tr");var FIGtd1=document.createElement("td");FIGtd1.className="image";var FIGimg=document.createElement("img");var FIGsrc=FIGinfo[1];FIGimg.src=FIGsrc;FIGimg.alt="Figure "+FIGsrc+" did not load";FIGimg.title="Figure "+fignmbr+". "+FIGcap;FIGimg.id="figure"+fignmbr;FIGtd1.appendChild(FIGimg);FIGtr1.appendChild(FIGtd1);FIGtbody.appendChild(FIGtr1);}
+  nodeTmp.appendChild(FIGtbody);newFrag.appendChild(nodeTmp);break;case"table":var nodeTmp=document.createElement("table");if(strtmparray[1].search(/\\centering/)>=0){nodeTmp.className='LaTeXtable centered';nodeTmp.align="center";}else{nodeTmp.className='LaTeXtable';};tableid++;nodeTmp.id="LaTeXtable"+tableid;var TABlbl=strtmparray[1].match(/\\label\s*\{\s*(\w+)\s*\}/);strtmparray[1]=strtmparray[1].replace(/\\label\s*\{\w+\}/g,"");var capIndex=strtmparray[1].search(/\\caption\s*\{[\s\S]+\}/);var TABcap="";if(capIndex>=0){var tmp=strtmparray[1];var delimcnt=0;var capstart=-1;for(var pos=capIndex;pos<tmp.length;pos++){if(tmp.charAt(pos)=="{"){delimcnt++};if(tmp.charAt(pos)=="}"){delimcnt--};if(delimcnt==1&&capstart<0){capstart=pos+1};if(delimcnt==0&&capstart>0){capend=pos-1;TABcap=tmp.substring(capstart,pos);break}}}
+  if(TABcap!=""){var TABtbody=document.createElement("tbody");var TABcaption=document.createElement("caption");TABcaption.className="LaTeXtable centered";var TABanchor=document.createElement("a");TABanchor.className="LaTeXtable";if(TABlbl!=null){TABanchor.id=TABlbl[1];}
+  LaTeXCounter["table"]++;var tabnmbr=makeNumberString(LaTeXCounter["table"]);var anchorSpan=document.createElement("span");anchorSpan.className="LaTeXtable";anchorSpan.style.display="none";anchorSpan.appendChild(document.createTextNode(tabnmbr));TABanchor.appendChild(anchorSpan);TABcaption.appendChild(TABanchor);var TABspan=document.createElement("span");TABspan.className="LaTeXtable";TABspan.appendChild(document.createTextNode("Table "+tabnmbr+". "));TABcaption.appendChild(TABspan);TABcaption.appendChild(document.createTextNode(""+TABcap));nodeTmp.appendChild(TABcaption);}
+  var TABinfo=strtmparray[1].match(/\\begin\s*\{\s*tabular\s*\}([\s\S]+)\\end\s*\{\s*tabular\s*\}/);if(TABinfo!=null){var TABtbody=document.createElement('tbody');var TABrow=null;var TABcell=null;var row=0;var col=0;var TABalign=TABinfo[1].match(/^\s*\{([^\}]+)\}/);TABinfo=TABinfo[1].replace(/^\s*\{[^\}]+\}/,"");TABinfo=TABinfo.replace(/\\hline/g,"");TABalign[1]=TABalign[1].replace(/\|/g,"");TABalign[1]=TABalign[1].replace(/\s/g,"");TABinfo=TABinfo.split("\\\\");for(row=0;row<TABinfo.length;row++){TABrow=document.createElement("tr");TABinfo[row]=TABinfo[row].split("&");for(col=0;col<TABinfo[row].length;col++){TABcell=document.createElement("td");switch(TABalign[1].charAt(col)){case"l":TABcell.align="left";break;case"c":TABcell.align="center";break;case"r":TABcell.align="right";break;default:TABcell.align="left";};TABcell.appendChild(document.createTextNode(TABinfo[row][col]));TABrow.appendChild(TABcell);}
+  TABtbody.appendChild(TABrow);}
+  nodeTmp.appendChild(TABtbody);}
+  newFrag.appendChild(nodeTmp);break;case"logicalbreak":var nodeTmp=document.createElement("p");nodeTmp.className=strtmparray[1];nodeTmp.appendChild(document.createTextNode("\u00A0"));newFrag.appendChild(nodeTmp);break;case"appendix":inAppendix=true;sectionCntr=0;break;case"alistitem":var EndDiv=document.createElement("div");EndDiv.className="endlistitem";newFrag.appendChild(EndDiv);var BegDiv=document.createElement("div");BegDiv.className="listitem";if(strtmparray[1]!=" "){var BegSpan=document.createElement("span");BegSpan.className="listitemmarker";var boldBegSpan=document.createElement("b");boldBegSpan.appendChild(document.createTextNode(strtmparray[1]+" "));BegSpan.appendChild(boldBegSpan);BegDiv.appendChild(BegSpan);}
+  newFrag.appendChild(BegDiv);break;case"br":newFrag.appendChild(document.createElement("br"));break;case"bibitem":newFrag.appendChild(document.createElement("br"));var nodeTmp=document.createElement("a");nodeTmp.className='bibitem';var nodeSpan=document.createElement("span");nodeSpan.className='bibitem';bibcntr++;var lbl=strtmparray[1].match(/\{\s*(\w+)\s*\}/);strtmparray[1]=strtmparray[1].replace(/\s*\{\s*\w+\s*\}/g,"");strtmparray[1]=strtmparray[1].replace(/^\s*\[/,"");strtmparray[1]=strtmparray[1].replace(/\s*\]$/,"");strtmparray[1]=strtmparray[1].replace(/^\s+|\s+$/g,"");if(lbl==null){biblist[bibcntr]="bibitem"+bibcntr}else{biblist[bibcntr]=lbl[1];};nodeTmp.name=biblist[bibcntr];nodeTmp.id=biblist[bibcntr];if(strtmparray[1]!=""){nodeSpan.appendChild(document.createTextNode(strtmparray[1]));}else{nodeSpan.appendChild(document.createTextNode("["+bibcntr+"]"));}
+  nodeTmp.appendChild(nodeSpan);newFrag.appendChild(nodeTmp);break;case"cite":var nodeTmp=document.createElement("a");nodeTmp.className='cite';nodeTmp.name='cite';nodeTmp.href="#"+strtmparray[1];newFrag.appendChild(nodeTmp);break;case"ref":var nodeTmp=document.createElement("a");nodeTmp.className='ref';nodeTmp.name='ref';nodeTmp.href="#"+strtmparray[1];newFrag.appendChild(nodeTmp);break;default:var nodeTmp=document.createElement("div");nodeTmp.className=strtmparray[0];if(IsCounter.test(strtmparray[0])){LaTeXCounter[strtmparray[0]]++;var nodeAnchor=document.createElement("a");nodeAnchor.className=strtmparray[0];var divnum=makeNumberString(LaTeXCounter[strtmparray[0]]);var anchorSpan=document.createElement("span");anchorSpan.className=strtmparray[0];anchorSpan.appendChild(document.createTextNode(divnum));anchorSpan.style.display="none";nodeAnchor.appendChild(anchorSpan);nodeTmp.appendChild(nodeAnchor);var nodeSpan=document.createElement("span");nodeSpan.className=strtmparray[0];nodeSpan.appendChild(document.createTextNode(strtmparray[1]+" "+divnum+". "));nodeTmp.appendChild(nodeSpan);}
+  if(isIE){if(strtmparray[0]==("thebibliography"||"abstract"||"keyword"||"proof")){var nodeSpan=document.createElement("span");nodeSpan.className=strtmparray[0];nodeSpan.appendChild(document.createTextNode(strtmparray[1]));nodeTmp.appendChild(nodeSpan);}}
+  if(strtmparray[0]=="endenumerate"||strtmparray[0]=="enditemize"||strtmparray[0]=="enddescription"){var endDiv=document.createElement("div");endDiv.className="endlistitem";newFrag.appendChild(endDiv);}
+  newFrag.appendChild(nodeTmp);if(strtmparray[0]=="enumerate"||strtmparray[0]=="itemize"||strtmparray[0]=="description"){var endDiv=document.createElement("div");endDiv.className="listitem";newFrag.appendChild(endDiv);}}}else{strtmp[j]=strtmp[j].replace(/\\\$/g,"<per>");strtmp[j]=strtmp[j].replace(/\$([^\$]+)\$/g," \\[$1\\[ ");strtmp[j]=strtmp[j].replace(/<per>/g,"\\$");strtmp[j]=strtmp[j].replace(/\\begin\s*\{\s*math\s*\}([\s\S]+?)\\end\s*\{\s*math\s*\}/g," \\[$1\\[ ");var strtmptmp=strtmp[j].split("\\[");for(var jjj=0;jjj<strtmptmp.length;jjj++){if(jjj%2){var nodeTmp=document.createElement("span");nodeTmp.className='inlinemath';nodeTmp.appendChild(document.createTextNode("$"+strtmptmp[jjj]+"$"));newFrag.appendChild(nodeTmp);}else{var TagIndex=strtmptmp[jjj].search(/\\\w+/);var tmpIndex=TagIndex;while(tmpIndex>-1){if(/^\\textcolor/.test(strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length))){strtmptmp[jjj]=strtmptmp[jjj].replace(/\\textcolor\s*\{\s*(\w+)\s*\}\s*/," \\[textcolor\\]$1\\]|");}else{if(/^\\colorbox/.test(strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length))){strtmptmp[jjj]=strtmptmp[jjj].replace(/\\colorbox\s*\{\s*(\w+)\s*\}\s*/," \\[colorbox\\]$1\\]|");}else{strtmptmp[jjj]=strtmptmp[jjj].substring(0,TagIndex)+strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length).replace(/\\\s*(\w+)\s*/," \\[$1\\]|");}}
+  TagIndex+=strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length).search(/\|/);TagIndex++;strtmptmp[jjj]=strtmptmp[jjj].replace(/\\\]\|/,"\\] ");if(strtmptmp[jjj].charAt(TagIndex)=="{"){strtmptmp[jjj]=strtmptmp[jjj].substring(0,TagIndex)+strtmptmp[jjj].substring(TagIndex+1,strtmptmp[jjj].length);var delimcnt=1;for(var kk=TagIndex;kk<strtmptmp[jjj].length;kk++){if(strtmptmp[jjj].charAt(kk)=="{"){delimcnt++};if(strtmptmp[jjj].charAt(kk)=="}"){delimcnt--};if(delimcnt==0){break;}}
+  strtmptmp[jjj]=strtmptmp[jjj].substring(0,kk)+"\\[ "+strtmptmp[jjj].substring(kk+1,strtmptmp[jjj].length);TagIndex=kk+3;}else{strtmptmp[jjj]=strtmptmp[jjj].substring(0,TagIndex)+"\\[ "+strtmptmp[jjj].substring(TagIndex+1,strtmptmp[jjj].length);TagIndex=TagIndex+3;}
+  if(TagIndex<strtmptmp[jjj].length){tmpIndex=strtmptmp[jjj].substring(TagIndex,strtmptmp[jjj].length).search(/\\\w+/);}
+  else{tmpIndex=-1};TagIndex+=tmpIndex;}
+  strtmptmp[jjj]=strtmptmp[jjj].replace(/\\\\\s*\\\\/g,"\\\\");strtmptmp[jjj]=strtmptmp[jjj].replace(/\\\\/g," \\[br\\] \\[ ");strtmptmp[jjj]=strtmptmp[jjj].replace(/\\label\s*\{\s*(\w+)\s*\}/g," \\[a\\]$1\\[ ");var strlbls=strtmptmp[jjj].split("\\[");for(var jj=0;jj<strlbls.length;jj++){if(jj%2){var strtmparray=strlbls[jj].split("\\]");switch(strtmparray[0]){case"textcolor":var nodeTmp=document.createElement("span");nodeTmp.className='LaTeXColor';if(IsColorName.test(strtmparray[1].toLowerCase())){nodeTmp.style.color=LaTeXColor[strtmparray[1].toLowerCase()];}else{nodeTmp.style.color=strtmparray[1];};nodeTmp.appendChild(document.createTextNode(strtmparray[2]));newFrag.appendChild(nodeTmp);break;case"colorbox":var nodeTmp=document.createElement("span");nodeTmp.className='LaTeXColor';if(IsColorName.test(strtmparray[1].toLowerCase())){nodeTmp.style.background=LaTeXColor[strtmparray[1].toLowerCase()];}else{nodeTmp.style.background=strtmparray[1];};nodeTmp.appendChild(document.createTextNode(strtmparray[2]));newFrag.appendChild(nodeTmp);break;case"br":newFrag.appendChild(document.createElement("br"));break;case"a":var nodeTmp=document.createElement("a");nodeTmp.className='LaTeXMathMLlabel';nodeTmp.id=strtmparray[1];nodeTmp.style.display="none";newFrag.appendChild(nodeTmp);break;default:var nodeTmp=document.createElement("span");nodeTmp.className=strtmparray[0];nodeTmp.appendChild(document.createTextNode(strtmparray[1]))
+  newFrag.appendChild(nodeTmp);}}else{newFrag.appendChild(document.createTextNode(strlbls[jj]));}}}}}}}};TheBody.parentNode.replaceChild(newFrag,TheBody);}}}
+  return TheBody;}
+  function LaTeXDivsAndRefs(thebody){var TheBody=thebody;var EndDivClass=null;var AllDivs=TheBody.getElementsByTagName("div");var lbl2id="";var lblnode=null;for(var i=AllDivs.length-1;i>=0;i--){EndDivClass=AllDivs[i].className.match(/end\w+/);if(EndDivClass!=null){EndDivClass=EndDivClass[0];var DivClass=EndDivClass.substring(3,EndDivClass.length);var EndDivNode=AllDivs[i];break;}}
+  while(EndDivClass!=null){var newFrag=document.createDocumentFragment();var RootNode=EndDivNode.parentNode;var ClassCount=1;while(EndDivNode.previousSibling!=null&&ClassCount>0){switch(EndDivNode.previousSibling.className){case EndDivClass:ClassCount++;newFrag.insertBefore(EndDivNode.previousSibling,newFrag.firstChild);break;case DivClass:if(EndDivNode.previousSibling.nodeName=="DIV"){ClassCount--;if(lbl2id!=""){EndDivNode.previousSibling.id=lbl2id;lbl2id=""}
+  if(ClassCount==0){RootNode=EndDivNode.previousSibling;}else{newFrag.insertBefore(EndDivNode.previousSibling,newFrag.firstChild);}};break;case'LaTeXMathMLlabel':lbl2id=EndDivNode.previousSibling.id;EndDivNode.parentNode.removeChild(EndDivNode.previousSibling);break;default:newFrag.insertBefore(EndDivNode.previousSibling,newFrag.firstChild);}}
+  RootNode.appendChild(newFrag);EndDivNode.parentNode.removeChild(EndDivNode);AllDivs=TheBody.getElementsByTagName("DIV");for(i=AllDivs.length-1;i>=0;i--){EndDivClass=AllDivs[i].className.match(/end\w+/);if(EndDivClass!=null){ClassCount=0;EndDivClass=EndDivClass[0];DivClass=EndDivClass.substring(3,EndDivClass.length);EndDivNode=AllDivs[i];RootNode=EndDivNode.parentNode;break;}}}
+  var AllDivs=TheBody.getElementsByTagName("div");var DIV2LI=null;for(var i=0;i<AllDivs.length;i++){if(AllDivs[i].className=="itemize"||AllDivs[i].className=="enumerate"||AllDivs[i].className=="description"){if(AllDivs[i].className=="itemize"){RootNode=document.createElement("UL");}else{RootNode=document.createElement("OL");}
+  RootNode.className='LaTeXMathML';if(AllDivs[i].hasChildNodes()){AllDivs[i].removeChild(AllDivs[i].firstChild)};while(AllDivs[i].hasChildNodes()){if(AllDivs[i].firstChild.hasChildNodes()){DIV2LI=document.createElement("LI");while(AllDivs[i].firstChild.hasChildNodes()){DIV2LI.appendChild(AllDivs[i].firstChild.firstChild);}
+  if(DIV2LI.firstChild.className=="listitemmarker"){DIV2LI.style.listStyleType="none";}
+  RootNode.appendChild(DIV2LI)}
+  AllDivs[i].removeChild(AllDivs[i].firstChild);}
+  AllDivs[i].appendChild(RootNode);}}
+  var AllAnchors=TheBody.getElementsByTagName("a");for(var i=0;i<AllAnchors.length;i++){if(AllAnchors[i].className=="ref"||AllAnchors[i].className=="cite"){var label=AllAnchors[i].href.match(/\#(\w+)/);if(label!=null){var labelNode=document.getElementById(label[1]);if(labelNode!=null){var TheSpans=labelNode.getElementsByTagName("SPAN");if(TheSpans!=null){var refNode=TheSpans[0].cloneNode(true);refNode.style.display="inline"
+  refNode.className=AllAnchors[i].className;AllAnchors[i].appendChild(refNode);}}}}}
+  return TheBody;}
+  var AMbody;var AMnoMathML=false,AMtranslated=false;function translate(spanclassAM){if(!AMtranslated){AMtranslated=true;AMinitSymbols();var LaTeXContainers=[];var AllContainers=document.getElementsByTagName('*');var ExtendName="";for(var k=0,l=0;k<AllContainers.length;k++){ExtendName=" "+AllContainers[k].className+" ";if(ExtendName.match(/\sLaTeX\s/)!=null){LaTeXContainers[l]=AllContainers[k];l++;}};if(LaTeXContainers.length>0){for(var m=0;m<LaTeXContainers.length;m++){AMbody=LaTeXContainers[m];try{AMbody=LaTeXDivsAndRefs(LaTeXpreProcess(AMbody));}catch(err){alert("Unknown Error: Defaulting to Original LaTeXMathML");}
+  if(AMbody.tagName=="PRE"){var PreChilds=document.createDocumentFragment();var DivChilds=document.createElement("DIV");while(AMbody.hasChildNodes()){DivChilds.appendChild(AMbody.firstChild);}
+  PreChilds.appendChild(DivChilds);AMbody.parentNode.replaceChild(PreChilds,AMbody);AMbody=DivChilds;}
+  AMprocessNode(AMbody,false,spanclassAM);}}else{AMbody=document.getElementsByTagName("body")[0];try{AMbody=LaTeXDivsAndRefs(LaTeXpreProcess(AMbody));}catch(err){alert("Unknown Error: Defaulting to Original LaTeXMathML");}
+  AMprocessNode(AMbody,false,spanclassAM);}}}
+  if(isIE){document.write("<object id=\"mathplayer\" classid=\"clsid:32F66A20-7614-11D4-BD11-00104BD3F987\"></object>");document.write("<?import namespace=\"m\" implementation=\"#mathplayer\"?>");}
+  function generic()
+  {translate();};if(typeof window.addEventListener!='undefined')
+  {window.addEventListener('load',generic,false);}
+  else if(typeof document.addEventListener!='undefined')
+  {document.addEventListener('load',generic,false);}
+  else if(typeof window.attachEvent!='undefined')
+  {window.attachEvent('onload',generic);}
+  else
+  {if(typeof window.onload=='function')
+  {var existing=onload;window.onload=function()
+  {existing();generic();};}
+  else
+  {window.onload=generic;}}
+  /*]]>*/
+  </script>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#реализация-haskell-в-ghc">Реализация Haskell в GHC</a><ul>
+<li><a href="#этапы-компиляции">Этапы компиляции</a></li>
+<li><a href="#язык-stg">Язык STG</a></li>
+<li><a href="#вычисление-stg">Вычисление STG</a><ul>
+<li><a href="#куча">Куча</a></li>
+<li><a href="#стек">Стек</a></li>
+<li><a href="#правила-общие-для-обеих-стратегий-вычисления">Правила общие для обеих стратегий вычисления</a></li>
+<li><a href="#правила-для-стратегии-вставка-вход">Правила для стратегии вставка-вход</a></li>
+<li><a href="#правила-для-стратегии-вычисление-применение">Правила для стратегии вычисление-применение</a></li>
+</ul></li>
+<li><a href="#представление-значений-в-памяти.-оценка-занимаемой-памяти">Представление значений в памяти. Оценка занимаемой памяти</a></li>
+<li><a href="#управление-памятью.-сборщик-мусора">Управление памятью. Сборщик мусора</a></li>
+<li><a href="#статистика-выполнения-программы">Статистика выполнения программы</a><ul>
+<li><a href="#статистика-вычислителя">Статистика вычислителя</a></li>
+<li><a href="#профилирование-функций">Профилирование функций</a><ul>
+<li><a href="#время-и-общий-объём-памяти">Время и общий объём памяти</a></li>
+<li><a href="#динамика-изменения-объёма-кучи">Динамика изменения объёма кучи</a></li>
+</ul></li>
+<li><a href="#поиск-источников-внезапной-остановки">Поиск источников внезапной остановки</a></li>
+</ul></li>
+<li><a href="#оптимизация-программ">Оптимизация программ</a><ul>
+<li><a href="#флаги-оптимизации">Флаги оптимизации</a></li>
+<li><a href="#прагма-inline">Прагма INLINE</a></li>
+<li><a href="#прагма-rules">Прагма RULES</a><ul>
+<li><a href="#фазы-компиляции">Фазы компиляции</a></li>
+</ul></li>
+<li><a href="#прагма-unpack">Прагма UNPACK</a></li>
+</ul></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="9.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="11.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="реализация-haskell-в-ghc"><a href="#TOC">Реализация Haskell в GHC</a></h1>
+<p>На момент написания этой книги основным компилятором Haskell является GHC. Остальные конкуренты отстают очень сильно. Отметим компилятор Hugs (его хорошо использовать для демонстрации Haskell на чужом компьютере, если вы не хотите устанавливать тяжёлый GHC). В этой главе мы обзорно рассмотрим как язык Hаskell реализован в GHC. GHC – как ни парадоксально это звучит, это самая успешная программа написанная на Haskell. GHC уже двадцать лет. Отметим основных разработчиков. Это Саймон Пейтон Джонс (Simon Peyton Jones) и Саймон Марлоу (Simon Marlow).</p>
+<p>GHC состоит из трёх частей. Это сам компилятор, основные библиотеки языка (такие как Prelude) и низкоуровневая система вычислений (она отвечает за управление памятью, потоками, вычисление примитивных операций). Весь GHC кроме системы вычислений написан на Haskell. Система вычислений написана на C. Компилятор принимает набор файлов с исходным кодом (а также возможно объектных и интерфейсных файлов) и генерирует код низкого уровня. Система вычислений низкого уровня используется в этом коде как библиотека. Она статически подключается к любому нативному коду, который генерируется GHC. Далее мы сосредоточимся на изучении компилятора.</p>
+<p>Но перед этим давайте освежим в памяти (или узнаем) несколько терминов. У нас есть код на Haskell, что значит перевести в код низкого уровня? Код низкого уровня представляет собой набор инструкций, которые изменяют значения в памяти компьютера. Изменение значений происходит с помощью базовых операций, которые выполняются в процессоре компьютера. Память компьютера представляет собой ленту ячеек. У каждой ячейки есть адрес и содержание. По адресу мы можем читать данные из ячейки и записывать их туда. Эти операции также выполняются с помощью инструкций. Мы будем делить память на стек (stack), кучу (heap) и регистры (registers).</p>
+<p>Стек~– это очередь с принципом работы “последним пришёл, первым ушёл”. Стек можно представить как стопку книг. У нас есть две операции: положить книгу наверх, и снять верхнюю книгу. Стек очень удобен для переключения контекстов вычисления. Представьте, что у нас есть функция, которая внутри вызывает другую функцию, а та следующую. Находясь в верхней функции при заходе во вторую мы сохраняем контекст внешней функции в стеке. Контекст – это та информация, которая нужна нам для того, чтобы продолжить вычисления. Как только мы доходим до третьей функции, мы “кладём на стопку сверху” контекст второй функции, как только третья функция вычислена, мы обращаемся к стеку и снимаем с него контекст второй функции продолжаем вычислять и как только вторая функция заканчивается снова обращаемся к стеку. А там сверху уже лежит контекст самой первой функции. Мы можем продолжать вычисления. Так происходит вычисление вложенных функций в императивных языках программирования.</p>
+<p>В куче мы храним разные данные. Данные бывают статическими (они нужны нам на протяжении выполнения всей программы) и динамическими (время жизни динамических данных заранее неизвестно, например это могут быть отложенные вычисления, мы не знаем когда ни нам понадобятся). У кучи также две операции: выделить блок памяти, эта операция принимает размер блока и возвращает адрес, по которому удалось выделить память, и освободить память по указанному адресу. Регистры находятся в процессоре. В них можно записывать и читать данные, при этом операции обращения к регистрам будут происходить очень быстро.</p>
+<p>Посмотрим как GHC справляется с переводом процесса редукции синонимов на язык понятный нашему компьютеру. Язык обновления стека и кучи. Это большая и трудная глава, читайте не спеша. Если покажется совсем трудно~– пропустите, вернётесь потом, когда захочется писать не только красивые, но и эффективные программы.</p>
+<h2 id="этапы-компиляции"><a href="#TOC">Этапы компиляции</a></h2>
+<p>Рассмотрим этапы компиляции программы.</p>
+<div>
+<img src="../pic/10/ghc.png" alt="Этапы компиляции" />
+</div>
+
+
+<p>На первых трёх этапах происходит проверка ошибок. Сначала мы строим синтаксическое дерево программы. Если мы нигде не забыли скобки, не ошиблись в простановке ключевых слов, то этот этап успешно завершится. Далее мы приписываем ко всем функциям их полные имена. Дописываем перед всеми определениями имя модуля, в котором они определены. Обычно на этом этапе нам сообщают о том, что мы забыли определить какую-нибудь функцию, часто это связано с простой опечаткой. Следующий этап – самый важный. Происходит вывод типов для всех значений и проверка программы по типам. Блок кода, отвечающий за проверку типов, является самым большим в GHC. Haskell имеет очень развитую систему типов. Многих возможностей мы ещё не коснулись, часть из них мы рассмотрим в главе 17. Допустим, что мы исправили все ошибки связанные с типами, тогда компилятор начнёт переводить Haskell в Core.</p>
+<p>Core – это функциональный язык программирования, который является сильно урезанной версией Haskell. Помните мы говорили, что в Haskell поддерживается несколько стилей (композиционный и декларативный). Что хорошо для программиста, не очень хорошо для компилятора. Компилятор устраняет весь синтаксический сахар и выражает все определения через простейшие конструкции языка Core. Далее происходит серия оптимизаций языка Core. На дереве описания программы выполняется серия функций типа . Например происходит замена вызовов коротких функций на их правые части урвнений (встраивание или inlining), выражения, которые проводят декомпозицию в <code><font color="#b2590f">case</font></code>-выражениях по константам, заменяются на соответствующие этим константам выражения. По требованию GHC может провести анализ строгости (strictness analysis). Он заключается в том, что GHC ищет аргументы функций, которые могут быть вычислены более эфективно с помощью вычисления по значению и расставляет анотации строгости. И многие многие другие оптимизации кода. Все они представлены в виде преобразования синтаксического дерева программы. Также этот этап называют упрощением программы.</p>
+<p>После этого Core переводится на STG. Это функциональный язык, повторяющий Core. Он содержит дополнительную информацию, которая необходима низкоуровневым бибилиотекам на этапе вычисления программы. Затем из STG генерируется код языка <code><font color=Green>C</font><font color="#2149c1">--</font></code>. Это язык низкого уровня, “портируемый ассемблер”. На этом языке не пишут программы, он предназначен для автоматической генерации кода. Далее из него получают другие низкоуровневые коды. Возможна генерация C, LLVM и нативного кода (код, который исполняется операционной системой).</p>
+<h2 id="язык-stg"><a href="#TOC">Язык STG</a></h2>
+<p>STG расшифровывается как Spineless Tagless G-machine. G-machine или Г-машина – это низкоуровневое описание процесса редукции графов (от Graph). Пока мы называли этот процесс редукцией синонимов. Spineless и Tagless – это термины специфичные для G-машины, которая была придумана разработчиками GHC. Tagless относится к особому представлению объектов в куче (объекты представлены единообразно, так что им не нужен специальный тег для обозначения типа объекта), а Spineless относится к тому, что в отличие от машин-предшественников, которые описывают процесс редукции графов виде последовательности инструкций, STG является небольшим функциональным языком. На  представлен синтаксис языка STG. Синтаксис упрощён для чтения людьми. Несмотря на упрощения мы сможем посмотреть как происходит вычисление выражений.</p>
+<div>
+<img src="../pic/10/stg1.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>По синтаксису STG можно понять, какие выражения языка Haskell являются синтаксическим сахаром. Им просто нет места в языке STG. Например, не видим мы сопоставления с образцом. Оно как и <code><font color="#b2590f">if</font></code>-выражения переписывается через <code><font color="#b2590f">case</font></code>-выражения. Исчезли <code><font color="#b2590f">where</font></code>-выражения. Конструкторы могут применяться только полностью, то есть для применения конструктора мы должны передать ему все аргументы. В STG <code><font color="#b2590f">let</font></code>-выражения разделяют на не рекурсивные (<code><font color="#b2590f">let</font></code>) и рекурсивные (<code><font color=Black>letrec</font></code>). Разделение проводится в целях оптимизации, мы же будем считать, что эти случаи описываются одной конструкцией.</p>
+<p>На что стоит обратить внимание? Заметим, что функции могут принимать только атомарные значения (либо примитивные значения, либо переменные). В данном случае переменные указывают на объекты в куче. Так если в Haskell мы пишем:</p>
+<pre><font color=Black>foldr</font> f <font color=Black>(</font>g x y<font color=Black>)</font> <font color=Black>(</font>h x<font color=Black>)</font></pre>
+<p>В STG это выражение примет вид:</p>
+<pre><font color="#b2590f">let</font> gxy <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>g x y<font color=Black>)</font>
+    hx  <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>h x<font color=Black>)</font>
+<font color="#b2590f">in</font>  foldr f gxy hx</pre>
+<p>У функций появились степени. Что это? Степени указывают на арность функции, то есть на количество принимаемых аргументов. Количество принимаемых аргументов определяется по левой части функции. Поскольку в Haskell функции могут возвращать другие функции, очень часто мы не можем знать арность, тогда мы пишем <span class="LaTeX">$\bullet$</span>.</p>
+<p>Отметим два важных принципа вычисления на STG:</p>
+<ul>
+<li><p>Новые объекты создаются в куче <em>только</em> в <code><font color="#b2590f">let</font></code>-выражениях</p></li>
+<li><p>Выражение приводится к СЗНФ <em>только</em> в <code><font color="#b2590f">case</font></code>-выражениях</p></li>
+</ul>
+<p>Выражение <code><font color="#b2590f">let</font> a <font color="#b2590f">=</font> obj <font color="#b2590f">in</font> e</code> означает добавь в кучу объект <code><font color=Black>obj</font></code> под именем <code><font color=Black>a</font></code> и затем вычисли <code><font color=Black>e</font></code>. Выражение <code><font color="#b2590f">case</font> e <font color="#b2590f">of</font></code>~<code><font color=Black>{</font>alt1<font color=Black>;</font><font color=Black>...</font><font color=Black>;</font>alt2<font color=Black>}</font></code> означает узнай конструктор в корне <code><font color=Black>e</font></code> и продолжи вычисления в соответствующей альтернативе. Обратите внимание на то, что сопоставления с образцом в альтернативах имеет только один уровень вложенности. Также аргумент <code><font color="#b2590f">case</font></code>-выражения в отличие от функции не обязан быть атомарным.</p>
+<p>Для тренировки перепишем на STG пример из раздела про ленивые вычисления.</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font>
+
+<font color=Black>zero</font>    <font color="#b2590f">=</font> <font color=Green>Zero</font>
+<font color=Black>one</font>     <font color="#b2590f">=</font> <font color=Green>Succ</font> zero
+<font color=Black>two</font>     <font color="#b2590f">=</font> <font color=Green>Succ</font> one
+
+<font color=Black>foldNat</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> a
+<font color=Black>foldNat</font> z  s  <font color=Green>Zero</font>      <font color="#b2590f">=</font> z
+<font color=Black>foldNat</font> z  s  <font color=Black>(</font><font color=Green>Succ</font> n<font color=Black>)</font>  <font color="#b2590f">=</font> s <font color=Black>(</font>foldNat z s n<font color=Black>)</font>
+
+<font color=Black>add</font> a <font color="#b2590f">=</font> foldNat a   <font color=Green>Succ</font>
+<font color=Black>mul</font> a <font color="#b2590f">=</font> foldNat one <font color=Black>(</font>add a<font color=Black>)</font> 
+
+<font color=Black>exp</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> add <font color=Black>(</font>add x x<font color=Black>)</font> x<font color=Black>)</font> <font color=Black>(</font>add <font color=Green>Zero</font> two<font color=Black>)</font></pre>
+<p>Теперь в STG:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font>
+
+<font color=Black>zero</font>    <font color="#b2590f">=</font> <font color=Green>CON</font><font color=Black>(</font><font color=Green>Zero</font><font color=Black>)</font>
+<font color=Black>one</font>     <font color="#b2590f">=</font> <font color=Green>CON</font><font color=Black>(</font><font color=Green>Succ</font> zero<font color=Black>)</font>
+<font color=Black>two</font>     <font color="#b2590f">=</font> <font color=Green>CON</font><font color=Black>(</font><font color=Green>Succ</font> one<font color=Black>)</font>
+
+<font color=Black>foldNat</font> <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> z s arg <font color="#b2590f">-&gt;</font> 
+            <font color="#b2590f">case</font> arg <font color="#b2590f">of</font> 
+                <font color=Green>Zero</font>    <font color="#b2590f">-&gt;</font> z
+                <font color=Green>Succ</font> n  <font color="#b2590f">-&gt;</font> <font color="#b2590f">let</font> next <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>foldNat z s n<font color=Black>)</font>
+                           <font color="#b2590f">in</font>  s next  
+          <font color=Black>)</font>
+
+<font color=Black>add</font>     <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> a <font color="#b2590f">-&gt;</font>
+            <font color="#b2590f">let</font> succ <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> x <font color="#b2590f">-&gt;</font> 
+                        <font color="#b2590f">let</font> r <font color="#b2590f">=</font> <font color=Green>CON</font><font color=Black>(</font><font color=Green>Succ</font> x<font color=Black>)</font> 
+                        <font color="#b2590f">in</font> r<font color=Black>)</font>
+            <font color="#b2590f">in</font>  foldNat a succ
+          <font color=Black>)</font>
+
+<font color=Black>mul</font>     <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> a <font color="#b2590f">-&gt;</font> 
+            <font color="#b2590f">let</font> succ <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>add a<font color=Black>)</font>
+            <font color="#b2590f">in</font>  foldNat one succ
+          <font color=Black>)</font>
+
+<font color=Black>exp</font>     <font color="#b2590f">=</font> <font color=Green>THUNK</font><font color=Black>(</font> 
+            <font color="#b2590f">let</font> f <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> x <font color="#b2590f">-&gt;</font> <font color="#b2590f">let</font> axx <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>add x x<font color=Black>)</font>
+                              <font color="#b2590f">in</font>  add axx x<font color=Black>)</font> 
+                a <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>add <font color=Green>Zero</font> two<font color=Black>)</font>
+            <font color="#b2590f">in</font>  f a    
+          <font color=Black>)</font></pre>
+<p>Программа состоит из связок вида <code><font color=Black>имя</font> <font color="#b2590f">=</font> объектКучи</code>. Эти связки называют глобальными, они становятся статическими объектами кучи, остальные объекты выделяются динамически в <code><font color="#b2590f">let</font></code>-выражениях. Глобальный объект типа <code><font color=Green>THUNK</font></code> называют постоянной аппликативной формой (constant applicative form или сокращённо CAF).</p>
+<h2 id="вычисление-stg"><a href="#TOC">Вычисление STG</a></h2>
+<p>Итак у нас есть упрощённый функциональный язык. Как мы будем вычислять выражения? Присутствие частичного применения усложняет этот процесс. Для многих функций мы не знаем заранее их арность. Так например в выражении</p>
+<pre><font color=Black>f</font> x y</pre>
+<p>Функция <code><font color=Black>f</font></code> может иметь один аргумент в определении, но вернуть функцию. Есть два способа вычисления таких функций:</p>
+<ul>
+<li><p><em>вставка-вход</em> (push-enter). Когда мы видим применение функции, мы сначала <em>вставляем</em> все аргументы в стек, затем совершаем <em>вход</em> в тело функции. В процессе входа мы вычисляем функцию <code><font color=Black>f</font></code> и узнаём число аргументов, которое ей нужно, после этого мы извлекаем из стека необходимое число аргументов, и применяем к ним функцию, если мы снова получаем функцию, тогда мы опять добираем необходимое число аргументов из стека. И так пока аргументы в стеке не кончатся.</p></li>
+<li><p><em>вычисление-применение</em> (eval-apply). Вместе с функцией мы храним информацию о том, сколько аргументов ей нужно. Если это статически определённая функция (определение выписано пользователем), то число аргументов мы можем понять по левой части определения. В этой стратегии, если число аргументов известно, мы сразу <em>вычисляем</em> значение с нужным числом аргументов, сохранив оставшиеся в стеке, а затем извлекаем аргументы из стека и <em>применяем</em> к ним вычисленное значение.</p></li>
+</ul>
+<p>Возвращаясь к исходному примеру, предположим, что арность функции <code><font color=Black>f</font></code> равна единице. Тогда стратегия вставка-вход сначала добавит на стек <code><font color=Black>x</font></code> и <code><font color=Black>y</font></code>, а затем будет добирать из стека необходимые аргументы. Стратегия вычисление-применение сначала вычислит <code><font color=Black>(</font>f x<font color=Black>)</font></code>, сохранив <code><font color=Black>y</font></code> на стеке, затем попробует применить результат к <code><font color=Black>y</font></code>. Почему мы говорим попробует? Может так случиться, что арность значения <code><font color=Black>f</font> x</code> окажется равным трём, но пока у нас есть лишь один аргумент, тогда мы создадим объект <code><font color=Green>PAP</font></code>, который соответствует частичному применению.</p>
+<p>Эти стратегии применимы как к ленивым, так и к энергичным языкам. Исторически сложилось, что ленивые языки тяготеют к первой стратегии, а энергичные ко второй. До недавнего времени и в GHC применялась первая стратегия. Пока однажды разработчики GHC всё же не решили сравнить две стратегии. Реализовав обе стратегии, и проверив их на большом количестве разных по сложности программ, они пришли к выводу, что ни одна из стратегий не даёт существенного преимущества на этапе вычислений. Потребление ресурсов оказалось примерно равным. Но вторая стратегия заметно выигрывала в простоте реализации. Подробнее об этом можно почитать в статье Simon Marlow, Simon Peyton Jones: Making a Fast Curry: Push/Enter vs. Eval/Apply. Описание модели вычислений GHC, которое вы сейчас читаете копирует описание приведённое в этой статье.</p>
+<h3 id="куча"><a href="#TOC">Куча</a></h3>
+<p>Объекты кучи принято называть <em>замыканиями</em> (closure). Их называют так, потому что обычно для вычисления выражения нам не достаточно знать его текст, например посмотрим на функцию:</p>
+<pre><font color=Black>mul</font>     <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> a <font color="#b2590f">-&gt;</font> 
+            <font color="#b2590f">let</font> succ <font color="#b2590f">=</font> <font color=Green>THUNK</font> <font color=Black>(</font>add a<font color=Black>)</font>
+            <font color="#b2590f">in</font>  foldNat one succ
+          <font color=Black>)</font></pre>
+<p>Для того, чтобы вычислить <code><font color=Green>THUNK</font><font color=Black>(</font>add a<font color=Black>)</font></code> нам необходимо знать значение <code><font color=Black>a</font></code>, это значение определено в теле функции. Оно определяется из контекста. По отношению к объекту такую переменную называют <em>свободной</em> (free). В куче мы будем хранить не только выражение <code><font color=Black>(</font>add a<font color=Black>)</font></code>, но и ссылки на все свободные переменные, которые участвуют в выражении объекта. Эти ссылки называют <em>довесок</em> (payload). Объект кучи содержит ссылку на специальную таблицу и довесок. В таблице находятся информация о типе объекта и код, который необходимо вычислить, а также другая служебная информация. При вычислении объекта мы заменяем ссылки настоящими значениями или ссылками на конструкторы.</p>
+<p>Объект кучи может быть:</p>
+<ul>
+<li><code><font color=Green>FUN</font></code> – определением функции;</li>
+<li><code><font color=Green>PAP</font></code> – частичным применением;</li>
+<li><code><font color=Green>CON</font></code> – полностью применённым конструктором;</li>
+<li><code><font color=Green>THUNK</font></code> – отложенным вычислением;</li>
+<li><code><font color=Green>BLACKHOLE</font></code> – это значение используется во время вычисления <code><font color=Green>THUNK</font></code>. Этот трюк предотвращает появление утечек памяти.</li>
+</ul>
+<p>Мы будем считать, что куча – это таблица, которая ставит в соответствие адресам объекты или вычисленные значения.</p>
+<h3 id="стек"><a href="#TOC">Стек</a></h3>
+<p>Стек служит для быстрого переключения контекста. Мы будем пользоваться стеком при вычислении <code><font color="#b2590f">case</font></code>-выражений и <code><font color=Green>THUNK</font></code>-объектов. При вычислении <code><font color="#b2590f">case</font></code>-выражения мы сохраняем в стеке альтернативы и место возврата значения, а сами начинаем вычислять аргумент <code><font color="#b2590f">case</font></code>-выражения. При вычислении <code><font color=Green>THUNK</font></code>-объекта мы запомним в стеке, адрес с которым необходимо связать полученное значение.</p>
+<p>При вычислении в стратегии вставка-вход мы будем сохранять в стеке аргументы функции. А при вычислении в стратегии вычисление-применение мы также будем сохранять аргументы функции в стеке. Какая разница между этими вариантами? В первой стратегии мы можем доставать из стека произвольное число аргументов, после определения арности функции мы добираем столько, сколько нам нужно, поэтому мы будем хранить аргументы по одному. Во второй же стратегии нам нужно просто сохранить все оставшиеся аргументы. Мы сохраняем и извлекаем их все сразу. Упрощая, объекты стека можно представить так:</p>
+<div>
+<img src="../pic/10/stg2.png" alt="Синтаксис STG" />
+</div>
+
+
+<h3 id="правила-общие-для-обеих-стратегий-вычисления"><a href="#TOC">Правила общие для обеих стратегий вычисления</a></h3>
+<p>Состояние вычислителя состоит из трёх частей. Это выражение для вычисления <span class="LaTeX">$e$</span>, стек <span class="LaTeX">$s$</span> и куча <span class="LaTeX">$H$</span>. Мы рассмотрим правила по которым вычислитель переходит из одного состояния в другое. Все они имеют вид:</p>
+<p><span class="LaTeX">$e_1;\quad s_1;\quad H_1\quad \Rightarrow\quad e_2;\quad s_2;\quad H_2$</span></p>
+<p>Левая часть переходит в правую, при условии, что левая часть имеет определённый вид. Начнём с правил, которые одинаковы и в той и в другой стратегии вычисления. Для простоты пока мы будем полагать, что объекты только добавляются в кучу и никогда не стираются. Мы будем обозначать добавление в стек как добавление элемента в обычный список: <span class="LaTeX">$elem\ :\ s$</span>.</p>
+<p>Рассмотрим правило для <code><font color="#b2590f">let</font></code>-выражений:</p>
+<div>
+<img src="../pic/10/stg-rules-let.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>В этом правиле мы добавляем в кучу новый объект <span class="LaTeX">$obj$</span> под именем (или по адресу) <span class="LaTeX">$x&#39;$</span>. Запись <span class="LaTeX">$e[x&#39;/x]$</span> означает замену <span class="LaTeX">$x$</span> на <span class="LaTeX">$x&#39;$</span> в выражении <span class="LaTeX">$e$</span>.</p>
+<p>Теперь разберёмся с правилами для <code><font color="#b2590f">case</font></code>-выражений.</p>
+<div>
+<img src="../pic/10/stg-rules-case.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>Вычисления начинаются с третьего правила, в котором нам встречается <code><font color="#b2590f">case</font></code>-выражения с произвольным <span class="LaTeX">$e$</span>. В этом правиле мы сохраняем в стеке альтернативы и адрес возвращаемого значения и продолжаем вычисление выражения <span class="LaTeX">$e$</span>. После вычисления мы перейдём к четвёртому правилу, тогда мы снимем со стека информацию необходимую для продолжения вычисления <code><font color="#b2590f">case</font></code>-выражения. Это приведёт нас к одному из первых двух правил. В первом правиле значение аргумента содержит конструктор, подходящий по одной из альтернатив, а во втором мы выбираем альтернативу по умолчанию.</p>
+<p>Теперь посмотрим как вычисляются <code><font color=Green>THUNK</font></code>-объекты.</p>
+<div>
+<img src="../pic/10/stg-rules-thunk.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>Если переменная указывает на отложенное вычисление <span class="LaTeX">$e$</span>, мы сохраняем в стеке адрес по которому необходимо обновить значение и вычисляем значение <span class="LaTeX">$e$</span>. В это время мы записываем в по адресу <span class="LaTeX">$x$</span> объект <span class="LaTeX">$BLACKHOLE$</span>. У нас нет такого правила, которое реагирует на левую часть, если в ней содержится объект <span class="LaTeX">$BLACKHOLE$</span>. Поэтому во время вычисления <span class="LaTeX">$THUNK$</span> ни одно из правил сработать не может. Этот трюк необходим для избежания утечек памяти. Как только выражнение будет вычислено мы извлечём из стека адрес <span class="LaTeX">$x$</span> и обновим значение.</p>
+<p>Правила применения функций, если арность совпадает с числом аргументов в тексте выражения:</p>
+<div>
+<img src="../pic/10/stg-rules-apply.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>Мы просто заменяем все вхождения аргументов на значения. Второе правило выполняет применение примитивной функции к значениям.</p>
+<h3 id="правила-для-стратегии-вставка-вход"><a href="#TOC">Правила для стратегии вставка-вход</a></h3>
+<div>
+<img src="../pic/10/stg-rules-push-enter.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>Первое правило выполняет этап “вставка”. Если мы видим применение функции, мы первым делом сохраняем все аргументы в стеке. Во втором правиле мы вычислили значение <code><font color=Black>f</font></code>, оно оказалось функцией с арностью <span class="LaTeX">$n$</span>. Тогда мы добираем из стека <span class="LaTeX">$n$</span> аргументов и подставляем их в правую часть функции <span class="LaTeX">$e$</span>. Если в стеке оказалось слишком мало аргументов, то мы переходим к третьему правилу и составляем частичное применение. Последнее правило говорит о том как расшифровывается частичное применение. Мы вставляем в стек все аргументы и начинаем вычисление функции <span class="LaTeX">$g$</span> из тела <span class="LaTeX">$PAP$</span>.</p>
+<h3 id="правила-для-стратегии-вычисление-применение"><a href="#TOC">Правила для стратегии вычисление-применение</a></h3>
+<div>
+<img src="../pic/10/stg-rules-eval-apply.png" alt="Синтаксис STG" />
+</div>
+
+
+<p>Разберёмся с первыми двумя правилами. В первом правиле статическая арность <span class="LaTeX">$f$</span> неизвестна, но значение <span class="LaTeX">$f$</span> уже вычислено, и мы можем узнать арность по объекту <span class="LaTeX">$FUN$</span>, далее возможны три случая. Число аргументов переданных в функцию совпадает с арностью <span class="LaTeX">$FUN$</span>, тогда мы применяем аргументы к правой части <span class="LaTeX">$FUN$</span>. Если в функцию передано больше аргументов чем нужно, мы сохраняем лишние на стеке. Если же аргументов меньше, то мы создаём объект <span class="LaTeX">$PAP$</span>. Третье правило говорит о том, что нам делать, если значение <span class="LaTeX">$f$</span> ещё не вычислено. Оно является <span class="LaTeX">$THUNK$</span>. Тогда мы сохраним аргументы на стеке и вычислим его. В следующем правиле мы раскрываем частичное применение. Мы просто организуем вызов функции со всеми аргументами (и со стека и из частичного применения). Последнее правило срабатывает после третьего. Когда мы вычислим <span class="LaTeX">$THUNK$</span> и увидим там <span class="LaTeX">$FUN$</span> или <span class="LaTeX">$PAP$</span>. Тогда мы составляем применение функции.</p>
+<p>Сложность применения стратегии вставка-вход связана с плохо предсказуемым изменением стека. Если в стратегии вычисление-выполнение мы добавляем и снимаем все аргументы, то в стратегии вставка-вход мы добавляем их по одному и неизвестно сколько снимем в следующий раз. Кроме того стратегия вычисление-применение позволяет проводить оптимизацию перемещения аргументов. Вместо стека мы можем хранить аргументы в регистрах. Тогда скорость обращения к аргументам резко возрастёт.</p>
+<h2 id="представление-значений-в-памяти.-оценка-занимаемой-памяти"><a href="#TOC">Представление значений в памяти. Оценка занимаемой памяти</a></h2>
+<p>Ранее мы говорили, что полностью вычисленное значение – это дерево, в узлах которого находятся одни лишь конструкторы. Процесс вычисления похож на очистку дерева выражения от синонимов. Мы начинаем с самого верха и идём к листьям. Потом мы выяснили, что для предотвращения дублирования вычислений мы подставляем в функции не сами значения, а ссылки на значения. Теперь нам понятно, что ссылки указывают на объекты в куче. Ссылки – это атомарные переменные. Полностью вычисленное значение является сетью (или графом) объектов кучи типа <code><font color=Green>CON</font></code>.</p>
+<p>Поговорим о том сколько места в памяти занимает то или иное значение. Как мы говорили память компьютера состоит из ячеек, в которых хранятся значения. У каждой ячейки есть адрес. Ячейки памяти неделимы, их также принято называть словами. Мы будем оценивать размер значения в словах.</p>
+<p>Каждый конструктор требует столько слов сколько у него полей плюс ещё одно слово для ссылки на служебную информацию (она нужна вычислителю). Посмотрим на примеры:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Int</font> <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color=Green>Int</font><font color=Black><em>#</em></font>              <font color="#2149c1">-- 2 слова</font>
+<font color="#b2590f">data</font> <font color=Green>Pair</font> a b <font color="#b2590f">=</font> <font color=Green>Pair</font> a b        <font color="#2149c1">-- 3 слова</font></pre>
+<p>У этого правила есть исключение. Если у конструктора нет полей, то есть он является константой или примитивным конструктором, то в процессе вычисления значение этого конструктора представлено ссылкой. Это означает, что внутри программы все значения ссылаются на одну область памяти. У нас действительно есть лишь один пустой список или одно значение <code><font color=Green>True</font></code> или <code><font color=Green>False</font></code>.</p>
+<p>Посчитаем число слов в значении <code><font color="#b2590f">[</font><font color=Green>Pair</font> <font color="#0000ee">1</font> <font color="#0000ee">2</font><font color="#b2590f">]</font></code>. Для этого для начала перепишем его в STG</p>
+<pre><font color=Black>nil</font> <font color="#b2590f">=</font> <font color=Green>[]</font>                 <font color="#2149c1">-- глобальный объект (не в счёт)</font>
+
+<font color="#b2590f">let</font> x1  <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color="#0000ee">1</font>           <font color="#2149c1">-- 2 слова</font>
+    x2  <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color="#0000ee">2</font>           <font color="#2149c1">-- 2 слова</font>
+    p   <font color="#b2590f">=</font> <font color=Green>Pair</font> x1 x2     <font color="#2149c1">-- 3 слова</font>
+    val <font color="#b2590f">=</font> <font color=Green>Cons</font> p nil     <font color="#2149c1">-- 3 слова</font>
+<font color="#b2590f">in</font>  val                  <font color="#2149c1">------------</font>
+                         <font color="#2149c1">-- 10 слов   </font></pre>
+<p>Поскольку объект кучи <code><font color=Green>CON</font></code> может хранить только ссылки, нам пришлось введением дополнительных переменных “развернуть” значение. Примитивный конструктор не считается, поскольку он сохранён глобально, в итоге получилось 10 слов. Посмотрим на ещё один пример, распишем значение <code><font color="#b2590f">[</font><font color=Green>Just</font> <font color=Green>True</font><font color=Black>,</font> <font color=Green>Just</font> <font color=Green>True</font><font color=Black>,</font> <font color=Green>Nothing</font><font color="#b2590f">]</font></code>:</p>
+<pre><font color=Black>nil</font>     <font color="#b2590f">=</font> <font color=Green>[]</font>
+<font color=Black>true</font>    <font color="#b2590f">=</font> <font color=Green>True</font>
+<font color=Black>nothing</font> <font color="#b2590f">=</font> <font color=Green>Nothing</font>
+
+<font color="#b2590f">let</font> x1 <font color="#b2590f">=</font> <font color=Green>Just</font> true          <font color="#2149c1">-- 2 слова</font>
+    x2 <font color="#b2590f">=</font> <font color=Green>Just</font> true          <font color="#2149c1">-- 2 слова</font>
+    p1 <font color="#b2590f">=</font> <font color=Green>Cons</font> nothing nil   <font color="#2149c1">-- 3 слова</font>
+    p2 <font color="#b2590f">=</font> <font color=Green>Cons</font> x2 p1         <font color="#2149c1">-- 3 слова</font>
+    p3 <font color="#b2590f">=</font> <font color=Green>Cons</font> x1 p2         <font color="#2149c1">-- 3 слова </font>
+<font color="#b2590f">in</font>  p3                      <font color="#2149c1">----------</font>
+                            <font color="#2149c1">-- 13 слов</font></pre>
+<p>Обычно одно слово соответствует 16, 32 или 64 битам. Эта цифра зависит от процессора. Мы считали, что любое значение можно поместить в одно слово, но это не так. Возьмём к примеру действительные числа с двойной точностью, они не поместятся в одно слово. Это необходимо учитывать при оценке объёма занимаемой памяти.</p>
+<h2 id="управление-памятью.-сборщик-мусора"><a href="#TOC">Управление памятью. Сборщик мусора</a></h2>
+<p>В прошлом разделе для простоты мы считали, что объекты только добавляются в кучу. На самом деле это не так. Допустим во время вычисления функции нам нужно было вычислить какие-то промежуточные данные, например объявленные в локальных переменных, тогда после вычисления результата все эти значения больше не нужны. При этом в куче висит много-много объектов, которые уже не нужны. Нам нужно как-то от них избавится. Этой задачей занимается отдельный блок вычислителя, который называется <em>сборщиком мусора</em> (garbage collector), соответственно процесс автоматического освобождения памяти называется сборкой мусора (garbage collection или GC).</p>
+<p>На данный момент в GHC используется копирующий последовательный сборщик мусора, который работает по алгоритму Чейни (Cheney). Для начала рассмотрим простой алгоритм сборки мусора. Мы выделяем небольшой объём памяти и начинаем наполнять его объектами. Как только место кончится мы найдём все “живые” объекты, а остальное пространство памяти будем считать свободным. Как только после очередной очистки оказалось, что нам всё же не хватает места. Мы найдём все живые объекты, подсчитаем сколько места они занимают и запросим у системы этот объём памяти. Скопируем все живые объекты на новое место, а старую память будем считать свободной. Так например, если у нас было выделено 30 Мб памяти и оказалось, что живые объекты занимают 10 Мб, мы выделим ещё 10 Мб, скопируем туда все живые объекты и общий объём памяти станет равным 40 Мб.</p>
+<p>Мы можем оптимизировать сборку мусора. Есть такая гипотеза, что большинство объектов имеют очень короткую жизнь. Это промежуточные данные, локальные переменные. Нам нужен лишь результат функции, но на подходе к результату мы сгенерируем много разовой информации. Ускорить очистку можно так. Мы выделим совсем небольшой участок памяти внутри нашей кучи, его принято называть <em>яслями</em> (nursery area), и будем выделять и собирать новые объекты только в нём, как только этот участок заполнится мы скопируем все живые объекты из яслей в остальную память и снова будем наполнять ясли. Как только вся память закончится мы поступим так же как и в предыдущем сценарии. Когда заканчивается место в яслях, мы проводим поверхностную очистку (minor GC), а когда заканчивается вся память в текущей куче, мы проводим глубокую очистку (major GC). Эта схема соответствует сборке с двумя поколениями.</p>
+<h2 id="статистика-выполнения-программы"><a href="#TOC">Статистика выполнения программы</a></h2>
+<p>Процесс управления памятью скрыт от программиста. Но при этом в GHC есть развитые средства косвенной диагностики работы программы. Пока мы пользовались самым простым способом проверки. Мы включали флаг <code><font color=Black>s</font></code> в интерпретаторе. Пришло время познакомиться и с другими.</p>
+<h3 id="статистика-вычислителя"><a href="#TOC">Статистика вычислителя</a></h3>
+<p>Для начала научимся смотреть статистику работы вычислителя. Посмотреть статистику можно с помощью флагов <code><font color=Black>s</font><font color="#b2590f">[</font>file<font color="#b2590f">]</font></code> и <code><font color=Green>S</font><font color="#b2590f">[</font>file<font color="#b2590f">]</font></code>. Эти флаги предназначены для вычислителя низкого уровня (realtime system или RTS, далее просто вычислитель), они заключаются в окружение <code><font color=Black>+</font><font color=Green>RTS</font> <font color=Black>...</font> <font color="#2149c1">-</font><font color=Green>RTS</font></code>, если флаги идут в конце строки и считается, что все последующие флаги предназначены для <code><font color=Green>RTS</font></code> мы можем просто написать <code><font color=Black>ghc</font> <font color="#2149c1">--make file.hs +RTS ...</font></code> Например скомпилируем такую программу:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>$</font> sum <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">1e5</font><font color="#b2590f">]</font></pre>
+<p>Теперь скомпилируем:</p>
+<pre>$ ghc --make sum.hs -rtsopts -fforce-recomp</pre>
+<p>Флаг <code><font color=Black>rtsopts</font></code> позволяет передавать скомпилированной программе флаги для вычислителя низкого уровня, далее для краткости мы будем называть его просто вычислителем. С флагом <code><font color=Black>fforce</font><font color="#2149c1">-</font>recomp</code> программа будет каждый раз заново пересобираться. Теперь посмотрим на статистику выполнения программы (флаг <code><font color=Black>s</font><font color="#b2590f">[</font>file<font color="#b2590f">]</font></code>, в этом примере мы перенаправляем выход в поток <code><font color=Black>stderr</font></code>):</p>
+<pre>$ ./sum +RTS -sstderr
+5.00005e9
+      14,145,284 bytes allocated in the heap
+      11,110,432 bytes copied during GC
+       2,865,704 bytes maximum residency (3 sample(s))
+         460,248 bytes maximum slop
+               7 MB total memory in use (0 MB lost due to fragmentation)
+
+                                    Tot time (elapsed)  Avg pause  Max pause
+  Gen  0        21 colls,     0 par    0.00s    0.01s     0.0006s    0.0036s
+  Gen  1         3 colls,     0 par    0.01s    0.01s     0.0026s    0.0051s
+
+  INIT    time    0.00s  (  0.00s elapsed)
+  MUT     time    0.01s  (  0.01s elapsed)
+  GC      time    0.01s  (  0.02s elapsed)
+  EXIT    time    0.00s  (  0.00s elapsed)
+  Total   time    0.02s  (  0.03s elapsed)
+
+  %GC     time      60.0%  (69.5% elapsed)
+
+  Alloc rate    1,767,939,507 bytes per MUT second
+
+  Productivity  40.0% of total user, 26.0% of total elapsed</pre>
+<p>Был распечатан результат и отчёт о работе программы. Разберёмся с показателями:</p>
+<pre><font color=Black>bytes</font> allocated <font color="#b2590f">in</font> the heap  <font color="#2149c1">-- число байтов выделенных в куче</font>
+                             <font color="#2149c1">-- за всё время работы программы</font>
+<font color=Black>bytes</font> copied during <font color=Green>GC</font>       <font color="#2149c1">-- число скопированных байтов</font>
+                             <font color="#2149c1">-- за всё время работы программы</font>
+<font color=Black>bytes</font> maximum residency      <font color="#2149c1">-- в каком объёме памяти работала программа </font>
+                             <font color="#2149c1">-- в скобках указано число глубоких очисток</font>
+<font color=Black>bytes</font> maximum slop           <font color="#2149c1">-- максимум потерь памяти из-за фрагментации</font>
+
+<font color=Black>total</font> memory <font color="#b2590f">in</font> use          <font color="#2149c1">-- сколько всего памяти было запрошено у ОС</font></pre>
+<p>Показатель <code><font color=Black>bytes</font> maximum residency</code> измеряется только при глубокой очистке, поскольку новая память выделяется именно в этот момент. Размер памяти выделенной в куче гораздо больше общего объёма памяти. Так происходит потому, что этот показатель указывает на общее число памяти в куче за всё время работы программы. Ведь мы переиспользуем не нужную нам память. По этому показателю можно судить о том, сколько замыканий (объектов) было выделено в куче.</p>
+<p>Следующие две строчки говорят о числе сборок мусора. Мы видим, что GC выполнил 21 поверхностную очистку (поколение 0) и 3 глубоких (покколение 1). Дальше идут показатели скорости. <code><font color=Green>INIT</font></code> и <code><font color=Green>EXIT</font></code> – это инициализация и завершение программы. <code><font color=Green>MUT</font></code> – это полезная нагрузка, время, которая наша программа тратила на изменение (MUTation) значений. <code><font color=Green>GC</font></code> – время сборки мусора. Далее GHC сообщил нам о том, что мы провели 60% времени в сборке мусора. Это очень плохо. Продуктивность программы очень низкая. Затратна глубокая сборка мусора, поверхностная – это дело обычное. Теперь посмотрим на показатели строгой версии этой программы:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font><font color=Black>(</font>foldl'<font color=Black>)</font>
+
+<font color=Black>sum'</font> <font color="#b2590f">=</font> foldl' <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color="#0000ee">0</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>$</font> sum' <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">1e5</font><font color="#b2590f">]</font></pre>
+<p>Скомпилируем:</p>
+<pre>$ ghc --make sumStrict.hs -rtsopts -fforce-recomp</pre>
+<p>Посмотрим на статистику:</p>
+<pre>$ ./sumStrict +RTS -sstderr
+5.00005e9
+      10,474,128 bytes allocated in the heap
+          24,324 bytes copied during GC
+          27,072 bytes maximum residency (1 sample(s))
+          27,388 bytes maximum slop
+               1 MB total memory in use (0 MB lost due to fragmentation)
+
+                                    Tot time (elapsed)  Avg pause  Max pause
+  Gen  0        19 colls,     0 par    0.00s    0.00s     0.0000s    0.0000s
+  Gen  1         1 colls,     0 par    0.00s    0.00s     0.0001s    0.0001s
+
+  INIT    time    0.00s  (  0.00s elapsed)
+  MUT     time    0.01s  (  0.01s elapsed)
+  GC      time    0.00s  (  0.00s elapsed)
+  EXIT    time    0.00s  (  0.00s elapsed)
+  Total   time    0.01s  (  0.01s elapsed)
+
+  %GC     time       0.0%  (3.0% elapsed)
+
+  Alloc rate    1,309,266,000 bytes per MUT second
+
+  Productivity 100.0% of total user, 116.0% of total elapsed</pre>
+<p>Мы видим, что произошла лишь одна глубокая сборка. И это существенно сказалось на продуктивности. Кромке того мы видим, что программа заняла лишь 27 Кб памяти, вместо 2 Мб как в прошлом случае. Теперь давайте покрутим ручки у GC. В GHC можно устанавливать разные параметры сборки мусора с помощью флагов. Все флаги можно посмотреть в документации GHC. Мы обратим внимание на несколько флагов. Флаг <code><font color=Green>H</font></code> назначает минимальное значение для стартового объёма кучи. Флаг <code><font color=Green>A</font></code> назначает объём памяти для яслей. По умолчанию размер яслей равен 512 Кб (эта цифра может измениться). Изменением этих параметров мы можем отдалить сборку мусора. Чем дольше работает программа между сборками, тем выше вероятность того, что многие объекты уже не нужны.</p>
+<p>Давайте убедимся в том, что поверхностные очистки происходят очень быстро и совсем не тормозят программу. Установим размер яслей на 32 Кб вместо 512 Кб как по умолчанию (размер пишется сразу за флагом, за цифрой идёт k или m):</p>
+<pre>$ ./sumStrict +RTS -A32k -sstderr
+...
+                                    Tot time (elapsed)  Avg pause  Max pause
+  Gen  0       318 colls,     0 par    0.00s    0.00s     0.0000s    0.0000s
+  Gen  1         1 colls,     0 par    0.00s    0.00s     0.0001s    0.0001s
+...
+  MUT     time    0.01s  (  0.01s elapsed)
+  GC      time    0.00s  (  0.00s elapsed)
+...
+  %GC     time       0.0%  (11.8% elapsed)</pre>
+<p>Мы видим, что за счёт уменьшения памяти очистки существенно участились, но это не сказалось на общем результате. С помощью флага <code><font color=Green>H</font><font color="#b2590f">[</font>size<font color="#b2590f">]</font></code> мы можем устанавливать рекомендуемое минимальное значение для размера кучи. Оно точно не будет меньше. Вернёмся к первому варианту и выделим алгоритму побольше памяти, например 20 Мб:</p>
+<pre><font color=Black>./</font>sum <font color=Black>+</font><font color=Green>RTS</font> <font color="#2149c1">-</font><font color=Green>A1m</font> <font color="#2149c1">-</font><font color=Green>H20m</font> <font color="#2149c1">-</font>sstderr
+<font color="#0000ee">5.00005e9</font>
+      <font color="#0000ee">14</font><font color=Black>,</font><font color="#0000ee">145</font><font color=Black>,</font><font color="#0000ee">284</font> bytes allocated <font color="#b2590f">in</font> the heap
+         <font color="#0000ee">319</font><font color=Black>,</font><font color="#0000ee">716</font> bytes copied during <font color=Green>GC</font>
+         <font color="#0000ee">324</font><font color=Black>,</font><font color="#0000ee">136</font> bytes maximum residency <font color=Black>(</font><font color="#0000ee">1</font> sample<font color=Black>(</font>s<font color=Black>)</font><font color=Black>)</font>
+          <font color="#0000ee">60</font><font color=Black>,</font><font color="#0000ee">888</font> bytes maximum slop
+              <font color="#0000ee">22</font> <font color=Green>MB</font> total memory <font color="#b2590f">in</font> use <font color=Black>(</font><font color="#0000ee">1</font> <font color=Green>MB</font> lost due to fragmentation<font color=Black>)</font>
+
+                                    <font color=Green>Tot</font> time <font color=Black>(</font>elapsed<font color=Black>)</font>  <font color=Green>Avg</font> pause  <font color=Green>Max</font> pause
+  <font color=Green>Gen</font>  <font color="#0000ee">0</font>         <font color="#0000ee">2</font> colls<font color=Black>,</font>     <font color="#0000ee">0</font> par    <font color="#0000ee">0.00</font>s    <font color="#0000ee">0.00</font>s     <font color="#0000ee">0.0001</font>s    <font color="#0000ee">0.0001</font>s
+  <font color=Green>Gen</font>  <font color="#0000ee">1</font>         <font color="#0000ee">1</font> colls<font color=Black>,</font>     <font color="#0000ee">0</font> par    <font color="#0000ee">0.00</font>s    <font color="#0000ee">0.00</font>s     <font color="#0000ee">0.0007</font>s    <font color="#0000ee">0.0007</font>s
+
+  <font color=Green>INIT</font>    time    <font color="#0000ee">0.00</font>s  <font color=Black>(</font>  <font color="#0000ee">0.00</font>s elapsed<font color=Black>)</font>
+  <font color=Green>MUT</font>     time    <font color="#0000ee">0.02</font>s  <font color=Black>(</font>  <font color="#0000ee">0.02</font>s elapsed<font color=Black>)</font>
+  <font color=Green>GC</font>      time    <font color="#0000ee">0.00</font>s  <font color=Black>(</font>  <font color="#0000ee">0.00</font>s elapsed<font color=Black>)</font>
+  <font color=Green>EXIT</font>    time    <font color="#0000ee">0.00</font>s  <font color=Black>(</font>  <font color="#0000ee">0.00</font>s elapsed<font color=Black>)</font>
+  <font color=Green>Total</font>   time    <font color="#0000ee">0.02</font>s  <font color=Black>(</font>  <font color="#0000ee">0.02</font>s elapsed<font color=Black>)</font>
+
+  <font color=Black>%</font><font color=Green>GC</font>     time       <font color="#0000ee">0.0</font><font color=Black>%</font>  <font color=Black>(</font><font color="#0000ee">4.4</font><font color=Black>%</font> elapsed<font color=Black>)</font>
+
+  <font color=Green>Alloc</font> rate    <font color="#0000ee">884</font><font color=Black>,</font><font color="#0000ee">024</font><font color=Black>,</font><font color="#0000ee">998</font> bytes per <font color=Green>MUT</font> second
+
+  <font color=Green>Productivity</font> <font color="#0000ee">100.0</font><font color=Black>%</font> <font color="#b2590f">of</font> total user<font color=Black>,</font> <font color="#0000ee">78.6</font><font color=Black>%</font> <font color="#b2590f">of</font> total elapsed</pre>
+<p>Произошла лишь одна глубокая очистка (похоже, что эта очистка соответствует начальному выделению памяти) и продуктивность программы стала стопроцентной. С помощью флага <code><font color=Green>S</font></code> вместо <code><font color=Black>s</font></code> мы можем посмотреть более детальную картину управления памяти. Будут распечатаны показатели памяти для каждой очистки.</p>
+<pre><font color=Black>./</font>sum <font color=Black>+</font><font color=Green>RTS</font> <font color="#2149c1">-</font><font color=Green>Sfile</font></pre>
+<p>В файле <code><font color=Black>file</font></code> мы найдём такую таблицу:</p>
+<pre>        память                          время
+<font color=Black>выделено</font> скопировано в живых    <font color=Green>GC</font>             <font color=Green>Total</font>             <font color=Green>Тип</font> очистки
+
+ <font color=Green>Alloc</font>    <font color=Green>Copied</font>     <font color=Green>Live</font>    <font color=Green>GC</font>    <font color=Green>GC</font>     <font color=Green>TOT</font>     <font color=Green>TOT</font>  <font color=Green>Page</font> <font color=Green>Flts</font>
+ bytes     bytes     bytes  user  elap    user    elap
+<font color="#0000ee">545028</font>    <font color="#0000ee">150088</font>    <font color="#0000ee">174632</font>  <font color="#0000ee">0.00</font>  <font color="#0000ee">0.00</font>    <font color="#0000ee">0.00</font>    <font color="#0000ee">0.00</font>    <font color="#0000ee">0</font>    <font color="#0000ee">0</font>  <font color=Black>(</font><font color=Green>Gen</font><font color="#b2590f">:</font>  <font color="#0000ee">1</font><font color=Black>)</font>
+<font color="#0000ee">523264</font>    <font color="#0000ee">298956</font>    <font color="#0000ee">324136</font>  <font color="#0000ee">0.00</font>  <font color="#0000ee">0.00</font>    <font color="#0000ee">0.00</font>    <font color="#0000ee">0.00</font>    <font color="#0000ee">0</font>    <font color="#0000ee">0</font>  <font color=Black>(</font><font color=Green>Gen</font><font color="#b2590f">:</font>  <font color="#0000ee">0</font><font color=Black>)</font>
+<font color=Black>...</font></pre>
+<p>Итак у нас появился один существенный показатель качества программ. Это количество глубоких очисток. Во время глубокой очистки вычислитель производит две затратные операции: сканирование всей кучи и запрос у системы возможно большого блока памяти. Чем меньше таких очисток, тем лучше. Сократить их число можно удачной комбинацией показателей <code><font color=Green>A</font></code> и <code><font color=Green>H</font></code>. Но не стоит сразу начинать обновлять параметры по умолчанию, если ваша программа работает слишком медленно. Лучше сначала попробовать изменить алгоритм. Найти функцию, которая слишком много ленится и ограничить её с помощью <code><font color=Black>seq</font></code> или энергичных образцов. В этом примере у нас была всего одна функция, поэтому поиск не составил труда. Но что если их уже очень много? Скорее всего так и будет. Не стоит оптимизировать не рабочую программу. А в рабочей программе обычно много функций. Но это не так страшно, помимо суммарных показателей GHC позволяет собирать более конкретную статистику.</p>
+<p>Стоит отметить функцию <code><font color=Black>performGC</font></code> из модуля <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Mem</font></code>, она форсирует поверхностную сборку мусора. Допустим вы чистаете какие-то данные из файла и тут же преобразуете их в структуру данных. После того как чтение данных закончится, вы знаете, что промежуточные данные связаные с чтением вам уже не нужны. Выполнив <code><font color=Black>performGC</font></code> вы можете подсказать об этом вычислителю.</p>
+<h3 id="профилирование-функций"><a href="#TOC">Профилирование функций</a></h3>
+<h4 id="время-и-общий-объём-памяти"><a href="#TOC">Время и общий объём памяти</a></h4>
+<p>Процесс отслеживания показателей память/скорость называется профилированием программы. Всё вроде бы работает, но работает слишком медленно, необходимо установить причину. Рассмотрим такую программу:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color=Black>concatR</font> <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font> 
+<font color=Black>concatL</font> <font color="#b2590f">=</font> foldl <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font>
+
+<font color=Black>fun</font> <font color="#b2590f">::</font> <font color=Green>Double</font>
+<font color=Black>fun</font> <font color="#b2590f">=</font> test concatL <font color="#2149c1">-</font> test concatR
+    <font color="#b2590f">where</font> test f <font color="#b2590f">=</font> last <font color=Black>$</font> f <font color=Black>$</font> map return <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">1e6</font><font color="#b2590f">]</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print fun</pre>
+<p>У нас есть подозрение, что какая-то из двух функций <code><font color=Black>concatX</font></code> работает слишком медленно. Мы можем посмотреть какая, если добавим к ним специальную прагму <code><font color=Green>SCC</font></code>:</p>
+<pre><font color=Black>concatR</font> <font color="#b2590f">=</font> <font color="#2149c1">{-# SCC "right" #-}</font> foldr <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font> 
+<font color=Black>concatL</font> <font color="#b2590f">=</font> <font color="#2149c1">{-# SCC "left"  #-}</font> foldl <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font></pre>
+<p>Напомню, что прагмой называется специальный блочный комментарий с решёткой. Это специальное сообщение компилятору. Прагмой <code><font color=Green>SCC</font></code> мы устанавливаем так называемый центр затрат (cost center). Она пишется сразу за знаком равно. В кавычках пишется имя, под которым статиситика войдёт в итоговый отчёт. После этого вычислитель будет следить за нагрузкой, которая приходится на эту функцию. Теперь нам нужно скомпилировать модуль с флагом <code><font color=Black>prof</font></code>, который активирует подсчёт статистики в центрах затрат:</p>
+<pre>$ ghc --make concat.hs -rtsopts -prof -fforce-recomp
+$ ./concat +RTS -p</pre>
+<p>Второй командой мы запускаем программу и передаём вычислителю флаг <code><font color=Black>p</font></code>. После этого будет создан файл <code><font color=Black>concat</font><font color=Black>.</font>prof</code>. Откроем этот файл:</p>
+<pre>	   concat <font color=Black>+</font><font color=Green>RTS</font> <font color="#2149c1">-</font>p <font color="#2149c1">-</font><font color=Green>RTS</font>
+
+	total time  <font color="#b2590f">=</font>        <font color="#0000ee">1.45</font> secs   <font color=Black>(</font><font color="#0000ee">1454</font> ticks <font color="#b2590f">@</font> <font color="#0000ee">1000</font> us<font color=Black>,</font> <font color="#0000ee">1</font> processor<font color=Black>)</font>
+	total alloc <font color="#b2590f">=</font> <font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">403</font><font color=Black>,</font><font color="#0000ee">506</font><font color=Black>,</font><font color="#0000ee">324</font> bytes  <font color=Black>(</font>excludes profiling overheads<font color=Black>)</font>
+
+<font color=Green>COST</font> <font color=Green>CENTRE</font> <font color=Green>MODULE</font>  <font color=Black>%</font>time <font color=Black>%</font>alloc
+
+<font color=Black>left</font>        <font color=Green>Main</font>     <font color="#0000ee">99.8</font>   <font color="#0000ee">99.8</font>
+
+
+                                                                 individual     inherited
+<font color=Green>COST</font> <font color=Green>CENTRE</font> <font color=Green>MODULE</font>                             no<font color=Black>.</font>   entries  <font color=Black>%</font>time <font color=Black>%</font>alloc   <font color=Black>%</font>time <font color=Black>%</font>alloc
+
+<font color=Green>MAIN</font>        <font color=Green>MAIN</font>                                <font color="#0000ee">46</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>   <font color="#0000ee">100.0</font>  <font color="#0000ee">100.0</font>
+ <font color=Green>CAF</font>        <font color=Green>GHC</font><font color=Black>.</font><font color=Green>Integer</font><font color=Black>.</font><font color=Green>Logarithms</font><font color=Black>.</font><font color=Green>Internals</font>    <font color="#0000ee">91</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>     <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>
+ <font color=Green>CAF</font>        <font color=Green>GHC</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Encoding</font><font color=Black>.</font><font color=Green>Iconv</font>               <font color="#0000ee">71</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>     <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>
+ <font color=Green>CAF</font>        <font color=Green>GHC</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Encoding</font>                     <font color="#0000ee">70</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>     <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>
+ <font color=Green>CAF</font>        <font color=Green>GHC</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Handle</font><font color=Black>.</font><font color=Green>FD</font>                    <font color="#0000ee">57</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>     <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>
+ <font color=Green>CAF</font>        <font color=Green>GHC</font><font color=Black>.</font><font color=Green>Conc</font><font color=Black>.</font><font color=Green>Signal</font>                     <font color="#0000ee">56</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>     <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>
+ <font color=Green>CAF</font>        <font color=Green>Main</font>                                <font color="#0000ee">53</font>         <font color="#0000ee">0</font>    <font color="#0000ee">0.2</font>    <font color="#0000ee">0.2</font>   <font color="#0000ee">100.0</font>  <font color="#0000ee">100.0</font>
+  right     <font color=Green>Main</font>                                <font color="#0000ee">93</font>         <font color="#0000ee">1</font>    <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>     <font color="#0000ee">0.0</font>    <font color="#0000ee">0.0</font>
+  left      <font color=Green>Main</font>                                <font color="#0000ee">92</font>         <font color="#0000ee">1</font>   <font color="#0000ee">99.8</font>   <font color="#0000ee">99.8</font>    <font color="#0000ee">99.8</font>   <font color="#0000ee">99.8</font></pre>
+<p>Мы видим, что почти всё время работы программа провела в функции <code><font color=Black>concatL</font></code>. Функция <code><font color=Black>concatR</font></code> была вычислена мгновенно (<code><font color=Black>time</font></code>) и почти не потребовала ресусов памяти (<code><font color=Black>alloc</font></code>). У нас есть две пары колонок результатов. <code><font color=Black>individual</font></code> указывает на время вычисления функции, а <code><font color=Black>inherited</font></code>~– на время вычисления функции и всех дочерних функций. Колонка <code><font color=Black>entries</font></code> указывает число вызовов функции. Если мы хотим проверить все функции мы можем не указывать функции прагмами. Для этого при компиляции указывается флаг <code><font color=Black>auto</font><font color="#2149c1">-</font>all</code>. Отметим также, что все константы определённый на самом верхнем уровне модуля, сливаются в один центр. Они называются в отчёте как <code><font color=Green>CAF</font></code>. Для того чтобы вычислитель следил за каждой константой по отдельности необходимо указать флаг <code><font color=Black>caf</font><font color="#2149c1">-</font>all</code>. Попробуем на таком модуле:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color=Black>fun1</font> <font color="#b2590f">=</font> test concatL <font color="#2149c1">-</font> test concatR
+<font color=Black>fun2</font> <font color="#b2590f">=</font> test concatL <font color=Black>+</font> test concatR
+
+<font color=Black>test</font> f <font color="#b2590f">=</font> last <font color=Black>$</font> f <font color=Black>$</font> map return <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">1e4</font><font color="#b2590f">]</font>
+
+<font color=Black>concatR</font> <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font> 
+<font color=Black>concatL</font> <font color="#b2590f">=</font> foldl <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font> 
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print fun1 <font color=Black>&gt;&gt;</font> print fun2</pre>
+<p>Скомпилируем:</p>
+<pre>$ ghc --make concat2.hs -rtsopts -prof -auto-all -caf-all -fforce-recomp
+$ ./concat2 +RTS -p
+0.0
+20000.0</pre>
+<p>После этого можно открыть файл <code><font color=Black>concat2</font><font color=Black>.</font>prof</code> и посмотреть итоговую статистику по всем значениям. Программа с включённым профилированием будет работать гораздо медленей, не исключено, что ей не хватит памяти на стеке, в этом случае вы можете добавить памяти с помощью флага вычислителя <code><font color=Green>K</font></code>, впрочем если это произойдёт GHC подскажет вам что делать.</p>
+<h4 id="динамика-изменения-объёма-кучи"><a href="#TOC">Динамика изменения объёма кучи</a></h4>
+<p>В предыдущем разделе мы смотрели общее время и память затраченные на вычисление функции. В этом мы научимся измерять динамику изменения расхода памяти на куче. По этому показателю можно понять в какой момент в программе возникают утечки памяти. Мы увидим характерные горбы на картинках, когда GC будет активно запрашивать новую память. Для этого сначала нужно скомпилировать программу с флагом <code><font color=Black>prof</font></code> как и в предыдущем разделе, а при выполнении программы добавить один из флагов <code><font color=Black>hc</font></code>, <code><font color=Black>hm</font></code>, <code><font color=Black>hd</font></code>, <code><font color=Black>hy</font></code> или <code><font color=Black>hr</font></code>. Все они начинаются с буквы <code><font color=Black>h</font></code>, от слова <code><font color=Black>heap</font></code> (куча). Вторая буква указывает тип графика, какими показателями мы интересуемся. Все они создают специальный файл <code><font color=Black>имяПриложения</font><font color=Black>.</font>hp</code>, который мы можем преобразовать в график в формате <code><font color=Green>PostScript</font></code> с помощью программы <code><font color=Black>hp2ps</font></code>, она устанавливается автоматически вместе с GHC.</p>
+<p>Рассмотрим типичную утечку памяти (из упражнения к предыдущей главе):</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font><font color=Black>(</font>getArgs<font color=Black>)</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>.</font> sum2 <font color=Black>.</font> xs <font color=Black>.</font> read <font color=Black>=&lt;&lt;</font> fmap head getArgs  
+    <font color="#b2590f">where</font> xs n <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">10</font> <font color=Black>^</font> n<font color="#b2590f">]</font>
+
+<font color=Black>sum2</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Int</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color=Black>sum2</font> <font color="#b2590f">=</font> iter <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+    <font color="#b2590f">where</font> iter c  <font color=Green>[]</font>     <font color="#b2590f">=</font> c
+          iter c  <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> iter <font color=Black>(</font>tick x c<font color=Black>)</font> xs
+
+<font color=Black>tick</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color=Black>tick</font> x <font color=Black>(</font>c0<font color=Black>,</font> c1<font color=Black>)</font> <font color="#b2590f">|</font> even x    <font color="#b2590f">=</font> <font color=Black>(</font>c0<font color=Black>,</font> c1 <font color=Black>+</font> <font color="#0000ee">1</font><font color=Black>)</font>
+                <font color="#b2590f">|</font> otherwise <font color="#b2590f">=</font> <font color=Black>(</font>c0 <font color=Black>+</font> <font color="#0000ee">1</font><font color=Black>,</font> c1<font color=Black>)</font></pre>
+<p>Скомпилируем с флагом профилирования:</p>
+<pre>$ ghc --make leak.hs -rtsopts -prof -auto-all</pre>
+<p>Статистика вычислителя показывает, что эта программа вызывала глубокую очистку 8 раз и выполняла полезную работу лишь 40% времени.</p>
+<pre>$ ./leak 6 +RTS -K30m -sstderr
+...
+                                    Tot time (elapsed)  Avg pause  Max pause
+  Gen  0       493 colls,     0 par    0.26s    0.26s     0.0005s    0.0389s
+  Gen  1         8 colls,     0 par    0.14s    0.20s     0.0248s    0.0836s
+...
+    Productivity  40.5% of total user, 35.6% of total elapsed
+</pre>
+<p>Теперь посмотрим на профиль кучи.</p>
+<pre>$ ./leak 6 +RTS -K30m -hc
+(500000,500000)
+$ hp2ps -e80mm -c leak.hp</pre>
+<p>В первой команде мы добавили флаг <code><font color=Black>hc</font></code> для того, чтобы создать файл с расширением <code><font color=Black>.</font>hp</code>. Он содержит таблицу с показателями размера кучи, которые вычислитель замеряет через равные промежутки времени. Мы можем изменять интервал с помощью флага <code><font color=Black>iN</font></code>, где <code><font color=Green>N</font></code>~– время в секундах. Второй командой мы преобразуем профиль в картинку. Флаг <code><font color=Black>c</font></code>, говорит о том, что мы хотим получить цветную картинку, а флаг <code><font color=Black>e80mm</font></code>, говорит о том, что мы собираемся вставить картинку в текст LaTeX. После <code><font color=Black>e</font></code> указан размер в миллиметрах. Мы видим характерный горб.</p>
+<div>
+<img src="../pic/10/leak.png" />
+</div>
+
+<p></p>
+<p>В картинку не поместились имена функций мы можем увеличить строку флагом <code><font color=Green>L</font></code>. Теперь все имена поместились.</p>
+<pre>$ ./leak 6 +RTS -K30m -hc -L45
+(500000,500000)
+$ hp2ps -e80mm -c leak.hp</pre>
+<div>
+<img src="../pic/10/leak_1.png" />
+</div>
+
+<p></p>
+<p>С помощью флага <code><font color=Black>hd</font></code> посмотрим на объекты, которые застряли в куче:</p>
+<pre>$ ./leak 6 +RTS -K30m -hd -L45
+(500000,500000)
+$ hp2ps -e80mm -c leak.hp</pre>
+<p>куча разбита по типу объектов (замыканий). <code><font color=Green>BLACKHOLE</font></code> это специальный объект, который заменяет <code><font color=Green>THUNK</font></code> во время его вычисления. <code><font color=Green>I</font><font color=Black>`</font><font color=Black>`</font><font color=Black><em>#</em></font></code> – это скрытый конструктор <code><font color=Green>Int</font></code>. <code><font color=Black>sat_sUa</font></code> и <code><font color=Black>sat_sUd</font></code> – это имена застрявших отложенных вычислений. Если бы наша программа была очень большой на этом месте мы бы запустили профилирование по функциям с флагом <code><font color=Black>p</font></code> и из файла <code><font color=Black>leak</font><font color=Black>.</font>prof</code> узнали бы в каких функциях программа тратит больше всего ресурсов. После этого мы бы пошли смотреть исходный код подозрительных функций и после внесённых изменений снова посмотрели бы на графики кучи.</p>
+<div>
+<img src="../pic/10/leak_2.png" />
+</div>
+
+<p></p>
+<p>Если подумать, что мы делаем? Мы создаём отложенное вычисление, которое обещает построить большой список, вытягиваем из списка по одному элементу и, если элемент оказывается чётным, прибавляем к одному элементу пары, а если не чётным, то к другому. Проблема в том, что внутри пары происходит накопление отложенных вычислений, необходимо сразу вычислять значения перед запаковыванием их в пару. Изменим код:</p>
+<pre><font color="#2149c1">{-# Language BangPatterns #-}</font>
+<font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font><font color=Black>(</font>getArgs<font color=Black>)</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>.</font> sum2 <font color=Black>.</font> xs <font color=Black>.</font> read <font color=Black>=&lt;&lt;</font> fmap head getArgs  
+    <font color="#b2590f">where</font> xs n <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">10</font> <font color=Black>^</font> n<font color="#b2590f">]</font>
+
+<font color=Black>sum2</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Int</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color=Black>sum2</font> <font color="#b2590f">=</font> iter <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+    <font color="#b2590f">where</font> iter c  <font color=Green>[]</font>     <font color="#b2590f">=</font> c
+          iter c  <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> iter <font color=Black>(</font>tick x c<font color=Black>)</font> xs
+
+<font color=Black>tick</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color=Black>tick</font> x <font color=Black>(</font><font color=Black>!</font>c0<font color=Black>,</font> <font color=Black>!</font>c1<font color=Black>)</font> <font color="#b2590f">|</font> even x    <font color="#b2590f">=</font> <font color=Black>(</font>c0<font color=Black>,</font> c1 <font color=Black>+</font> <font color="#0000ee">1</font><font color=Black>)</font>
+                  <font color="#b2590f">|</font> otherwise <font color="#b2590f">=</font> <font color=Black>(</font>c0 <font color=Black>+</font> <font color="#0000ee">1</font><font color=Black>,</font> c1<font color=Black>)</font></pre>
+<p>Мы сделали функцию <code><font color=Black>tick</font></code> строгой. Теперь посмотрим на профиль:</p>
+<pre>$ ghc --make leak2.hs -rtsopts -prof -auto-all
+$ ./leak2 6 +RTS -K30m -hc
+(500000,500000)
+$ hp2ps -e80mm -c leak2.hp</pre>
+<p>Не получилось. Как же так. Посмотрим на расход памяти отдельных функций. <code><font color=Black>tick</font></code> стала строгой, но этого не достаточно, потому что в первом аргументе <code><font color=Black>iter</font></code> накапливаются вызовы <code><font color=Black>tick</font></code>. Сделаем <code><font color=Black>iter</font></code> строгой по первому аргументу:</p>
+<p></p>
+<div>
+<img src="../pic/10/leak2.png" />
+</div>
+
+<pre><font color=Black>sum2</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Int</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color=Black>sum2</font> <font color="#b2590f">=</font> iter <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+    <font color="#b2590f">where</font> iter <font color=Black>!</font>c  <font color=Green>[]</font>     <font color="#b2590f">=</font> c
+          iter <font color=Black>!</font>c  <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> iter <font color=Black>(</font>tick x c<font color=Black>)</font> xs</pre>
+<p>Теперь снова посмотрим на профиль:</p>
+<pre>$ ghc --make leak2.hs -rtsopts -prof -auto-all
+$ ./leak2 6 +RTS -K30m -hc
+(500000,500000)
+$ hp2ps -e80mm -c leak2.hp</pre>
+<p>Мы видим, что память резко подскакивает и остаётся постоянной. Но теперь показатели измеряются не в мегабайтах, а в килобайтах. Мы справились. Остальные флаги <code><font color=Black>hX</font></code> позволяют наблюдать за разными специфическими объектами в куче. Мы можем узнать сколько памяти приходится на разные модули (<code><font color=Black>hm</font></code>), сколько памяти приходится на разные конструкторы (<code><font color=Black>hd</font></code>), на разные типы замыканий (<code><font color=Black>hy</font></code>).</p>
+<p></p>
+<div>
+<img src="../pic/10/leak3.png" />
+</div>
+
+
+<h3 id="поиск-источников-внезапной-остановки"><a href="#TOC">Поиск источников внезапной остановки</a></h3>
+<p><code><font color="#b2590f">case</font></code>-выражения и декомпозиция в аргументах функции могут стать источником очень неприятных ошибок. Программа прошла проверку типов, завелась и вот уже работает-работает как вдруг мы видим на экране:</p>
+<pre><font color=Black>***</font> <font color=Green>Exception</font><font color="#b2590f">:</font> <font color=Green>Prelude</font><font color=Black>.</font>head<font color="#b2590f">:</font> empty list</pre>
+<p>или</p>
+<pre><font color=Black>***</font> <font color=Green>Exception</font><font color="#b2590f">:</font> <font color=Green>Maybe</font><font color=Black>.</font>fromJust<font color="#b2590f">:</font> <font color=Green>Nothing</font></pre>
+<p>И совсем не понятно откуда эта ошибка. В каком модуле сидит эта функция. Может мы её импортировали из чужой библиотеки или написали сами. Как раз для таких случаев в GHC предусмотрен специальный флаг <code><font color=Black>xc</font></code>.</p>
+<p>Посмотрим на выполнение такой программы:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color=Black>addEvens</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>addEvens</font> a b 
+    <font color="#b2590f">|</font> even a <font color=Black>&amp;&amp;</font> even b <font color="#b2590f">=</font> a <font color=Black>+</font> b
+
+<font color=Black>q</font> <font color="#b2590f">=</font> zipWith addEvens <font color="#b2590f">[</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">2</font><font color=Black>,</font> <font color="#0000ee">4</font><font color=Black>,</font> <font color="#0000ee">6</font><font color=Black>,</font> <font color="#0000ee">7</font><font color=Black>,</font> <font color="#0000ee">8</font><font color=Black>,</font> <font color="#0000ee">10</font><font color="#b2590f">]</font> <font color=Black>(</font>repeat <font color="#0000ee">0</font><font color=Black>)</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print q</pre>
+<p>Для того, чтобы воспользоваться флагом <code><font color=Black>xc</font></code> необходимо скомпилировать программу с возможностью профилирования:</p>
+<pre>$ ghc --make break.hs -rtsopts -prof
+$ ./break +RTS -xc
+*** Exception (reporting due to +RTS -xc): (THUNK_2_0), stack trace: 
+  Main.CAF
+break: break.hs:(4,1)-(5,30): Non-exhaustive patterns in function addEvens</pre>
+<p>Так мы узнали в каком месте кода проявился злосчастный вызов, это строки <code><font color=Black>(</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">1</font><font color=Black>)</font><font color="#2149c1">-</font><font color=Black>(</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">30</font><font color=Black>)</font></code>. Что соответствует определению функции <code><font color=Black>addEvens</font></code>. Не очень полезная информация. Мы и так бы это узнали. Нам бы хотелось узнать тот путь, по которому шла программа к этому вызову. Проблема в том, что все вызовы слились в один <code><font color=Green>CAF</font></code> для модуля. Так разделим их:</p>
+<pre>$ ghc --make break.hs -rtsopts -prof -caf-all -auto-all
+$ ./break +RTS -xc
+*** Exception (reporting due to +RTS -xc): (THUNK_2_0), stack trace: 
+  Main.addEvens,
+  called from Main.q,
+  called from Main.CAF:q
+  --> evaluated by: Main.main,
+  called from :Main.CAF:main
+break: break.hs:(4,1)-(5,30): Non-exhaustive patterns in function addEvens</pre>
+<p>Теперь мы видим путь к этому вызову, мы пришли в него из знчения <code><font color=Black>q</font></code>, которое было вызвано из <code><font color=Black>main</font></code>.</p>
+<h2 id="оптимизация-программ"><a href="#TOC">Оптимизация программ</a></h2>
+<p>В этом разделе мы поговорим о том этапе компиляции, на котором происходят преобразования <code><font color=Green>Core</font> <font color="#b2590f">-&gt;</font> <font color=Green>Core</font></code>. Мы называли этот этап упрощением программы.</p>
+<h3 id="флаги-оптимизации"><a href="#TOC">Флаги оптимизации</a></h3>
+<p>Мы можем задавать степень оптимизации программы специальными флагами. Самые простые флаги начинаются с большой буквы <code><font color=Green>O</font></code>. Естесственно, чем больше мы оптимизируем, тем дольше компилируется код. Поэтому не стоит увлекаться оптимизацией на начальном этапе проектирования. Посмотрим какие возможности у нас есть:</p>
+<ul>
+<li>без <code><font color="#2149c1">-</font><font color=Green>O</font></code> – минимум оптимизаций, код компилируется как можно быстрее.</li>
+<li><code><font color="#2149c1">-</font><font color=Green>O0</font></code> – выключить оптимизацию полностью</li>
+<li><code><font color="#2149c1">-</font><font color=Green>O</font></code> – умеренная оптимизация.</li>
+<li><code><font color=Green>O2</font></code> – активная оптимизация, код компилируется дольше, но пока <code><font color=Green>O2</font></code> не сильно выигрывает у <code><font color=Green>O</font></code> по продуктивности.</li>
+</ul>
+<p>Для оптимизации мы компилируем программу с заданным флагом, например попробуйте скомпилировать самый первый пример с флагом <code><font color=Green>O</font></code>:</p>
+<pre><font color=Black>ghc</font> <font color="#2149c1">--make sum.hs -O </font></pre>
+
+<p>и утечка памяти исчезнет.</p>
+<p>Посмотреть описание конкретных шагов оптимизации можно в документации к GHC. Например при включённой оптимизации GHC применяет анализ строгости. В ходе него GHC может исправить простые утечки памяти за нас. Стоит отметить оптимизацию <code><font color="#2149c1">-</font>fexcess<font color="#2149c1">-</font>precision</code>, он может существенно ускорить программы, в которых много вычислений с <code><font color=Green>Double</font></code>. Но при этом вычисления могут потерять в точности, округление становится непредсказуемым.</p>
+<h3 id="прагма-inline"><a href="#TOC">Прагма INLINE</a></h3>
+<p>Если мы посмотрим в исходный файл для модуля <code><font color=Green>Prelude</font></code>, то мы найдём такое определение для композиции функций:</p>
+<pre><font color="#2149c1">-- | Function composition.</font>
+<font color="#2149c1">{-# INLINE (.) #-}</font>
+<font color="#2149c1">-- Make sure it has TWO args only on the left, so that it inlines</font>
+<font color="#2149c1">-- when applied to two functions, even if there is no final argument</font>
+<font color=Black>(</font><font color=Black>.</font><font color=Black>)</font>    <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> c
+<font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> f g <font color="#b2590f">=</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> f <font color=Black>(</font>g x<font color=Black>)</font></pre>
+<p>Помимо знакомого нам определения и комментариев мы видим новую прагму <code><font color=Green>INLINE</font></code>. Она указывает компилятору на то, что на этапе упрощения программы необходимо заменить вызов функции на её правую часть. Этот процесс называют встраиванием функций. Замена будет произведена только в случае полного применения функции, если синтаксическая арность (количество аргументов слева от знака равно) совпадает с числом переданных в функцию аргументов. Поэтому для GHC есть существенная разница между определениями:</p>
+<pre><font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> f g <font color="#b2590f">=</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> f <font color=Black>(</font>g x<font color=Black>)</font>
+
+<font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> f g x <font color="#b2590f">=</font> f <font color=Black>(</font>g x<font color=Black>)</font></pre>
+<p>Встраиванием функций мы экономим на создании лишних объектов в куче, но при этом код может существенно разбухнуть. GHC пользуется эвристическим алгоритмом при определении когда функцию стоит встраивать, а когда~– нет. По умолчанию GHC проводит встраивание только внутри модуля. Если мы компилируем с флагом <code><font color=Green>O</font></code>, функции будут встраиваться между модулями. Для этого GHC сохраняет в интерфейсном файле (с расширением <code><font color=Black>.</font>hi</code>) не только типы функций, но и павые части достаточно кратких функций. Длина функции определяется числом узлов в синтаксическом дереве кода её правой части. Директивой <code><font color=Green>INLINE</font></code> мы приказываем GHC встроить функцию. Также есть более слабая версия этой прагмы~–<code><font color=Green>INELINABLE</font></code>. Этой прагмой мы рекомендуем произвести встраивание функции не смотря на её величину.</p>
+<p>Задать порог величины функции для встраивания можно с помощью флага <code><font color="#2149c1">-</font>funfolding<font color="#2149c1">-</font>use<font color="#2149c1">-</font>threshold<font color="#b2590f">=</font><font color="#0000ee">16</font></code>. Отметим, что если функция не является экспортируемой и используется лишь один раз, то GHC втроит её в любом случае, поэтому стоит определять списки экспортируемых определений в шапке модуля, иначе компилятор будет считать, что экспортируются все определения.</p>
+<p>Прагма <code><font color=Green>INLINE</font></code> может стоять в любом месте, где можно было бы объявить тип значения. Так например можно указать компилятору встраивать методы класса:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Monad</font> <font color=Green>T</font> <font color="#b2590f">where</font>
+    <font color="#2149c1">{-# INLINE return #-}</font>
+    return <font color="#b2590f">=</font> <font color=Black>...</font>
+    <font color="#2149c1">{-# INLINE (&gt;&gt;=) #-}</font>
+    <font color=Black>(</font><font color=Black>&gt;&gt;=</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Black>...</font></pre>
+<p>Встраивание значений может существенно ускорить программу. Но не стоит венчать каждую экспортируемую функцию прагмой <code><font color=Green>INLINE</font></code>, возможно GHC встроит их автоматически. Посмотреть какие функции были встроены можно по определениям, попавшим в файл <code><font color=Black>.</font>hi</code>.</p>
+<p>Например если мы скомпилируем такой код с флагом <code><font color=Black>ddump</font><font color="#2149c1">-</font>hi</code>:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Inline</font><font color=Black>(</font>f<font color=Black>,</font> g<font color=Black>)</font> <font color="#b2590f">where</font>
+
+<font color=Black>g</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>g</font> x <font color="#b2590f">=</font> x <font color=Black>+</font> <font color="#0000ee">2</font>
+
+<font color=Black>f</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>f</font> x <font color="#b2590f">=</font> g <font color=Black>$</font> g x</pre>
+
+<p>то среди прочих определений увидим:</p>
+<pre><font color=Black>ghc</font> <font color="#2149c1">-</font>c <font color="#2149c1">-</font>ddump<font color="#2149c1">-</font>hi <font color="#2149c1">-</font><font color=Green>O</font> <font color=Green>Inline</font><font color=Black>.</font>hs
+<font color=Black>...</font>
+  f <font color="#b2590f">::</font> <font color=Green>GHC</font><font color=Black>.</font><font color=Green>Types</font><font color=Black>.</font><font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>GHC</font><font color=Black>.</font><font color=Green>Types</font><font color=Black>.</font><font color=Green>Int</font>
+    <font color="#2149c1">{- Arity: 1, HasNoCafRefs, Strictness: U(L)m,
+       Unfolding: InlineRule (1, True, False)
+                  (\ x :: GHC.Types.Int -&gt;
+                   case x of wild { GHC.Types.I# x1 -&gt;
+                   GHC.Types.I# (GHC.Prim.+# (GHC.Prim.+# x1 2) 2) }) -}</font>
+<font color=Black>...</font></pre>
+<p>В этом виде прочесть функцию не так просто. Ко всем именам добавлены имена модулей. Приведём вывод к более простому виду с помощью флага <code><font color=Black>dsuppress</font><font color="#2149c1">-</font>all</code>:</p>
+<pre><font color=Black>ghc</font> <font color="#2149c1">-</font>c <font color="#2149c1">-</font>ddump<font color="#2149c1">-</font>hi <font color="#2149c1">-</font>dsuppress<font color="#2149c1">-</font>all <font color="#2149c1">-</font><font color=Green>O</font> <font color=Green>Inline</font><font color=Black>.</font>hs
+<font color=Black>...</font>
+<font color=Black>f</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+    <font color="#2149c1">{- Arity: 1, HasNoCafRefs, Strictness: U(L)m,
+       Unfolding: InlineRule (1, True, False)
+       (\ x :: Int -&gt; case x of wild { I# x1 -&gt; I# (+# (+# x1 2) 2) }) -}</font>
+<font color=Black>...</font></pre>
+<p>Мы видим, что все вызовы функции <code><font color=Black>g</font></code> были заменены. Если вы всё же подозреваете, что GHC не справляется с встраиванием ваших часто используемых функций и это сказывается, попробуйте добавить к ним <code><font color=Green>INLINE</font></code>, но при этом лучше узнать, привело ли это к росту производительности, проверить с помощью профилирования.</p>
+<p>Отметим также прагму <code><font color=Green>NOINLINE</font></code> с её помощью мы можем запретить встраивание функции. Эта прагма часто используется при различных трюках с <code><font color=Black>unsafePerformIO</font></code>, встраивание функции, которая содержит неконтролируемые побочные эффекты, может повлиять на её результат.</p>
+<h3 id="прагма-rules"><a href="#TOC">Прагма RULES</a></h3>
+<p>Разработчики GHC хотели, чтобы их компилятор был расширяемым и программист мог бы определять специфические для его приложения правила оптимизации. Для этого была придумана прагма <code><font color=Green>RULES</font></code>. За счёт чистоты функций мы можем в очень простом виде выражать инварианты программы. Инвариант~– это некоторое свойство значения, которое остаётся постоянным при некоторых преобразованиях. Наиболее распространённые инварианты имеют собственные имена. Например, это коммутативность сложения:</p>
+<pre><font color="#b2590f">forall</font> a b<font color=Black>.</font> a <font color=Black>+</font> b <font color="#b2590f">=</font> b <font color=Black>+</font> a</pre>
+<p>Здесь мы пишем: для любых <code><font color=Black>a</font></code> и <code><font color=Black>b</font></code> изменение порядка следования аргументов у <code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font></code> не влияет на результат. С ключевым словом <code><font color="#b2590f">forall</font></code> мы уже когда-то встречались, когда говорили о типе <code><font color=Green>ST</font></code>. Помните тип функции <code><font color=Black>runST</font></code>? Пример свойства функции <code><font color=Black>map</font></code>:</p>
+<pre><font color="#b2590f">forall</font> f g<font color=Black>.</font>   map f <font color=Black>.</font> map g <font color="#b2590f">=</font> map <font color=Black>(</font>f <font color=Black>.</font> g<font color=Black>)</font></pre>
+<p>Это свойство принято называть дистрибутивностью. Мы видим, что функция композиции дистрибутивна относительно функции <code><font color=Black>map</font></code>. Инварианты определяют скрытые закономерности значений. За счёт чистоты функций мы можем безболезненно заменить в любом месте программы левую часть на правую или наоборот. Оптимизация начинается тогда, когда мы понимаем, что одна из частей может быть вычислена гораздо эффективнее другой. Так в примере с <code><font color=Black>map</font></code> выражение справа от знака равно гораздо эффективнее, поскольку в нём мы не строим промежуточный список. Особенно ярко разница проявляется в энергичной стратегии вычислений. Или посмотрим на такое совсем простое свойство:</p>
+<pre><font color=Black>map</font> id <font color="#b2590f">=</font> id</pre>
+<p>Если мы заменим левую часть на правую, то число сэкономленных усилий будет пропорционально длине списка. Вряд ли программист станет писать такие выражения, однако они могут появиться после выполнения других оптимизаций, например после многих встраиваний различных функций.</p>
+<p>Можно представить, что эти правила являются дополнительными уравнениями в определении функции:</p>
+<pre><font color=Black>map</font> f <font color=Green>[]</font>        <font color="#b2590f">=</font> <font color=Green>[]</font>
+<font color=Black>map</font> f <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font>    <font color="#b2590f">=</font> f x <font color="#b2590f">:</font> map f xs
+
+<font color=Black>map</font> id a        <font color="#b2590f">=</font> a
+<font color=Black>map</font> f <font color=Black>(</font>map g x<font color=Black>)</font> <font color="#b2590f">=</font> map <font color=Black>(</font>f <font color=Black>.</font> g<font color=Black>)</font> x</pre>
+<p>Словно теперь мы можем проводить сопоставление с образцом не только по конструкторам, но и по выражениям самого языка и функция <code><font color=Black>map</font></code> стала конструктором. Что интересно, зависимости могут быть какими угодно, они могут выражать закономерности, присущие той области, которую мы описываем. В дополнительных уравнениях мы подставляем аргументы так же как и в обычных, если где-нибудь в коде программы находится соответствие с левой частью уравнения, мы заменяем её на правую. При этом мы пишем правила так, чтобы действительно происходила оптимизация программы, поэтому слева пишется медленная версия.</p>
+<p>Такие дополнительные правила пишутся в специальной прагме <code><font color=Green>RULES</font></code>:</p>
+<pre><font color="#2149c1">{-# RULES
+    "map/compose"   forall f g x.  map f (map g x)  = map (f . g) x    
+    "map/id"                       map id           = id 
+#-}</font></pre>
+<p>Первым в кавычках идёт имя правила. Оно используется только для подсчёта статистики (например если мы хотим узнать сколько правил сработало в данном прогоне программы). За именем правила пишут уравнение. В одной прагме может быть несколько уравнений. Правила разделяются точкой с запятой или переходом на другу строку. Все свободные переменные правила перечисляются в окружении <code><font color="#b2590f">forall</font> <font color=Black>(</font><font color=Black>...</font><font color=Black>)</font> <font color=Black>.</font></code>~. Компилятор доверяет нам абсолютно. Производится только проверка типов. Никаких других проверок не проводится. Выполняется ли на самом деле это свойство, будет ли вычисление правой части действительно проще программы вычисления левой – известно только нам.</p>
+<p>Отметим то, что прагма <code><font color=Green>RULES</font></code> применяется до тех пор пока есть возможность её применять, при этом мы можем войти в бесконечный цикл:</p>
+<pre><font color="#2149c1">{-# RULES
+        "infinite"  forall a b. f a b = f b a 
+#-}</font></pre>
+<p>С помощью прагмы <code><font color=Green>RULES</font></code> можно реализовать очень сложные схемы оптимизации. Так в Prelude реализуется слияние (fusion) списков. За счёт этой оптимизации многие выражения вида свёртка/развёртка не будут производить промежуточных списков. Этой схеме будет посвящена отдельная глава. Например если список преобразуется серией функций <code><font color=Black>map</font></code>, <code><font color=Black>filter</font></code> и <code><font color=Black>foldr</font></code> промежуточные списки не строятся.</p>
+<p>Посмотрим как работает прагма <code><font color=Green>RULES</font></code>, попробуем скомпилировать такой код:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">data</font> <font color=Green>List</font> a <font color="#b2590f">=</font> <font color=Green>Nil</font> <font color="#b2590f">|</font> <font color=Green>Cons</font> a <font color=Black>(</font><font color=Green>List</font> a<font color=Black>)</font>
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>)</font>
+
+<font color=Black>foldrL</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> b
+<font color=Black>foldrL</font> cons nil x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Green>Nil</font>         <font color="#b2590f">-&gt;</font> nil
+    <font color=Green>Cons</font> a <font color="#b2590f">as</font>   <font color="#b2590f">-&gt;</font> cons a <font color=Black>(</font>foldrL cons nil <font color="#b2590f">as</font><font color=Black>)</font> 
+
+<font color=Black>mapL</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> b
+<font color=Black>mapL</font> <font color="#b2590f">=</font> undefined
+
+<font color="#2149c1">{-# RULES  
+"mapL"   forall f xs.
+        mapL f xs = foldrL (Cons . f) Nil xs
+  #-}</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>$</font> mapL <font color=Black>(</font><font color=Black>+</font><font color="#0000ee">100</font><font color=Black>)</font> <font color=Black>$</font> <font color=Green>Cons</font> <font color="#0000ee">1</font> <font color=Black>$</font> <font color=Green>Cons</font> <font color="#0000ee">2</font> <font color=Black>$</font> <font color=Green>Cons</font> <font color="#0000ee">3</font> <font color=Green>Nil</font></pre>
+<p>Функция <code><font color=Black>mapL</font></code> не определена, вместо этого мы сделали косвенное определение в прагме <code><font color=Green>RULES</font></code>. Проверим, для того чтобы <code><font color=Green>RULES</font></code> заработали, необходимо компилировать с одним из флагов оптимизаций <code><font color=Green>O</font></code> или <code><font color=Green>O2</font></code>:</p>
+<pre>$ ghc --make -O Rules.hs 
+$ ./Rules
+Rules: Prelude.undefined</pre>
+<p>Что-то не так. Дело в том, что GHC слишком поторопился и заменил простую функцию <code><font color=Black>mapL</font></code> на её определение. Функция <code><font color=Black>$</font></code> также очень короткая, если бы нам удалось задержать встраивание <code><font color=Black>mapL</font></code>, тогда <code><font color=Black>$</font></code> превратилось бы в обычное применение и наши правила сработали бы.</p>
+<h4 id="фазы-компиляции"><a href="#TOC">Фазы компиляции</a></h4>
+<p>Для решения этой проблемы в прагмы <code><font color=Green>RULES</font></code> и <code><font color=Green>INLINE</font></code> были введены ссылки на фазы компиляции. С помощью них мы можем указать GHC в каком порядке реагировать на эти прагмы. Фазы пишутся в квадратных скобках:</p>
+<pre><font color="#2149c1">{-# INLINE [2] someFun #-}</font>
+<font color="#2149c1">{-# RULES
+"fun" [0] forall ... 
+"fun" [1] forall ... 
+"fun" [~1] forall ... 
+  #-}</font></pre>
+<p>Компиляция выполняется в несколько фаз. Фазы следуют некотрого заданного целого числа, например трёх, до нуля. Мы можем сослаться на фазу двумя способами: просто номером и номером с тильдой. Ссылка без тильды говорит: попытайся применить это правило как можно раньше до тех пор пока не наступит данная фаза, далее не применяй. Ссылка с тильдой говорит: подожди до наступления этой фазы. В нашем примере мы задержим встраивание для <code><font color=Black>mapL</font></code> и <code><font color=Black>foldrL</font></code> так:</p>
+<pre><font color="#2149c1">{-# INLINE [1] foldrL #-}</font>
+<font color=Black>foldrL</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> b
+
+<font color="#2149c1">{-# INLINE [1] mapL #-}</font>
+<font color=Black>mapL</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> b</pre>
+<p>Посмотреть какие правила сработали можно с помощью флага <code><font color=Black>ddump</font><font color="#2149c1">-</font>rule<font color="#2149c1">-</font>firings</code>. Теперь скомпилируем:</p>
+<pre>$ ghc --make -O Rules.hs -ddump-rule-firings
+...
+Rule fired: SPEC Main.$fShowList [GHC.Integer.Type.Integer]
+Rule fired: mapL
+Rule fired: Class op show
+...
+$ ./Rules 
+Cons 101 (Cons 102 (Cons 103 Nil))</pre>
+<p>Среди прочих правил, определённых в стандартных библиотеках, сработало и наше. Составим правила, которые будут проводить оптимизацию слияние для наших списков, они будут заменять последовательное применение <code><font color=Black>mapL</font></code> на один <code><font color=Black>mapL</font></code> c композицией функций, также промежуточный список будет устранён в связке <code><font color=Black>foldrL</font><font color=Black>/</font>mapL</code>.</p>
+<h3 id="прагма-unpack"><a href="#TOC">Прагма UNPACK</a></h3>
+<p>Наш основной враг на этапе оптимизации программы это лишние объекты кучи. Чем меньше объектов мы создаём на пути к результату, тем эффективнее наша программа. С помощью прагмы <code><font color=Green>INLINE</font></code> мы можем избавиться от многих объектов, связанных с вызовом функции, это объекты типа <code><font color=Green>FUN</font></code>. Прагма <code><font color=Green>UNPACK</font></code> позволяет нам бороться с лишними объектами типа <code><font color=Green>CON</font></code>. В прошлой главе мы говорили о том, что значения в Haskell содержат дополнительную служебную информацию, которая необходима на этапе вычисления, например значение сначала было отложенным, потом мы до него добрались и вычислили, возможно оно оказалось не определённым значением (<code><font color=Black>undefined</font></code>). Такие значения называются запакованными (boxed). Незапакованное значение, это примитивное значение, как оно представлено в памяти компьютера. Вспомним определение целых чисел:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Int</font> <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color=Green>Int</font><font color=Black><em>#</em></font></pre>
+<p>По традиции все незапакованные значения пишутся с решёткой на конце. Запакованные значения позволяют отклдывать вычисления, пользоваться <code><font color=Black>undefined</font></code> при определении функции. Но за эту гибкость приходится платить. Вспомним расход памяти в выражении <code><font color="#b2590f">[</font><font color=Green>Pair</font> <font color="#0000ee">1</font> <font color="#0000ee">2</font><font color="#b2590f">]</font></code></p>
+<pre><font color=Black>nil</font> <font color="#b2590f">=</font> <font color=Green>[]</font>                 <font color="#2149c1">-- глобальный объект (не в счёт)</font>
+
+<font color="#b2590f">let</font> x1  <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color="#0000ee">1</font>           <font color="#2149c1">-- 2 слова</font>
+    x2  <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color="#0000ee">2</font>           <font color="#2149c1">-- 2 слова</font>
+    p   <font color="#b2590f">=</font> <font color=Green>Pair</font> x1 x2     <font color="#2149c1">-- 3 слова</font>
+    val <font color="#b2590f">=</font> <font color=Green>Cons</font> p nil     <font color="#2149c1">-- 3 слова</font>
+<font color="#b2590f">in</font>  val                  <font color="#2149c1">------------</font>
+                         <font color="#2149c1">-- 10 слов   </font></pre>
+<p>Получилось десять слов для списка из одного элемента, который фактически хранит два значения. Размер списка, который хранит такие пары будет зависеть от числа элементов <span class="LaTeX">$N$</span> как <span class="LaTeX">$10N$</span>. Тогда как полезная нагрузка составляет <span class="LaTeX">$2N$</span>. С помощью прагмы <code><font color=Green>UNPACK</font></code> мы можем отказаться от ленивой гибкости в пользу меньшего расхода памяти. Эта прагма позволяет встраивать<br />один конструктор в поле другого. Это поле должно быть строгим (с пометкой <code><font color=Black>!</font></code>) и мономорфным (тип поля должен быть конкретным типом, а не параметром), причём подчинённый тип должен содержать лишь один конструктор (у него нет альтернатив):</p>
+<pre><font color="#b2590f">data</font> <font color=Green>PairInt</font> <font color="#b2590f">=</font> <font color=Green>PairInt</font> 
+    <font color="#2149c1">{-# UNPACK #-}</font> <font color=Black>!</font><font color=Green>Int</font>
+    <font color="#2149c1">{-# UNPACK #-}</font> <font color=Black>!</font><font color=Green>Int</font></pre>
+<p>Мы конкретизировали поля <code><font color=Green>Pair</font></code> и сделали их строгими с помощью восклицательных знаков. После этого значения из конструктора <code><font color=Green>Int</font></code> будут храниться прямо в конструкторе <code><font color=Green>PairInt</font></code>:</p>
+<pre><font color=Black>nil</font> <font color="#b2590f">=</font> <font color=Green>[]</font>                 <font color="#2149c1">-- глобальный объект (не в счёт)</font>
+
+<font color="#b2590f">let</font> p   <font color="#b2590f">=</font> <font color=Green>PairInt</font> <font color="#0000ee">1</font> <font color="#0000ee">2</font>    <font color="#2149c1">-- 3 слова</font>
+    val <font color="#b2590f">=</font> <font color=Green>Cons</font> p nil     <font color="#2149c1">-- 3 слова</font>
+<font color="#b2590f">in</font>  val                  <font color="#2149c1">------------</font>
+                         <font color="#2149c1">-- 6 слов   </font></pre>
+<p>Так мы сократим размер до <span class="LaTeX">$6N$</span>. Но мы можем пойти ещё дальше. Если этот тип является ключевым типом нашей программы и мы расчитываем на то, что в нём будет хранится много значений мы можем создать специальный список для таких пар и распаковать значение списка:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>ListInt</font> <font color="#b2590f">=</font> <font color=Green>ConsInt</font> <font color="#2149c1">{-# UNPACK #-}</font> <font color=Black>!</font><font color=Green>PairInt</font> 
+             <font color="#b2590f">|</font> <font color=Green>NilInt</font>
+
+<font color=Black>nil</font> <font color="#b2590f">=</font> <font color=Green>NilInt</font>
+
+<font color="#b2590f">let</font> val <font color="#b2590f">=</font> <font color=Green>ConsInt</font> <font color="#0000ee">1</font> <font color="#0000ee">2</font> nil   <font color="#2149c1">-- 4 слова</font>
+<font color="#b2590f">in</font>  val                     <font color="#2149c1">-----------</font>
+                            <font color="#2149c1">-- 4 слова</font></pre>
+<p>Значение будет встроено дважды и получится, что у нашего нового конструктора <code><font color=Green>Cons</font></code> уже три поля. Отметим, что эта прагма имеет смысл лишь при включённом флаге оптимизации <code><font color="#2149c1">-</font><font color=Green>O</font></code> или выше. Если мы не включим этот флаг, то компилятор не будет проводить встраивание функций, поэтому при вычислении функций вроде</p>
+<pre><font color=Black>sumPair</font> <font color="#b2590f">::</font> <font color=Green>PairInt</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>sumPair</font> <font color=Black>(</font><font color=Green>Pair</font> a b<font color=Black>)</font> <font color="#b2590f">=</font> a <font color=Black>+</font> b</pre>
+<p>Плюс не будет встроен и вместо того, чтобы сразу сложить два числа с помощью примитивной функции, компилятор сначала запакует их в конструктор <code><font color=Green>I</font><font color=Black><em>#</em></font></code> и затем применит функцию <code><font color=Black>+</font></code>, в которой опять распакует их, сложит и затем, снова запаковав, вернёт результат.</p>
+<p>Компилятор автоматически запаковывает все такие значения при передаче в ленивую функцию, это может привести к снижению быстродействия даже при включённом флаге оптимизации, при недостаточном встраивании. Это необходимо учитывать. В таких случая проводите профилирование, убедитесь в том, что оптимизация привела к повышению эффективности.</p>
+<p>В стандартных библиотеках предусмотрено много незапакованных типов. Например это специальные кортежи. Они пишутся с решётками:</p>
+<pre><font color="#b2590f">newtype</font> <font color=Green>ST</font> s a <font color="#b2590f">=</font> <font color=Green>ST</font> <font color=Black>(</font><font color=Green>STRep</font> s a<font color=Black>)</font>
+<font color="#b2590f">type</font> <font color=Green>STRep</font> s a <font color="#b2590f">=</font> <font color=Green>State</font><font color=Black><em>#</em></font> s <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Black><em>#</em></font> <font color=Green>State</font><font color=Black><em>#</em></font> s<font color=Black>,</font> a <font color=Black><em>#</em></font><font color=Black>)</font></pre>
+<p>Это определение типа <code><font color=Green>ST</font></code>. Специальные кортежи используются для возврата нескольких значений напрямую, без создания промежуточного кортежа в куче. В этом случае значения будут сохранены в регистрах или на стеке. Для использования специальных значений необходимо активировать расширения <code><font color=Green>MagicHash</font></code> и <code><font color=Green>UnboxedTuples</font></code></p>
+<p>Разработчики различных библиотек могут предоставлять несколько вариантов своих данных: ленивые версии и незапакованные. Например в <code><font color=Green>ST</font></code>-массив незапакованных значений <code><font color=Green>STUArray</font> s i a</code> эквивалентен массиву значений в C. В таком массиве можно хранить лишь примитивные типы.</p>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>Эта глава была посвящена компилятору GHC. Мы говорим Haskell подразумеваем GHC, говорим GHC подразумеваем Haskell. К сожалению на данный момент у этого компилятора нет достойных конкурентов. А может и к счастью, ведь если бы не было GHC, у нас была бы бурная конкуренция среди компиляторов поплоше. Мы бы не знали, что они не так хороши. Но у нас не было бы программ, которые способны тягаться по скорости с С. И мы бы говорили: ну декларативное программирование, что поделаешь, за радость абстракций приходится платить. Но есть GHC! Всё-таки это очень трудно: написать компилятор для ленивого языка</p>
+<p>Отметим другие компиляторы: Hugs разработан Марком Джонсом (написан на C), nhc98 основанный Николасом Райомо (Niklas Röjemo) этот компилятор задумывался как легковесный и простой в установке, он разрабатывался при поддержке NUTEK, Йоркского университета и Технического университета Чалмерса. От этого компилятора отпочковался YHC, Йоркский компилятор. UHC – компилятор Утрехтского университета, разработан для тестирования интересных идей в теории типов. JHC (Джон Мичэм, John Meacham) и LHC (Дэвид Химмельступ и Остин Сипп, David Himmelstrup, Austin Seipp) компиляторы предназначенные для проведения более сложных оптимизаций программ с помощью преобразований дерева программы.</p>
+<p>В этой главе мы узнали как вычисляются программы в GHC. Мы узнали об этапах компиляции. Сначала проводится синтаксический анализ программы и проверка типов, затем код Haskell переводится на язык Core. Это сильно урезанная версия Haskell. После этого проводятся оптимизации, которые преобразуют дерево программы. На последнем этапе Core переводится на ещё более низкоуровневый, но всё ещё функциональный язык STG, который превращается в низкоуровневый код и исполняется вычислителем. Посмотреть на текст вашей программы в <code><font color=Green>Core</font></code> и <code><font color=Green>STG</font></code> можно с помощью флагов <code><font color=Black>ddump</font><font color="#2149c1">-</font>simpl</code> <code><font color=Black>ddump</font><font color="#2149c1">-</font>stg</code> при этом лучше воспользоваться флагом <code><font color=Black>ddump</font><font color="#2149c1">-</font>suppress<font color="#2149c1">-</font>all</code> для пропуска многочисленных деталей. Хардкорные разработчики Haskell смотрят <code><font color=Green>Core</font></code> для того чтобы понять насколько строгой оказалась та или иная функция, как аргументы размещаются в памяти. Но это уже высший пилотаж искусства оптимизации на Haskell.</p>
+<p>Мы узнали о том как работает сборщик мусора и научились просматривать разные параметры работы программы. У нас появилось несколько критериев оценки производительности программ: минимум глубоких очисток и отсутствие горбов на графике изменения кучи. Мы потренировались в охоте за утечками памяти и посмотрели как разные типы профилирования могут подсказать нам в каком месте затаилась ошибка. Отметим, что не стоит в каждой медленной программе искать утечку памяти. Так в примере <code><font color=Black>concat</font></code> у нас не было утечек памяти, просто один из алгоритмов работал очень плохо и через профилирование функций мы узнали какой.</p>
+<p>Также мы познакомились с новыми прагмами оптимизации программ. Это встраиваемые функции <code><font color=Green>INLINE</font></code>, правила преобразования выражений <code><font color=Green>RULE</font></code> и встраиваемые конструкторы <code><font color=Green>UNPACK</font></code>. Разработчики GHC отмечают, что грамотное использование прагмы <code><font color=Green>INLINE</font></code> может существенно повысить скорость программы. Если мы встраиваем функцию, которая используется очень часто, нам не нужно создавать лишних отложенных вычислений при её вызовах.</p>
+<p>Надеюсь, что содержание этой главы упростит понимание программ. Как они вычисляются, куда идёт память, почему она висит в куче. При оптимизации программ предпочитайте изменение алгоритма перед настройкой параметров компилятора под плохой алгоритм. Вспомните самый первый пример, увеличением памяти под сборку мусора нам удалось вытянуть ленивую версию <code><font color=Black>sum</font></code>, но ведь строгая версия требовала в 100 раз меньше памяти, причём её запросы не зависели от величины списка. Если бы мы остановились на ленивой версии, вполне могло бы так статься, что первый год нас бы устраивали результаты, но потом наши аппетиты могли возрасти. И вдруг программа, так тщательно настроенная, взорвалась. За год мы, конечно, многое позабыли о её внутренностях, искать ошибку было бы гораздо труднее. Впрочем не так безнадёжно: включаем <code><font color=Black>auto</font><font color="#2149c1">-</font>all</code>, <code><font color=Black>caf</font><font color="#2149c1">-</font>all</code> с флагом <code><font color=Black>prof</font></code> и смотрим отчёт после флага <code><font color=Black>p</font></code>.</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<ul>
+<li><p>Попытайтесь понять причину утечки памяти в примере с функцией <code><font color=Black>sum2</font></code> на уровне STG. Не запоминайте этот пример, вроде, ага, тут у нас копятся отложенные вычисления в аргументе. Переведите на STG и посмотрите в каком месте происходит слишком много вызовов <code><font color="#b2590f">let</font></code>-выражений. Переведите и пример без утечки памяти, а также промежуточный вариант, который не сработал. Для этого вам понадобится выразить энергичный образец через функцию <code><font color=Black>seq</font></code>.</p>
+<p>Подсказка: За счёт семантики <code><font color="#b2590f">case</font></code>-выражений нам не нужно специальных конструкций для того чтобы реализовать <code><font color=Black>seq</font></code> в STG:</p>
+<pre><font color=Black>seq</font> <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> a b <font color="#b2590f">-&gt;</font>
+        <font color="#b2590f">case</font> a <font color="#b2590f">of</font>
+            x <font color="#b2590f">-&gt;</font> b
+      <font color=Black>)</font></pre>
+<p>При этом вызов функции <code><font color=Black>seq</font></code> будет встроен. Необходимо будет заменить в коде все вызовы <code><font color=Black>seq</font></code> на правую часть определения (без <code><font color=Green>FUN</font></code>). Также обратите внимание на то, что плюс не является примитивной функцией:</p>
+<pre><font color=Black>plusInt</font> <font color="#b2590f">=</font> <font color=Green>FUN</font><font color=Black>(</font> ma mb <font color="#b2590f">-&gt;</font>
+            <font color="#b2590f">case</font> ma <font color="#b2590f">of</font>
+                <font color=Green>I</font><font color=Black><em>#</em></font> a <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> mb <font color="#b2590f">of</font>
+                            <font color=Green>I</font><font color=Black><em>#</em></font> b <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> <font color=Black>(</font>primitivePlus a b<font color=Black>)</font> <font color="#b2590f">of</font>
+                                        res <font color="#b2590f">-&gt;</font> <font color=Green>I</font><font color=Black><em>#</em></font> res
+          <font color=Black>)</font></pre>
+<p>В этой функции всплыла на поверхность одна тонкость. Если бы мы писали это выражение в Haskell, то мы бы сразу вернули результат <code><font color=Black>(</font><font color=Green>I</font><font color=Black>``#``</font> <font color=Black>(</font>primitivePlus a b<font color=Black>)</font><font color=Black>)</font></code>, но мы пишем в STG и конструктор может принять только атомарное выражение. Тогда мы могли бы подумать и сохранить его по старинке в <code><font color="#b2590f">let</font></code>-выражении:</p>
+<pre><font color="#b2590f">-&gt;</font> <font color="#b2590f">let</font> v <font color="#b2590f">=</font> primitivePlus a b
+   <font color="#b2590f">in</font>  <font color=Green>I</font><font color=Black><em>#</em></font> v </pre>
+<p>Но это не правильное выражение в STG! Конструкция в правой части <code><font color="#b2590f">let</font></code>-выражения должна быть объектом кучи, а у нас там простое выражение. Но было бы плохо добавить к нему <code><font color=Green>THUNK</font></code>, поскольку это выражение содержит вызов примитивной функции на незапакованных значениях. Эта операция выполняется очень быстро. Было бы плохо создавать для неё специальный объект на куче. Поэтому мы сразу вычисляем это выражение в третьем <code><font color="#b2590f">case</font></code>. Эта функция также будет встроенной, необходимо заменить все вызовы на определение.</p></li>
+<li><p>Набейте руку в профилировании, пусть это станет привычкой. Вы долго писали большую программу и теперь вы можете узнать много подробностей из её жизни, что происходит с ней во время вычисления кода. Вернитесь к прошлой главе и попрофилируйте разные примеры. В конце главы мы рассматривали пример с поиском корней, там мы создавали большой список промежуточных результатов и в нём искали решение. Я говорил, что такие алгоритмы очень эффективны при ленивой стратегии вычислений, но так ли это? Будьте критичны, не верьте на слово, ведь теперь у вас есть инструменты для проверки моих туманных гипотез.</p></li>
+<li><p>Откройте документацию к GHC. Пролистайте её. Проникнитесь уважением к разработчикам GHC. Найдите исходники GHC и почитайте их. Посмотрите на Haskell-код, написанный профессионалами. Выберите функцию наугад и попытайтесь понять как она строит свой результат.</p></li>
+<li><p>Откройте документацию вновь. Нас интересует глава <code><font color=Green>Profiling</font></code>. Найдите в разделе профилирование кучи как выполняется retainer profiling. Это специальный тип профилирования направленный на поиск данных, которые удерживают в памяти другие данные (типичный сценарий для утечек памяти). Разберитесь с этим типом профилирования (флаг <code><font color=Black>hr</font></code>).</p></li>
+<li><p>Постройте систему правил, которая выполняет слияние для списков <code><font color=Green>List</font></code>, определённых в примере для прагмы <code><font color=Green>RULES</font></code>. Сравните показатели производительности с правилами и без (для этого скомпилируйте дважды с флагом <code><font color=Green>O</font></code> и без) на тестовом выражении:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>$</font> sumL <font color=Black>$</font> 
+    mapL <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x <font color="#2149c1">-</font> <font color="#0000ee">1000</font><font color=Black>)</font> <font color=Black>$</font> mapL <font color=Black>(</font><font color=Black>+</font><font color="#0000ee">100</font><font color=Black>)</font> <font color=Black>$</font> mapL <font color=Black>(</font><font color=Black>*</font><font color="#0000ee">2</font><font color=Black>)</font> <font color=Black>$</font> genL <font color="#0000ee">0</font> <font color="#0000ee">1e6</font></pre>
+<p>Функция <code><font color=Black>sumL</font></code> находит сумму элементов в списке, функция <code><font color=Black>genL</font></code> генерирует список чисел с единичным шагом от первого аргумента до второго.</p>
+<p>Подсказка: вам нужно воспользоваться такими свойствами (не забудьте о фазах компиляции)</p>
+<pre><font color=Black>mapL</font> f <font color=Black>(</font>mapL g xs<font color=Black>)</font>              <font color="#b2590f">=</font> <font color=Black>...</font>
+<font color=Black>foldrL</font> cons nil <font color=Black>(</font>mapL f xs<font color=Black>)</font>     <font color="#b2590f">=</font> <font color=Black>...</font>     </pre></li>
+<li><p>Откройте исходный код <code><font color=Green>Prelude</font></code> и присмотритесь к различным прагмам. Попытайтесь понять почему они там используются.</p></li>
+</ul>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="9.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="11.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="9" style="list-style-type: decimal">
+<li>Редукция выражений
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="11" style="list-style-type: decimal">
+<li>Ленивые чудеса
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

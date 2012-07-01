@@ -1,0 +1,438 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#средства-разработки">Средства разработки</a><ul>
+<li><a href="#пакеты">Пакеты</a><ul>
+<li><a href="#создание-пакетов">Создание пакетов</a><ul>
+<li><a href="#cabal">.cabal</a></li>
+<li><a href="#setup.hs">Setup.hs</a></li>
+</ul></li>
+<li><a href="#создаём-библиотеки">Создаём библиотеки</a></li>
+<li><a href="#создаём-исполняемые-программы">Создаём исполняемые программы</a></li>
+<li><a href="#установка-пакета">Установка пакета</a></li>
+<li><a href="#удаление-библиотеки">Удаление библиотеки</a></li>
+<li><a href="#репозиторий-пакетов-hackage">Репозиторий пакетов Hackage</a></li>
+<li><a href="#дополнительные-атрибуты-пакета">Дополнительные атрибуты пакета</a></li>
+<li><a href="#установка-библиотек-для-профилирования">Установка библиотек для профилирования</a></li>
+</ul></li>
+<li><a href="#создание-документации-с-помощью-haddock">Создание документации с помощью Haddock</a><ul>
+<li><a href="#комментарии-к-определениям">Комментарии к определениям</a></li>
+<li><a href="#комментарии-к-модулю">Комментарии к модулю</a></li>
+<li><a href="#структура-страницы-документации">Структура страницы документации</a></li>
+<li><a href="#разметка">Разметка</a><ul>
+<li><a href="#параграфы">Параграфы</a></li>
+<li><a href="#блоки-кода">Блоки кода</a></li>
+<li><a href="#примеры-вычисления-в-интерпретаторе">Примеры вычисления в интерпретаторе</a></li>
+<li><a href="#имена-определений">Имена определений</a></li>
+<li><a href="#курсив-и-моноширинный-шрифт">Курсив и моноширинный шрифт</a></li>
+<li><a href="#модули">Модули</a></li>
+<li><a href="#списки">Списки</a></li>
+<li><a href="#список-определений">Список определений</a></li>
+<li><a href="#url">URL</a></li>
+<li><a href="#ссылки-внутри-модуля">Ссылки внутри модуля</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="17.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="19.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="средства-разработки"><a href="#TOC">Средства разработки</a></h1>
+<p>В этой главе мы познакомимся с основными средствами разработки больших программ. Мы научимся устанавливать и создавать библиотеки, писать документацию.</p>
+<h2 id="пакеты"><a href="#TOC">Пакеты</a></h2>
+<p>В Haskell есть ещё один уровень организации данных, мы можем объединять модули в <em>пакеты</em> (package). Также как и модули пакеты могут зависеть от других пакетов, если они пользуются модулями их этих пакетов. Одним пакетом мы уже пользовались и довольно часто, это пакет <code><font color=Black>base</font></code>, который содержит все стандартные модули, например такие как <code><font color=Green>Prelude</font></code>, <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font></code> или <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font></code>. Для создания и установки пакетов существует приложение <code><font color=Black>cabal</font></code>. Оно определяет протокол организации и распространения модулей Haskell.</p>
+<h3 id="создание-пакетов"><a href="#TOC">Создание пакетов</a></h3>
+<p>Предположим, что мы написали программу, которая состоит из нескольких модулей. Пусть все модули хранятся в директории с именем <code><font color=Black>src</font></code>. Для того чтобы превратить набор модулей в пакет, нам необходимо поместить в одну директорию с <code><font color=Black>src</font></code> два файла:</p>
+<ul>
+<li><p><code><font color=Black>имяПакета</font><font color=Black>.</font>cabal</code> – файл с описанием пакета.</p></li>
+<li><p><code><font color=Green>Setup</font><font color=Black>.</font>hs</code> – файл с инструкциями по установке пакета</p></li>
+</ul>
+<h4 id="cabal"><a href="#TOC">.cabal</a></h4>
+<p>Посмотрим на простейший файл с описанием библиотеки, этот файл находится в одной директории с той директорией, в которой содержатся все модули приложения и имеет расширение <code><font color=Black>.</font>cabal</code>:</p>
+<pre><font color=Green>Name</font>        <font color="#b2590f">:</font> <font color=Green>Foo</font>
+<font color=Green>Version</font>     <font color="#b2590f">:</font> <font color="#0000ee">1.0</font>
+
+<font color=Green>Library</font>
+  build<font color="#2149c1">-</font>depends     <font color="#b2590f">:</font> base
+  exposed<font color="#2149c1">-</font>modules   <font color="#b2590f">:</font> <font color=Green>Foo</font></pre>
+<p>Сначала идут свойства пакета. Общий формат определения свойства:</p>
+<pre><font color=Green>ИмяСвойства</font> <font color="#b2590f">:</font> <font color=Green>Значение</font></pre>
+<p>В примере мы указали имя пакета <code><font color=Green>Foo</font></code>, и версию <code><font color="#0000ee">1.0</font></code>. После того, как мы указали все свойства, мы определяем будет наш пакет библиотекой или исполняемой программой или возможно он будет и тем и другим. Если пакет будет библиотекой, то мы помещаем за набором атрибутов слово <code><font color=Green>Library</font></code>, а если это исполняемая программа, то мы помещаем слово <code><font color=Green>Executable</font></code>, после мы пишем описание модулей пакета, зависимости от других пакетов, какие модули будут видны пользователю. Формат составления описаний в этой части такой же как и в самом начале файла. Сначала идёт зарезервированное слово-атрибут, затем через двоеточие следует значение. Обратите внимание на отступы за словом <code><font color=Green>Library</font></code>, они обязательны и сделаны с помощью <em>пробелов</em>, <code><font color=Black>cabal</font></code> не воспринимает табуляцию.</p>
+<p>Файл <code><font color=Black>.</font>cabal</code> может содержать комментарии, они делаются также как и в Haskell, закомментированная строка начинается с двойного тире.</p>
+<h4 id="setup.hs"><a href="#TOC">Setup.hs</a></h4>
+<p>Файл <code><font color=Green>Setup</font><font color=Black>.</font>hs</code> содержит информацию о том как устанавливается библиотека. При установке могут использоваться другие программы и библиотеки. Пока мы будем пользоваться простейшим случаем:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Distribution</font><font color=Black>.</font><font color=Green>Simple</font>
+<font color=Black>main</font> <font color="#b2590f">=</font> defaultMain</pre>
+<p>Этот файл позволяет нам создавать библиотеки и приложения, которые созданы только с помощью Haskell. Это не так уж и мало!</p>
+<h3 id="создаём-библиотеки"><a href="#TOC">Создаём библиотеки</a></h3>
+<p>Типичный файл <code><font color=Black>.</font>cabal</code> для библиотеки выглядит так:</p>
+<pre><font color=Green>Name</font><font color="#b2590f">:</font>           pinocchio
+<font color=Green>Version</font><font color="#b2590f">:</font>        <font color="#0000ee">1.1</font><font color=Black>.</font><font color="#0000ee">1</font>
+<font color=Green>Cabal</font><font color="#2149c1">-</font><font color=Green>Version</font><font color="#b2590f">:</font>  <font color=Black>&gt;=</font> <font color="#0000ee">1.2</font>
+<font color=Green>License</font><font color="#b2590f">:</font>        <font color=Green>BSD3</font>
+<font color=Green>License</font><font color="#2149c1">-</font><font color=Green>File</font><font color="#b2590f">:</font>   <font color=Green>LICENSE</font>
+<font color=Green>Author</font><font color="#b2590f">:</font>         <font color=Green>Mister</font> <font color=Green>Geppetto</font>
+<font color=Green>Homepage</font><font color="#b2590f">:</font>       http<font color="#b2590f">://</font>pinocchio<font color=Black>.</font>sourceforge<font color=Black>.</font>net<font color=Black>/</font>
+<font color=Green>Category</font><font color="#b2590f">:</font>       <font color=Green>AI</font>
+<font color=Green>Synopsis</font><font color="#b2590f">:</font>       <font color=Green>Tools</font> for creation <font color="#b2590f">of</font> woodcrafted robots
+<font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Type</font><font color="#b2590f">:</font>     <font color=Green>Simple</font>
+
+
+<font color=Green>Library</font>
+  <font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Depends</font><font color="#b2590f">:</font> base
+  <font color=Green>Hs</font><font color="#2149c1">-</font><font color=Green>Source</font><font color="#2149c1">-</font><font color=Green>Dirs</font><font color="#b2590f">:</font> src<font color=Black>/</font>  
+  <font color=Green>Exposed</font><font color="#2149c1">-</font>modules<font color="#b2590f">:</font>
+    <font color=Green>Wood</font><font color=Black>.</font><font color=Green>Robot</font><font color=Black>.</font><font color=Green>Act</font><font color=Black>,</font> <font color=Green>Wood</font><font color=Black>.</font><font color=Green>Robot</font><font color=Black>.</font><font color=Green>Percept</font><font color=Black>,</font> <font color=Green>Wood</font><font color=Black>.</font><font color=Green>Robot</font><font color=Black>.</font><font color=Green>Think</font>
+  <font color=Green>Other</font><font color="#2149c1">-</font><font color=Green>Modules</font><font color="#b2590f">:</font>
+    <font color=Green>Wood</font><font color=Black>.</font><font color=Green>Robot</font><font color=Black>.</font><font color=Green>Internals</font></pre>
+<p>Этим файлом мы описали библиотеку с именем <code><font color=Black>pinocchio</font></code>, версия 1.1.1, она использует версию <code><font color=Black>cabal</font></code> не ниже <code><font color="#0000ee">1.2</font></code>. Библиотека выпущена под лицензией BSD3. Файл с лицензией находится в текущей директории под именем <code><font color=Green>LICENSE</font></code>. Автор библиотеки <code><font color=Green>Mister</font> <font color=Green>Geppetto</font></code>. Подробнее узнать о библиотеке можно на её домашней странице <code><font color=Black>http</font><font color="#b2590f">://</font>pinocchio<font color=Black>.</font>sourceforge<font color=Black>.</font>net<font color=Black>/</font></code>. Атрибут <code><font color=Green>Category</font></code> указывает на широкую отрасль знаний, к которой принадлежит наша библиотека. В данном случае мы описываем библиотеку для построения роботов из дерева, об этом мы пишем в атрибуте <code><font color=Green>Synopsis</font></code> (краткое описание), поэтому наша библиотека принадлежит к категории искусственный интеллект или сокращённо <code><font color=Green>AI</font></code>. Последний атрибут <code><font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Type</font></code> указывает на тип сборки пакета. Мы будем пользоваться значением <code><font color=Green>Simple</font></code>, который соответствует сборке с помощью простейшего файла <code><font color=Green>Setup</font><font color=Black>.</font>hs</code>, который мы рассмотрели в предыдущем разделе.</p>
+<p>После описания пакета, идёт слово <code><font color=Green>Library</font></code>, ведь мы создаём библиотеку. Далее в атрибуте <code><font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Depends</font></code><br />мы указываем зависимости для нашего пакета. Здесь мы перечисляем все пакеты, которые мы используем в своей библиотеке. В данном случае мы пользовались лишь стандартной библиотекой <code><font color=Black>base</font></code>. В атрибуте <code><font color=Black>hs</font><font color="#2149c1">-</font>source<font color="#2149c1">-</font>dirs</code> мы указываем, где искать директорию с исходным кодом библиотеки. Затем мы указываем три внешних модуля, они будут доступны пользователю после установки библиотеки (атрибут <code><font color=Green>Exposed</font><font color="#2149c1">-</font><font color=Green>Modules</font></code>), и внутренние скрытые модули (атрибут <code><font color=Green>Other</font><font color="#2149c1">-</font><font color=Green>Modules</font></code>).</p>
+<h3 id="создаём-исполняемые-программы"><a href="#TOC">Создаём исполняемые программы</a></h3>
+<p>Типичный файл <code><font color=Black>.</font>cabal</code> для исполняемой программы:</p>
+<pre><font color=Green>Name</font><font color="#b2590f">:</font>           micro
+<font color=Green>Version</font><font color="#b2590f">:</font>        <font color="#0000ee">0.0</font>
+<font color=Green>Cabal</font><font color="#2149c1">-</font><font color=Green>Version</font><font color="#b2590f">:</font>  <font color=Black>&gt;=</font> <font color="#0000ee">1.2</font>
+<font color=Green>License</font><font color="#b2590f">:</font>        <font color=Green>BSD3</font>
+<font color=Green>Author</font><font color="#b2590f">:</font>         <font color=Green>Tony</font> <font color=Green>Reeds</font>
+<font color=Green>Synopsis</font><font color="#b2590f">:</font>       <font color=Green>Small</font> programming language
+<font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Type</font><font color="#b2590f">:</font>     <font color=Green>Simple</font>
+
+<font color=Green>Executable</font> micro
+  <font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Depends</font><font color="#b2590f">:</font>  base<font color=Black>,</font> parsec
+  <font color=Green>Main</font><font color="#2149c1">-</font><font color=Green>Is</font><font color="#b2590f">:</font>        <font color=Green>Main</font><font color=Black>.</font>hs
+  <font color=Green>Hs</font><font color="#2149c1">-</font><font color=Green>Source</font><font color="#2149c1">-</font><font color=Green>Dirs</font><font color="#b2590f">:</font> micro
+
+<font color=Green>Executable</font> micro<font color="#2149c1">-</font>repl
+  <font color=Green>Main</font><font color="#2149c1">-</font><font color=Green>Is</font><font color="#b2590f">:</font>        <font color=Green>Main</font><font color=Black>.</font>hs
+  <font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Depends</font><font color="#b2590f">:</font>  base<font color=Black>,</font> parsec
+  <font color=Green>Hs</font><font color="#2149c1">-</font><font color=Green>Source</font><font color="#2149c1">-</font><font color=Green>Dirs</font><font color="#b2590f">:</font> repl
+  <font color=Green>Other</font><font color="#2149c1">-</font><font color=Green>Modules</font><font color="#b2590f">:</font>  <font color=Green>Utils</font></pre>
+<p>В этом файле мы описываем две программы. Компилятор языка и интерпретатор языка <code><font color=Black>micro</font></code>. Если сравнить этот файл с файлом для библиотеки, то мы заметим лишь один новый атрибут. Это <code><font color=Green>Main</font><font color="#2149c1">-</font><font color=Green>Is</font></code>. Он указывает в каком модуле содержится функция <code><font color=Black>main</font></code>. После установки этого пакета будут созданы два исполняемых файла. С именами <code><font color=Black>micro</font></code> и <code><font color=Black>micro</font><font color="#2149c1">-</font>repl</code>.</p>
+<h3 id="установка-пакета"><a href="#TOC">Установка пакета</a></h3>
+<p>Пакеты устанавливаются с помощью команды <code><font color=Black>install</font></code>. Необходимо перейти в директорию пакета, ту, в которой находятся два служебных файла (<code><font color=Black>.</font>cabal</code> и <code><font color=Green>Setup</font><font color=Black>.</font>hs</code>) и директория с исходниками, и запустить команду:</p>
+<pre><font color=Black>cabal</font> install</pre>
+<p>Если мы нигде не ошиблись в описании пакета, не перепутали табуляцию с пробелами при отступах, или указали без ошибок все зависимости, то пакет успешно установится. Если это библиотека, то мы сможем подключать экспортируемые ей модули в любом другом модуле, просто указав их в директиве <code><font color="#b2590f">import</font></code>. При этом нам уже не важно, где находятся модули библиотеки. Мы имеем возможность импортировать их из любого модуля. Если же пакет был исполняемой программой, будут созданы бинарные файлы программ. В конце <code><font color=Black>cabal</font></code> сообщит нам куда он их положил.</p>
+<p>Иногда возникают проблемы с пакетами, которые генерируют исполняемые файлы, а затем с их помощью устанавливают другие пакеты. Проблема возникает из-за того, что <code><font color=Black>cabal</font></code> может положить бинарный файл в директорию, которая не видна следующим программам, которые хотят продолжить установку. В этом случае необходимо либо переложить созданные бинарные файлы в директорию, которая будет им видна, или добавить директорию с новыми бинарными файлами в <code><font color=Green>PATH</font></code> (под UNIX, Linux). Переменная операционной системы PATH содержит список всех путей, в которых система ищет исполняемые программы, если путь не указан явно. Посмотреть содержание <code><font color=Green>PATH</font></code> можно, вызвав:</p>
+<pre>$ echo $PATH</pre>
+<p>Появится строка директорий, которые записаны через двоеточие. Для того чтобы добавить директорию <code><font color=Black>/</font><font color="#b2590f">data</font><font color=Black>/</font>dir</code> в <code><font color=Green>PATH</font></code> необходимо написать:</p>
+<pre>$ PATH=$PATH:/data/dir</pre>
+<p>Эта команда добавит директорию в <code><font color=Green>PATH</font></code> для текущей сессии в терминале, если мы хотим записать её насовсем, мы добавим эту команду в специальный скрытый файл <code><font color=Black>.</font>bashrc</code>, он находится в домашней директории пользователя. Под Windows добавить директорию в <code><font color=Green>PATH</font></code> можно с помощью графического интерфейса. Кликните правой кнопкой мыши на иконку <code><font color=Green>My</font> <font color=Green>Computer</font></code> (Мой Компьютер), в появившемся меню выберите вкладку <code><font color=Green>Properties</font></code> (Свойства). Появится окно <code><font color=Green>System</font> <font color=Green>Properties</font></code> (Свойства системы), в нём выберите вкладку <code><font color=Green>Advanced</font></code> и там нажмите на кнопку <code><font color=Green>Environment</font> variables</code> (Переменные среды). И в этом окне будет строка <code><font color=Green>Path</font></code>, её мы и хотим отредактировать, добавив необходимые нам пути.</p>
+<p>Давайте потренируемся и создадим библиотеку и исполняемую программу. Создадим библиотеку, которая выводит на экран <code><font color=Green>Hello</font> <font color=Green>World</font></code>. Создадим директорию <code><font color=Black>hello</font></code>, и в ней создадим директорию <code><font color=Black>src</font></code>. Эта директория будет содержать исходный код. Главный модуль библиотеки экспортирует функцию приветствия:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Hello</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>Hello</font><font color=Black>(</font>hello<font color=Black>)</font>
+<font color="#b2590f">import</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>World</font><font color=Black>(</font>world<font color=Black>)</font>
+
+<font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font></pre>
+<p>Главный модуль программы <code><font color=Green>Main</font><font color=Black>.</font>hs</code> определяет функцию <code><font color=Black>main</font></code>, которая выводит текст приветствия на экран:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Hello</font> 
+
+<font color=Black>main</font> <font color="#b2590f">=</font> print helloWorld</pre>
+<p>У нас будет два внутренних модуля, каждый из которых определяет синоним для одного слова. Мы поместим их в папку <code><font color=Green>Utility</font></code>. Это модуль <code><font color=Green>Utility</font><font color=Black>.</font><font color=Green>Hello</font></code></p>
+<pre><font color="#b2590f">module</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>Hello</font> <font color="#b2590f">where</font>
+<font color=Black>hello</font> <font color="#b2590f">=</font> <font color=Black>"Hello"</font></pre>
+<p>И модуль <code><font color=Green>Utility</font><font color=Black>.</font><font color=Green>World</font></code>:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>World</font> <font color="#b2590f">where</font>
+<font color=Black>world</font> <font color="#b2590f">=</font> <font color=Black>"World"</font></pre>
+<p>Исходники готовы, теперь приступим к описанию пакета. Создадим в корневой директории пакета файл <code><font color=Black>hello</font><font color=Black>.</font>cabal</code>.</p>
+<pre><font color=Green>Name</font><font color="#b2590f">:</font>           hello
+<font color=Green>Version</font><font color="#b2590f">:</font>        <font color="#0000ee">1.0</font>
+<font color=Green>Cabal</font><font color="#2149c1">-</font><font color=Green>Version</font><font color="#b2590f">:</font>  <font color=Black>&gt;=</font> <font color="#0000ee">1.2</font>
+<font color=Green>License</font><font color="#b2590f">:</font>        <font color=Green>BSD3</font>
+<font color=Green>Author</font><font color="#b2590f">:</font>         <font color=Green>Anton</font>
+<font color=Green>Synopsis</font><font color="#b2590f">:</font>       <font color=Green>Little</font> example <font color="#b2590f">of</font> cabal usage
+<font color=Green>Category</font><font color="#b2590f">:</font>       <font color=Green>Example</font>
+<font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Type</font><font color="#b2590f">:</font>     <font color=Green>Simple</font>
+
+<font color=Green>Library</font>
+  <font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Depends</font><font color="#b2590f">:</font> base <font color=Black>==</font> <font color="#0000ee">4</font><font color=Black>.*</font>
+  <font color=Green>Hs</font><font color="#2149c1">-</font><font color=Green>Source</font><font color="#2149c1">-</font><font color=Green>Dirs</font><font color="#b2590f">:</font> src<font color=Black>/</font>
+  <font color=Green>Exposed</font><font color="#2149c1">-</font>modules<font color="#b2590f">:</font>
+    <font color=Green>Hello</font>
+  <font color=Green>Other</font><font color="#2149c1">-</font><font color=Green>Modules</font><font color="#b2590f">:</font>
+    <font color=Green>Utility</font><font color=Black>.</font><font color=Green>Hello</font>
+    <font color=Green>Utility</font><font color=Black>.</font><font color=Green>World</font>
+
+<font color=Green>Executable</font> hello
+  <font color=Green>Build</font><font color="#2149c1">-</font><font color=Green>Depends</font><font color="#b2590f">:</font> base <font color=Black>==</font> <font color="#0000ee">4</font><font color=Black>.*</font>
+  <font color=Green>Main</font><font color="#2149c1">-</font><font color=Green>Is</font><font color="#b2590f">:</font> <font color=Green>Main</font><font color=Black>.</font>hs
+  <font color=Green>Hs</font><font color="#2149c1">-</font><font color=Green>Source</font><font color="#2149c1">-</font><font color=Green>Dirs</font><font color="#b2590f">:</font> src<font color=Black>/</font></pre>
+<p>В этом файле мы описали библиотеку и программу. В строке <code><font color=Black>base</font> <font color=Black>==</font> <font color="#0000ee">4</font><font color=Black>.*</font></code> мы указали версию пакета <code><font color=Black>base</font></code>. Запись <code><font color="#0000ee">4</font><font color=Black>.*</font></code> означает любая версия, которая начинается с четвёрки. Осталось только поместить в корневую директорию пакета файл <code><font color=Green>Setup</font><font color=Black>.</font>hs</code>.</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Distribution</font><font color=Black>.</font><font color=Green>Simple</font>
+<font color=Black>main</font> <font color="#b2590f">=</font> defaultMain</pre>
+<p>Теперь мы можем переключиться на корневую директорию пакета и установить пакет:</p>
+<pre><font color=Black>anton</font><font color="#b2590f">@</font>anton<font color="#2149c1">-</font>desktop<font color="#b2590f">:~/</font>haskell<font color="#2149c1">-</font>notes<font color=Black>/</font>code<font color=Black>/</font>ch<font color="#2149c1">-</font><font color="#0000ee">17</font><font color=Black>/</font>hello<font color=Black>$</font> cabal install
+<font color=Green>Resolving</font> dependencies<font color=Black>...</font>
+<font color=Green>Configuring</font> hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>...</font>
+<font color=Green>Preprocessing</font> library hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>...</font>
+<font color=Green>Preprocessing</font> executables for hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>...</font>
+<font color=Green>Building</font> hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>...</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">3</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>World</font>    <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>World</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>World</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">3</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>Hello</font>    <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">3</font> <font color="#b2590f">of</font> <font color="#0000ee">3</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Hello</font>            <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color=Green>Registering</font> hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>...</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">4</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>World</font>    <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>World</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font>hello<font color=Black>/</font>hello<font color="#2149c1">-</font>tmp<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>World</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">4</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Utility</font><font color=Black>.</font><font color=Green>Hello</font>    <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font>hello<font color=Black>/</font>hello<font color="#2149c1">-</font>tmp<font color=Black>/</font><font color=Green>Utility</font><font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">3</font> <font color="#b2590f">of</font> <font color="#0000ee">4</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Hello</font>            <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font>hello<font color=Black>/</font>hello<font color="#2149c1">-</font>tmp<font color=Black>/</font><font color=Green>Hello</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">4</font> <font color="#b2590f">of</font> <font color="#0000ee">4</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Main</font>             <font color=Black>(</font> src<font color=Black>/</font><font color=Green>Main</font><font color=Black>.</font>hs<font color=Black>,</font> dist<font color=Black>/</font>build<font color=Black>/</font>hello<font color=Black>/</font>hello<font color="#2149c1">-</font>tmp<font color=Black>/</font><font color=Green>Main</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color=Green>Linking</font> dist<font color=Black>/</font>build<font color=Black>/</font>hello<font color=Black>/</font>hello <font color=Black>...</font>
+<font color=Green>Installing</font> library <font color="#b2590f">in</font> <font color=Black>/</font>home<font color=Black>/</font>anton<font color=Black>/.</font>cabal<font color=Black>/</font>lib<font color=Black>/</font>hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>/</font>ghc<font color="#2149c1">-</font><font color="#0000ee">7.4</font><font color=Black>.</font><font color="#0000ee">1</font>
+<font color=Green>Installing</font> executable<font color=Black>(</font>s<font color=Black>)</font> <font color="#b2590f">in</font> <font color=Black>/</font>home<font color=Black>/</font>anton<font color=Black>/.</font>cabal<font color=Black>/</font>bin
+<font color=Green>Registering</font> hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>...</font></pre>
+<p>Мы видим сообщения о процессе установки. После установки в текущей директории пакета появилась директория <code><font color=Black>dist</font></code>, в которую были помещены скомпилированные файлы библиотеки. В последних строках <code><font color=Black>cabal</font></code> сообщил нам о том, что он установил библиотеку в директорию:</p>
+<pre><font color=Green>Installing</font> library <font color="#b2590f">in</font> <font color=Black>/</font>home<font color=Black>/</font>anton<font color=Black>/.</font>cabal<font color=Black>/</font>lib<font color=Black>/</font>hello<font color="#2149c1">-</font><font color="#0000ee">1.0</font><font color=Black>/</font>ghc<font color="#2149c1">-</font><font color="#0000ee">7.4</font><font color=Black>.</font><font color="#0000ee">1</font></pre>
+
+<p>и исполняемый файл в директорию:</p>
+<pre><font color=Green>Installing</font> executable<font color=Black>(</font>s<font color=Black>)</font> <font color="#b2590f">in</font> <font color=Black>/</font>home<font color=Black>/</font>anton<font color=Black>/.</font>cabal<font color=Black>/</font>bin</pre>
+<p>С помощью различных флагов мы можем контролировать процесс установки пакета. Назначать дополнительные директории, указывать куда поместить скомпилированные файлы. Подробно об этом можно почитать в справке, выполнив в командной строке одну из команд:</p>
+<pre><font color=Black>cabal</font> <font color=Black>--help</font>
+<font color=Black>cabal</font> install <font color=Black>--help</font></pre>
+<p>Если у вас не получилось сразу установить пакет не отчаивайтесь и почитайте сообщения об ошибках из <code><font color=Black>cabal</font></code>, он информативно жалуется о забытых зависимостях и неспособности правильно прочитать файл с описанием пакета.</p>
+<h3 id="удаление-библиотеки"><a href="#TOC">Удаление библиотеки</a></h3>
+<p>Установленные с помощью <code><font color=Black>cabal</font></code> файлы видны из любого модуля. Имена модулей регистрируются глобально. Если нам захочется установить библиотеку с уже зарегистрированным именем, произойдёт хаос. Возможно прежняя библиотека нам уже не нужна. Как нам удалить её? Посмотрим на решение для компилятора ghc. Мы можем посмотреть список всех зарегистрированных в ghc библиотек с помощью команды:</p>
+<pre>$ ghc-pkg list
+   Cabal-1.8.0.6
+   array-0.3.0.1
+   base-4.2.0.2
+   ...
+   ...</pre>
+<p>Появится длинный список с именами библиотек. Для удаления одной из них мы можем выполнить команду:</p>
+<pre><font color=Black>ghc</font><font color="#2149c1">-</font>pkg unregister имя<font color="#2149c1">-</font>библиотеки</pre>
+<p>Например так мы можем удалить только что установленную библиотеку <code><font color=Black>hello</font></code>:</p>
+<pre>$ ghc-pkg unregister hello</pre>
+<h3 id="репозиторий-пакетов-hackage"><a href="#TOC">Репозиторий пакетов Hackage</a></h3>
+<p>Если у нас подключен интернет, то мы можем воспользоваться наследием сообщества Haskell и установить пакет с <code><font color=Green>Hackage</font></code>. Там расположено много-много-много пакетов. Любой разработчик Haskell может добавить свой пакет на <code><font color=Green>Hackage</font></code>. Посмотреть на пакеты можно на сайте этого репозитория:</p>
+<blockquote>
+<p><a href="http://hackage.haskell.org"><code class="url">http://hackage.haskell.org</code></a></p>
+</blockquote>
+<p>Если для вашей задачи необходимо выполнить какую-нибудь довольно общую задачу, например написать тип красно-чёрных деревьев или построить парсер или возможно вам нужен веб-сервер, поищите этот пакет на <code><font color=Green>Hackage</font></code>, он там наверняка окажется, ещё и в нескольких вариантах.</p>
+<p>Для установки пакета с <code><font color=Green>Hackage</font></code> нужно просто написать</p>
+<pre><font color=Black>cabal</font> install имя<font color="#2149c1">-</font>пакета</pre>
+<p>Возможно нам нужен очень новый пакет, который был только что залит автором на <code><font color=Green>Hackage</font></code>. Тогда выполняем:</p>
+<pre><font color=Black>cabal</font> update</pre>
+<p>Происходит обновление данных о загруженных на <code><font color=Green>Hackage</font></code>. Что хорошо, вы можете загрузить исходники из <code><font color=Green>Hackage</font></code>, например у вас никак не получается написать пакет, который устанавливался бы без ошибок. Просто загрузим исходники какого-нибудь пакета из <code><font color=Green>Hackage</font></code> и посмотрим на пример рабочего пакета.</p>
+<h3 id="дополнительные-атрибуты-пакета"><a href="#TOC">Дополнительные атрибуты пакета</a></h3>
+<p>В файле <code><font color=Black>.</font>cabal</code> также часто указывают такие атрибуты как:</p>
+<dl>
+<dt><code><font color=Green>Maintainer</font></code></dt>
+<dd><p>Поле содержит адрес электронной почты тех.~поддержки</p>
+</dd>
+<dt><code><font color=Green>Stability</font></code></dt>
+<dd><p>Статус версии библиотеки (стабильная, экспериментальная, нестабильная).</p>
+</dd>
+<dt><code><font color=Green>Description</font></code></dt>
+<dd><p>Подробное описание назначения пакета. Оно помещается на главную страницу пакета в документации.</p>
+</dd>
+<dt><code><font color=Green>Extra</font><font color="#2149c1">-</font><font color=Green>Source</font><font color="#2149c1">-</font><font color=Green>Files</font></code></dt>
+<dd><p>В этом поле можно через пробел указать дополнительные файлы, включаемые в пакет. Это могут быть примеры использования, описание в формате PDF или хроника изменений и другие служебные файлы.</p>
+</dd>
+<dt><code><font color=Green>License</font><font color="#2149c1">-</font>file</code></dt>
+<dd><p>Путь к файлу с лицензией.</p>
+</dd>
+<dt><code><font color=Black>ghc</font><font color="#2149c1">-</font>options</code></dt>
+<dd><p>Флаги компиляции для GHC. Если в нашей библиотеке мы активно пользуемся продвинутыми прагмами оптимизации, необходимо сообщить об этом компилятору пользователя. Например, мы можем написать в этом атрибуте <code><font color="#2149c1">-</font><font color=Green>O</font></code> или <code><font color="#2149c1">-</font><font color=Green>O2</font></code>.</p>
+</dd>
+</dl>
+<h3 id="установка-библиотек-для-профилирования"><a href="#TOC">Установка библиотек для профилирования</a></h3>
+<p>Помните когда-то мы занимались профилированием? Это было в главе, посвящённой устройству GHC. Мы включали флаг <code><font color="#2149c1">-</font>prof</code> и всё шло гладко. Там мы профилировали код, в котором участвовали лишь стандартные библиотеки из пакета <code><font color=Black>base</font></code>, такие как <code><font color=Green>Prelude</font></code>. Но если мы попробуем профилировать код с какими-нибудь другими библиотеками, установленными с помощью <code><font color=Black>cabal</font></code>, GHC возмутится и скажет, что для профилирования не хватает специальной версии библиотеки <code><font color=Black>имярек</font></code>. Для того чтобы иметь возможность профилировать код, в котором участвуют другие библиотеки необходимо установить их с возможностью профилирования. Это делается при установке с помощью специального флага <code><font color=Black>--``enable-library-profiling</font></code> или <code><font color=Black>--``enable-executable-profiling</font></code> (если мы устанавливаем исполняемое приложение):</p>
+<pre>$ cabal install имярек --reinstall --enable-library-profiling</pre>
+<p>Библиотека будет установлена в двух экземплярах: для исполнения и профилирования. Возможно библиотека <code><font color=Black>имярек</font></code> потребует переустановки некоторых библиотек, от которых она зависит. Повторяем эту процедуру для этих библиотек и возвращаемся к исходной библиотеке.</p>
+<h2 id="создание-документации-с-помощью-haddock"><a href="#TOC">Создание документации с помощью Haddock</a></h2>
+<p>Если мы зайдём на Hackage, то там мы увидим длинный список пакетов, отсортированных по категориям. К какой категории какой пакет относится мы указываем в <code><font color=Black>.</font>cabal</code>-файле в атрибуте <code><font color=Green>Category</font></code>. Далее рядом с именем пакета мы видим краткое описание, оно берётся из атрибута <code><font color=Green>Synopsis</font></code>. Если мы зайдём на страницу одного из пакетов, то там мы увидим страницу в таком же формате, что и документация к стандартным библиотекам. Мы видим описание пакета и ниже иерархию модулей. Мы можем зайти в заинтересовавший нас модуль и посмотреть на объявленные функции, типы и классы. В самом низу страницы находится ссылка к исходникам пакета.</p>
+<p>“Домашняя страница” пакета была создана с помощью приложения <code><font color=Green>Haddock</font></code>. Оно генерирует документацию в формате <code><font color=Black>html</font></code> по специальным комментариям. <code><font color=Green>Haddock</font></code> встроен в <code><font color=Black>cabal</font></code>, например мы можем сделать документацию к нашему пакету <code><font color=Black>hello</font></code>. Для этого нужно переключиться на корневую директорию пакета и вызвать:</p>
+<pre><font color=Black>cabal</font> haddock</pre>
+<p>После этого в директории <code><font color=Black>dist</font></code> появится директория <code><font color=Black>doc</font></code>, в которой внутри директории <code><font color=Black>html</font></code> находится созданная документация. Мы можем открыть файл <code><font color=Black>index</font><font color=Black>.</font>html</code> и там мы увидим “иерархию нашего” модуля. В модуле пока нет ни одной функции, так получилось потому, что <code><font color=Green>Haddock</font></code> помещает в документацию лишь те функции, у которых есть объявление типа. Если мы добавим в модуле <code><font color=Green>Hello</font><font color=Black>.</font>hs</code>: к единственной функции объявление типа:</p>
+<pre><font color=Black>helloWorld</font> <font color="#b2590f">::</font> <font color=Green>String</font>
+<font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font></pre>
+<p>И теперь перезапустим <code><font color=Black>haddock</font></code>. То мы увидим, что в модуле <code><font color=Green>Hello</font></code> появилась одна запись.</p>
+<h3 id="комментарии-к-определениям"><a href="#TOC">Комментарии к определениям</a></h3>
+<p>Прокомментировать любое определение можно с помощью комментария следующего вида:</p>
+<pre><font color="#2149c1">-- | Here is the comment</font>
+<font color=Black>helloWorld</font> <font color="#b2590f">::</font> <font color=Green>String</font>
+<font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font></pre>
+<p>Обратите внимание на значок “или”, сразу после комментариев. Этот комментарий будет включен в документацию. Также можно писать комментарии после определения для этого к комментарию добавляется значок степени:</p>
+<pre><font color=Black>helloWorld</font> <font color="#b2590f">::</font> <font color=Green>String</font>
+<font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font>
+<font color="#2149c1">-- ^ Here is the comment</font></pre>
+<p>К сожалению на момент написания этих строк <code><font color=Green>Haddock</font></code> может включать в документацию лишь латинские символы. Комментарии могут простираться несколько строк:</p>
+<pre><font color="#2149c1">-- | Here is the type.</font>
+<font color="#2149c1">-- It contains three elements.</font>
+<font color="#2149c1">-- That's it.</font>
+<font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A</font> <font color="#b2590f">|</font> <font color=Green>B</font> <font color="#b2590f">|</font> <font color=Green>C</font></pre>
+<p>Также они могут быть блочными:</p>
+<pre><font color="#2149c1">{-|
+   Here is the type.
+   It contains three elements.
+   That's it.
+ -}</font>
+<font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A</font> <font color="#b2590f">|</font> <font color=Green>B</font> <font color="#b2590f">|</font> <font color=Green>C</font></pre>
+<p>Мы можем комментировать не только определение целиком, но и отдельные части. Например так мы можем пояснить отдельные аргументы у функции:</p>
+<pre><font color=Black>add</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> a   <font color="#2149c1">-- ^ The first argument</font>
+             <font color="#b2590f">-&gt;</font> a   <font color="#2149c1">-- ^ The second argument   </font>
+             <font color="#b2590f">-&gt;</font> a   <font color="#2149c1">-- ^ The return value   </font></pre>
+<p>Методы класса и отдельные конструкторы типа можно комментировать как обычные функции:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>T</font>
+        <font color="#2149c1">-- | constructor A    </font>
+       <font color="#b2590f">=</font> <font color=Green>A</font>      
+        <font color="#2149c1">-- | constructor B</font>
+       <font color="#b2590f">|</font> <font color=Green>B</font>      
+        <font color="#2149c1">-- | constructor C</font>
+       <font color="#b2590f">|</font> <font color=Green>C</font>     </pre>
+<p>Или так:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A</font>      <font color="#2149c1">-- ^ constructor A</font>
+       <font color="#b2590f">|</font> <font color=Green>B</font>      <font color="#2149c1">-- ^ constructor B</font>
+       <font color="#b2590f">|</font> <font color=Green>C</font>      <font color="#2149c1">-- ^ and so on</font></pre>
+<p>Комментарии к классу:</p>
+<pre><font color="#2149c1">-- | С-class</font>
+<font color="#b2590f">class</font> <font color=Green>С</font> a <font color="#b2590f">where</font>
+    <font color="#2149c1">-- | f-function</font>
+    f <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a
+    <font color="#2149c1">-- | g-function</font>
+    g <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<h3 id="комментарии-к-модулю"><a href="#TOC">Комментарии к модулю</a></h3>
+<p>Комментарии к модулю помещаются перед объявлением имени модуля. Эта информация попадёт в самое начало страницы документации:</p>
+<pre><font color="#2149c1">-- | Little example</font>
+<font color="#b2590f">module</font> <font color=Green>Hello</font> <font color="#b2590f">where</font></pre>
+<h3 id="структура-страницы-документации"><a href="#TOC">Структура страницы документации</a></h3>
+<p>Если модуль большой, то его бывает удобно разделить на части, словно разделы в главе книги. Определения группируются по функциональности и помещаются в разные разделы или даже подразделы. Структура документации определяется с помощью специальных комментариев в экспорте модуля. Посмотрим на пример:</p>
+<pre><font color="#2149c1">-- | Little example</font>
+<font color="#b2590f">module</font> <font color=Green>Hello</font><font color=Black>(</font>
+    <font color="#2149c1">-- * Introduction</font>
+    <font color="#2149c1">-- | Here is the little example to show you</font>
+    <font color="#2149c1">-- how to make docs with Haddock</font>
+    
+    <font color="#2149c1">-- * Types</font>
+    <font color="#2149c1">-- | The types.</font>
+    <font color=Green>T</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font>
+    <font color="#2149c1">-- * Classes</font>
+    <font color="#2149c1">-- | The classes.</font>
+    <font color=Green>C</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font>
+    <font color="#2149c1">-- * Functions</font>
+    helloWorld
+    <font color="#2149c1">-- ** Subfunctions1</font>
+    <font color="#2149c1">-- ** Subfunctions2    </font>
+<font color=Black>)</font> <font color="#b2590f">where</font>
+
+<font color=Black>...</font></pre>
+<p>Комментарии со звёздочкой создают раздел, а с двумя звёздочками – подраздел. Те определения, которые экспортируются за комментариями со звёздочкой попадут в один раздел или подраздел. Если сразу за комментарием со звёздочкой идёт комментарий со знаком “или”, то он будет помещён в самое начало раздела. В нём мы можем пояснить по какому принципу группируются определения в данном разделе.</p>
+<h3 id="разметка"><a href="#TOC">Разметка</a></h3>
+<p>С помощью специальных символов можно выделять различные элементы текста, например, ссылки, куски кода, названия определений или модулей. <code><font color=Green>Haddock</font></code> установит необходимые ссылки и выделит элемент в документации.</p>
+<p>При этом символы <code><font color="#b2590f">\</font></code>, <code><font color=Black>'</font></code>, <code><font color=Black>`</font></code>, <code><font color=Black>"</font></code>, <code><font color="#b2590f">@</font></code>, <code><font color=Black>&lt;</font></code> являются специальными, если вы хотите воспользоваться одним из специальных символов в тексте необходимо написать перед ним обратный слэш <code><font color="#b2590f">\</font></code>. Также символы для обозначения комментариев <code><font color=Black>*</font></code>, <code><font color="#b2590f">|</font></code>, <code><font color=Black>^</font></code> и <code><font color=Black>&gt;</font></code> являются специальными, если они расположены в самом начале строки.</p>
+<h4 id="параграфы"><a href="#TOC">Параграфы</a></h4>
+<p>Параграфы определяются по пустой сроке в комментарии. Так например мы можем разбить текст на два параграфа:</p>
+<pre><font color="#2149c1">-- | The first paragraph goes here.</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">-- The second paragraph goes here.</font>
+<font color=Black>fun</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b</pre>
+<h4 id="блоки-кода"><a href="#TOC">Блоки кода</a></h4>
+<p>Существует два способа обозначения блоков кода:</p>
+<pre><font color="#2149c1">-- | This documentation includes two blocks of code:</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">-- @</font>
+<font color="#2149c1">--     f x = x + x</font>
+<font color="#2149c1">--     g x = x</font>
+<font color="#2149c1">-- @</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">-- &gt;  g x = x * 42</font></pre>
+<p>В первом варианте мы заключаем блок кода в окружение <code><font color=Black>@...@</font></code>. Так мы можем выделить целый кусок кода. Для выделения одной строки мы можем воспользоваться знаком <code><font color=Black>&gt;</font></code>.</p>
+<h4 id="примеры-вычисления-в-интерпретаторе"><a href="#TOC">Примеры вычисления в интерпретаторе</a></h4>
+<p>В <code><font color=Green>Haddock</font></code> мы можем привести пример вычисления выражения в интерпретаторе. Это делается с помощью тройного символа <code><font color=Black>&gt;</font></code>:</p>
+<pre><font color="#2149c1">-- | Two examples are given bellow:</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">-- &gt;&gt;&gt; 2+3</font>
+<font color="#2149c1">-- 5</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">-- &gt;&gt;&gt; print 1 &gt;&gt; print 2</font>
+<font color="#2149c1">-- 1</font>
+<font color="#2149c1">-- 2</font></pre>
+<p>Строки, которые идут сразу за строкой с символом <code><font color=Black>&gt;&gt;&gt;</font></code> помечаются как результат выполнения выражения в интерпретаторе.</p>
+<h4 id="имена-определений"><a href="#TOC">Имена определений</a></h4>
+<p>Для того чтобы выделить имя любого определения, будь то функция, тип или класс, необходимо заключить его в ординарные кавычки, как в <code><font color=Black>'T'</font></code>. При этом <code><font color=Green>Haddock</font></code> установит ссылку к определению и подсветит имя в тексте. Для того чтобы сослаться на определение из другого модуля необходимо написать его полное имя, т.е.~с приставкой имени модуля, например функция <code><font color=Black>fun</font></code>, определённая в модуле <code><font color=Green>M</font></code>, имеет полное имя <code><font color=Green>M</font><font color=Black>.</font>fun</code>, тогда в комментариях мы обозначаем её <code><font color=Black>'</font><font color=Green>M</font><font color=Black>.</font>fun'</code>.</p>
+<p>Ординарные кавычки часто используются в английском языке как апострофы, в таких сочетаниях как don’t, isn’t. Перед такими вхождениями ординарных кавычек можно не писать обратный слэш. <code><font color=Green>Haddock</font></code> сумеет отличить их от идентификатора.</p>
+<h4 id="курсив-и-моноширинный-шрифт"><a href="#TOC">Курсив и моноширинный шрифт</a></h4>
+<p>Для выделения текста курсивом, он заключается в окружение <code><font color=Black>...</font></code>. Для написания текста моноширинным шрифтом, он заключается в окружение <code><font color=Black>@...@</font></code>.</p>
+<h4 id="модули"><a href="#TOC">Модули</a></h4>
+<p>Для обозначения модулей используются двойные кавычки, как в</p>
+<pre><font color="#2149c1">-- | This is a reference to the "Foo" module.</font></pre>
+<h4 id="списки"><a href="#TOC">Списки</a></h4>
+<p>Список без нумерации обозначается с помощью звёздочек:</p>
+<pre><font color="#2149c1">-- | This is a bulleted list:</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">--     * first item</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">--     * second item</font></pre>
+<p>Пронумерованный список, обозначается символами <code><font color=Black>(</font>n<font color=Black>)</font></code> или <code><font color=Black>n</font><font color=Black>.</font></code> (<code><font color=Black>n</font></code> с точкой), где <code><font color=Black>n</font></code> – некоторое целое число:</p>
+<pre><font color="#2149c1">-- | This is an enumerated list:</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">--     (1) first item</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">--     2. second item</font></pre>
+<h4 id="список-определений"><a href="#TOC">Список определений</a></h4>
+<p>Определения обозначаются квадратными скобками, например комментарий:</p>
+<pre><font color="#2149c1">-- | This is a definition list:</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">--   [@foo@] The description of @foo@.</font>
+<font color="#2149c1">--</font>
+<font color="#2149c1">--   [@bar@] The description of @bar@.</font></pre>
+
+<p>в документации будет выглядеть так:</p>
+<dl>
+<dt><code><font color=Black>foo</font></code></dt>
+<dd><p>The description of <code><font color=Black>foo</font></code>.</p>
+</dd>
+<dt><code><font color=Black>bar</font></code></dt>
+<dd><p>The description of <code><font color=Black>bar</font></code>.</p>
+</dd>
+</dl>
+<p></p>
+<p>Для выделения текста моноширинным шрифтом мы воспользовались окружением <code><font color=Black>@...@</font></code>.</p>
+<h4 id="url"><a href="#TOC">URL</a></h4>
+<p>Ссылки на сайты включаются с помощью окружения <code><font color=Black>&lt;...&gt;</font></code>.</p>
+<h4 id="ссылки-внутри-модуля"><a href="#TOC">Ссылки внутри модуля</a></h4>
+<p>Для того чтобы сослаться на какой-нибудь текст внутри модуля, его необходимо отметить ссылкой. Для этого мы помещаем в том месте, на которое мы хотим сослаться, запись <code><font color=Black><em>#</em></font>label<font color=Black><em>#</em></font></code>, где <code><font color=Black>label</font></code> – это идентификатор ссылки. Теперь мы можем сослаться на это место из другого модуля с помощью записи <code><font color=Black>"module#label"</font></code>, где <code><font color="#b2590f">module</font></code> – имя модуля, в котором находится ссылка <code><font color=Black>label</font></code>.</p>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>В этой главе мы познакомились с основными элементами арсенала разработчика программ. Мы научились создавать библиотеки и документировать их.</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<p>Вспомните один из примеров и превратите его в библиотеку. Например, напишите библиотеку для натуральных чисел Пеано.</p>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="17.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="19.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="17" style="list-style-type: decimal">
+<li>Дополнительные возможности
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="19" style="list-style-type: decimal">
+<li>Ориентируемся по карте
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

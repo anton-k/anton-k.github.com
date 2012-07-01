@@ -1,0 +1,641 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#поиграем">Поиграем</a><ul>
+<li><a href="#стратегия-написания-программ">Стратегия написания программ</a><ul>
+<li><a href="#описание-задачи">Описание задачи</a></li>
+<li><a href="#набросок-решения">Набросок решения</a></li>
+<li><a href="#каркас.-типы-и-классы">Каркас. Типы и классы</a></li>
+<li><a href="#ленивое-программирование">Ленивое программирование</a></li>
+</ul></li>
+<li><a href="#пятнашки">Пятнашки</a><ul>
+<li><a href="#цикл-игры">Цикл игры</a><ul>
+<li><a href="#отображение-позиции">Отображение позиции</a></li>
+<li><a href="#реакция-на-реплики-пользователя">Реакция на реплики пользователя</a></li>
+<li><a href="#слушаем-игрока">Слушаем игрока</a></li>
+</ul></li>
+<li><a href="#приведём-код-в-порядок">Приведём код в порядок</a><ul>
+<li><a href="#основные-функции">Основные функции</a></li>
+<li><a href="#запросы-от-пользователя">Запросы от пользователя (<code><font color=Black>getLine</font></code>)</a></li>
+<li><a href="#ответы-пользователю">Ответы пользователю (<code><font color=Black>putStrLn</font></code>)</a></li>
+</ul></li>
+<li><a href="#формат-запросов">Формат запросов</a></li>
+<li><a href="#последние-штрихи">Последние штрихи</a></li>
+<li><a href="#правила-игры">Правила игры</a><ul>
+<li><a href="#начальное-состояние">Начальное состояние</a></li>
+<li><a href="#делаем-ход">Делаем ход</a></li>
+<li><a href="#перемешиваем-фишки">Перемешиваем фишки</a></li>
+<li><a href="#отображение-положения">Отображение положения</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="12.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="14.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="поиграем"><a href="#TOC">Поиграем</a></h1>
+<p>Вот и закончилась первая часть книги. Мы узнали основные конструкции языка Haskell. В этой главе мы напишем законченную программу для игры в пятнашки. Ну или почти законченную, глава венчается упражнениями.</p>
+<h2 id="стратегия-написания-программ"><a href="#TOC">Стратегия написания программ</a></h2>
+<h3 id="описание-задачи"><a href="#TOC">Описание задачи</a></h3>
+<p>Решение задачи начинается с описания проблемы и наброска решения. Мы хотим создать программу, в которой можно будет играть в пятнашки. Если вам не знакома это игра, то взгляните на рисунок. Игра начинается с позиции, в которой все фишки перемешаны. Необходимо, переставляя фишки, вернуться в исходное положение. В исходном положении фишки идут по порядку.</p>
+<div>
+<img src="../pic/13/15.png" alt="Случайное и конечное состояние игры пятнашки" />
+</div>
+
+<p></p>
+<p>Программа будет перемешивать фишки и отображать поле для игры. Она будет спрашивать следующий ход и обновлять поле после хода. Если мы расставим все фишки по порядку, программа сообщит нам об этом и предложит начать новую игру. В каждый момент мы можем не только сделать ход, но и покинуть игру или начать всё заново. Известно, что не из любого положения можно расставить фишки по порядку. Поэтому наш алгоритм перемешивания должен генерировать только такие позиции, для которых решение возможно.</p>
+<h3 id="набросок-решения"><a href="#TOC">Набросок решения</a></h3>
+<p>Программа, которую мы хотим написать, будет вести диалог с пользователем. Она показывает поле для игры и спрашивает ход следующий ход. Потом она распознаёт ход, и показывает обновлённое поле. И так далее. Нам нужно как-то организовать этот диалог.</p>
+<p>При этом в программе можно выделить две независимые части. Одна отвечает за сам диалог. Она принимает реплики пользователя и отображает поле для игры. А другая часть отвечает за правила игры пятнашки: как ходы влияют на поле, какое положение является победным, как перемешивать фишки.</p>
+<p>У нас будет два отдельных модуля: один для описания игры, назовём его <code><font color=Green>Game</font></code>, а другой для описания диалога с пользователем. Мы назовём его <code><font color=Green>Loop</font></code> (петля или цикл), поскольку диалог это зацикленная процедура получения реплики и реакции на реплику.</p>
+<p>Такой вот набросок-ориентир. После этого можно приступать к реализации. Но с чего начать?</p>
+<h3 id="каркас.-типы-и-классы"><a href="#TOC">Каркас. Типы и классы</a></h3>
+<p>В Haskell программы обычно начинают строить с каркаса, т.е.~с типов и классов. Нам нужно выделить основные сущности и подумать какие типы подходят для их описания лучше всего.</p>
+<p>В нашей задаче есть поле с фишками и ходы. Мы делаем ходы и фишки двигаются. Поле – это матрица или двумерный массив. У нас есть два индекса, которые пробегают значения от нуля до трёх. В каждой ячейке массива хранятся фишки. Фишки обозначаются целыми числами:</p>
+<pre><font color="#b2590f">type</font> <font color=Green>Pos</font>    <font color="#b2590f">=</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color="#b2590f">type</font> <font color=Green>Label</font>  <font color="#b2590f">=</font> <font color=Green>Int</font>
+
+<font color="#b2590f">type</font> <font color=Green>Board</font>  <font color="#b2590f">=</font> <font color=Green>Array</font> <font color=Green>Pos</font> <font color=Green>Label</font></pre>
+<p>Пустую фишку мы будем также обозначать числом. Физически когда мы ходим, мы меняем положение одной фишки. Но в нашем описании мы меняем местами две фишки, поскольку пустая фишка также обозначается номером. Когда мы ходим, мы меняем положение пустой фишки, одним ходом мы можем сместить её вверх, вниз, влево или вправо. Введём специальный тип для обозначения ходов:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Move</font> <font color="#b2590f">=</font> <font color=Green>Up</font> <font color="#b2590f">|</font> <font color=Green>Down</font> <font color="#b2590f">|</font> <font color=Green>Left</font> <font color="#b2590f">|</font> <font color=Green>Right</font></pre>
+<p>Для того чтобы при каждом ходе не искать пустую клетку, давайте сохраним её текущее положение. Тип <code><font color=Green>Game</font></code> будет содержать текущее положение пустой клетки и положение фишек:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Game</font> <font color="#b2590f">=</font> <font color=Green>Game</font> <font color=Black>{</font>
+        emptyField  <font color="#b2590f">::</font> <font color=Green>Pos</font><font color=Black>,</font>
+        gameBoard   <font color="#b2590f">::</font> <font color=Green>Board</font> <font color=Black>}</font></pre>
+<p>Вот и все типы для описания игры. Сохраним их в модуле <code><font color=Green>Game</font></code>. Теперь подумаем о типах для диалога с пользователем. В этом модуле наверняка будет много функций с типом <code><font color=Green>IO</font></code>, потому что в нём происходит взаимодействие с игроком. Но, что является каркасом для диалога?</p>
+<p>Если мы хотим с кем-нибудь общаться, необходимо чтобы у нас был с собеседником общий язык, он и будет каркасом для диалога. Вспомним, что мы ожидаем от пользователя. Пользователь может:</p>
+<ul>
+<li><p>Сделать ход</p></li>
+<li><p>Начать новую игру</p></li>
+<li><p>Выйти из игры</p></li>
+</ul>
+<p>Если пользователь делает ход мы показываем новое положение поля, если он начинает новую игру мы показываем ему новую перемешанную позицию, давайте у нас будет разная степень перемешанности фигур. При перемешивании мы стартуем из победного положения и начинаем случайным образом делать ходы. Чем больше ходов мы сделаем тем сложнее будет собрать игру. Поэтому пользователь будет указывать число шагов для перемешивания при запросе новой игры. Если пользователь попросит закончить игру мы попрощаемся и выйдем из игры.</p>
+<p>На основе этих рассуждений вырисовывается следующий тип для сообщений:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Query</font> <font color="#b2590f">=</font> <font color=Green>Quit</font> <font color="#b2590f">|</font> <font color=Green>NewGame</font> <font color=Green>Int</font> <font color="#b2590f">|</font> <font color=Green>Play</font> <font color=Green>Move</font></pre>
+<p>Значение типа <code><font color=Green>Query</font></code> (запрос) может быть константа <code><font color=Green>Quit</font></code> (выход), запрос новой игры <code><font color=Green>NewGame</font></code> с числом, которое указывает на сложность новой игры, также игрок может просто сделать ход <code><font color=Green>Play</font> <font color=Green>Move</font></code>.</p>
+<p>А каков формат наших ответов? Все наши ответы на самом деле будут вызовами функции <code><font color=Black>putStrLn</font></code> мы будем отвечать пользователю изменениями экрана. Поэтому у нас нет специального типа для ответов. Итак у нас есть каркас, который можно начинать покрывать значениями. На этом этапе у нас есть два модуля. Это модуль <code><font color=Green>Loop</font></code>:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Loop</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Game</font>
+
+<font color="#b2590f">data</font> <font color=Green>Query</font> <font color="#b2590f">=</font> <font color=Green>Quit</font> <font color="#b2590f">|</font> <font color=Green>NewGame</font> <font color=Green>Int</font> <font color="#b2590f">|</font> <font color=Green>Play</font> <font color=Green>Move</font></pre>
+
+<p>И модуль <code><font color=Green>Game</font></code>:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Array</font>
+
+<font color="#b2590f">data</font> <font color=Green>Move</font> <font color="#b2590f">=</font> <font color=Green>Up</font> <font color="#b2590f">|</font> <font color=Green>Down</font> <font color="#b2590f">|</font> <font color=Green>Left</font> <font color="#b2590f">|</font> <font color=Green>Right</font>
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Enum</font><font color=Black>)</font>
+
+<font color="#b2590f">type</font> <font color=Green>Label</font> <font color="#b2590f">=</font> <font color=Green>Int</font>
+
+<font color="#b2590f">type</font> <font color=Green>Pos</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+
+<font color="#b2590f">type</font> <font color=Green>Board</font> <font color="#b2590f">=</font> <font color=Green>Array</font> <font color=Green>Pos</font> <font color=Green>Label</font>
+
+<font color="#b2590f">data</font> <font color=Green>Game</font> <font color="#b2590f">=</font> <font color=Green>Game</font> <font color=Black>{</font>
+        emptyField  <font color="#b2590f">::</font> <font color=Green>Pos</font><font color=Black>,</font>
+        gameBoard   <font color="#b2590f">::</font> <font color=Green>Board</font> <font color=Black>}</font></pre>
+<h3 id="ленивое-программирование"><a href="#TOC">Ленивое программирование</a></h3>
+<p>Мы уже знаем как происходят ленивые вычисления. Мы принимаем выражение и начинаем очищать его от синонимов от корня к листьям или сверху вниз. Оказывается таким способом можно писать программы. Более того в функциональном программировании это очень распространённый подход. Мы начинаем со спецификации задачи (неформального описания) и потихоньку вытягиваем из него выражения языка Haskell. Начинаем мы с корня, с самой верхней функции. Эта функция будет состоять из подвыражений. Когда мы напишем верхнюю функцию, мы перейдём к подвыражениям. И так мы будем спускаться пока не напишем всю программу.</p>
+<p>Кажется, что такой подход очень не надёжен. Ведь мы сможем запустить программу только когда напишем её целиком. На каждом промежуточном шаге у нас есть неопределённые подвыражения. Получается, что очень долгое время мы будем писать программу, не зная работает она или нет.</p>
+<p>Оказывается, что в Haskell есть решение этой проблемы. Нам поможет значение <code><font color=Black>undefined</font></code>. Мы будем писать только тип функции (и мысленно будем говорить, пусть она делает то-то), а вместо определения будем писать <code><font color=Black>undefined</font></code>. При этом конечно мы не сможем выполнять программу, вычислитель подорвётся на первом же значении, но мы сможем узнать осмысленна ли наша программа с точки зрения компилятора, проходит ли она проверку типов. В Haskell это большой плюс. Если программа прошла проверку типов, то скорее всего она будет работать.</p>
+<p>Такой подход написания программ называется написанием сверху вниз. Мы начинаем с самой верхней функции и потихоньку вычищаем все <code><font color=Black>undefined</font></code>. Если вспомнить ленивые вычисления, то там роль <code><font color=Black>undefined</font></code> выполняли отложенные вычисления.</p>
+<p>В чём преимущества такого подхода? Посмотрим на дерево. Если мы идём сверху вниз, то в самом начале у нас лишь одна задача, потом их становится всё больше и больше. Они дробятся, но источник у них один. Мы всегда знаем, что нам нужно чтобы закончить нашу задачу. Написать это, это и это подвыражение. Беда только в том, что это подвыражение содержит ещё больше подвыражений. Но сложные подвыражения мы можем оставить на потом и заняться другими. А потом, когда мы их доделаем может вдруг оказаться, что это сложное выражение нам и не нужно.</p>
+<div>
+<img src="../pic/13/tree.png" alt="Дерево задач" />
+</div>
+
+<p></p>
+<p>Если же мы начинаем идти из листьев, то у нас много отправных точек, которые должны сойтись в одной цели. При этом они могут и не сойтись, мы можем застрять в одной точке и потратить слишком много времени. И на остальные задачи у нас не хватит сил или мы можем потратить много времени на решение задачи, которая совсем не нужна для итогового решения. Также как и в вычислениях по значению, мы можем застрять на вычислении бесконечного значения, даже если в итоговом ответе нам понадобится лишь его малая часть.</p>
+<p>Ещё один плюс решения сверху вниз состоит в экономии усилий. Мы можем написать всю программу в виде функций, которые состоят лишь из определений типов. И утрясти общую схему программы на типах. Мы не тратим время на реализацию, а смотрим как программа выглядит “вцелом”. Если общий набросок нас устраивает мы можем начать заполнять дыры и детализировать отдельные выражения. Так мы будем детализировать-детализировать пока не придём к первоначальному решению. Далее если у нас останется время мы можем сменить реализацию некоторых частей. Но общая схема останется прежней, она уже устоялась на уровне типов. Часто такую стратегию разработки называют разработкой через прототипы (developing by prototyping). При этом процесс написания приложения можно представить как процесс сходимости, приближения к пределу. У нас есть серия промежуточных решений или прототипов, которые с каждым шагом всё точнее и точнее описывают итоговую программу. Также если мы работаем в команде, то дробление задачи на подзадачи происходит естественно, в ходе детализации, мы можем распределить нагрузку, распределив разные <code><font color=Black>undefined</font></code> между участниками проекта.</p>
+<p>Но давайте приступим к реализации нашей игры. Самая верхняя функция, будет запускать программу. Назовём её <code><font color=Black>play</font></code>. Это функция взаимодействия с пользователем она ведёт диалог, поэтому её тип будет <code><font color=Green>IO</font> <font color=Green>()</font></code>:</p>
+<pre><font color=Black>play</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>play</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Итак у нас появилась корневая функция. Что мы будем в ней делать? Для начала мы поприветствуем игрока (функция <code><font color=Black>greetings</font></code>). Затем предложим ему начать игру (функция <code><font color=Black>setup</font></code>), после чего запустим цикл игры (функция <code><font color=Black>gameLoop</font></code>). Приветствие это просто надпись на экране, поэтому тип у него будет <code><font color=Green>IO</font> <font color=Green>()</font></code>. Предложение игры вернёт стартовую позицию для игры, поэтому тип будет <code><font color=Green>IO</font> <font color=Green>Game</font></code>. Цикл игры принимает состояние и продолжает диалог. В типах это выражается так:</p>
+<pre><font color=Black>play</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>play</font> <font color="#b2590f">=</font> greetings <font color=Black>&gt;&gt;</font> setup <font color=Black>&gt;&gt;=</font> gameLoop
+
+<font color=Black>greetings</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>greetings</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>setup</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>setup</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>gameLoop</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>gameLoop</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Сохраним эти определения в модуле <code><font color=Green>Loop</font></code> и загрузим модуль с программой в интерпретатор:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>Loop</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Game</font>             <font color=Black>(</font> <font color=Green>Game</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> </pre>
+<p>Модуль загрузился. Он потянул за собой модуль <code><font color=Green>Game</font></code>, потому что мы воспользовались типом <code><font color=Green>Move</font></code> из этого модуля. Программа прошла проверку типов, значит она осмысленна и мы можем двигаться дальше.</p>
+<p>У нас три варианта дальнейшей детализации это функции <code><font color=Black>greetings</font></code>, <code><font color=Black>setup</font></code> и <code><font color=Black>gameLoop</font></code>. Мы пока пропустим <code><font color=Black>greetings</font></code> там мы напишем какое-нибудь приветствие и сообщим игроку куда он попал и как ходить.</p>
+<p>В функции <code><font color=Black>setup</font></code> нам нужно начать первую игру. Для начала игры нам нужно узнать её сложность, т.е.~на сколько ходов перемешивать позицию. Это значит, что нам нужно спросить у игрока целое число. Мы спросим число функцией <code><font color=Black>getLine</font></code>, а затем попробуем его распознать. Если пользователь ввёл не число, то мы попросим его повторить ввод. Функция <code><font color=Black>readInt</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font></code> распознаёт число. Она возвращает целое число завёрнутое в <code><font color=Green>Maybe</font></code>, потому что строка может оказаться не числом. Затем это число мы используем в функции <code><font color=Black>shuffle</font></code> (перемешать), которая будет возвращать позицию, которая перемешана с заданной глубиной.</p>
+<pre><font color="#2149c1">-- в модуль Loop</font>
+
+<font color=Black>setup</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>setup</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"Начнём новую игру?"</font> <font color=Black>&gt;&gt;</font>
+    putStrLn <font color=Black>"Укажите сложность (положительное целое число): "</font> <font color=Black>&gt;&gt;</font>
+    getLine <font color=Black>&gt;&gt;=</font> maybe setup shuffle <font color=Black>.</font> readInt 
+
+<font color=Black>readInt</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font>
+<font color=Black>readInt</font> <font color="#b2590f">=</font> undefined
+
+<font color="#2149c1">-- в модуль Game:</font>
+
+<font color=Black>shuffle</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>shuffle</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Функция <code><font color=Black>shuffle</font></code> возвращает состояние игры <code><font color=Green>Game</font></code>, которое завёрнуто в <code><font color=Green>IO</font></code>. Оно завёрнуто в <code><font color=Green>IO</font></code>, потому что перемешивать позицию мы будем случайным образом, это значит, что мы воспользуемся функциями из модуля <code><font color=Green>Random</font></code>. Мы хотим чтобы каждая новая игра начиналась с новой позиции, поэтому скорее всего где-то в недрах функции <code><font color=Black>shuffle</font></code> мы воспользуемся <code><font color=Black>newStdGen</font></code>, которая и потянет за собой тип <code><font color=Green>IO</font></code>.</p>
+<p>Игра перемешивается согласно правилам, поэтому функцию <code><font color=Black>shuffle</font></code> мы поселим в модуле <code><font color=Green>Game</font></code>. А функция <code><font color=Black>readInt</font></code> это скорее элемент взаимодействия с пользователем, ведь в ней мы распознаём число в строчном ответе, она останется в модуле <code><font color=Green>Loop</font></code>.</p>
+<p>Проверим работает ли наша программа:</p>
+<pre><font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>r
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Game</font>             <font color=Black>(</font> <font color=Green>Game</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> </pre>
+<p>Работает! Можно спускаться по дереву выражения ниже. Сейчас нам предстоит написать одну из самых сложных функций, это функция <code><font color=Black>gameLoop</font></code>.</p>
+<h2 id="пятнашки"><a href="#TOC">Пятнашки</a></h2>
+<h3 id="цикл-игры"><a href="#TOC">Цикл игры</a></h3>
+<p>Функция цикла игры принимает текущую позицию. При этом у на два варианта. Возможно игра пришла в конечное положение (<code><font color=Black>isGameOver</font></code>) и мы можем сообщить игроку о том, что он победил (<code><font color=Black>showResults</font></code>), если это не так, то мы покажем текущее положение (<code><font color=Black>showGame</font></code>), спросим ход (<code><font color=Black>askForMove</font></code>) и среагируем на ход (<code><font color=Black>reactOnMove</font></code>).</p>
+<pre><font color="#2149c1">-- в модуль Loop</font>
+
+<font color=Black>gameLoop</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>gameLoop</font> game 
+    <font color="#b2590f">|</font> isGameOver game   <font color="#b2590f">=</font> showResults game <font color=Black>&gt;&gt;</font> setup <font color=Black>&gt;&gt;=</font> gameLoop
+    <font color="#b2590f">|</font> otherwise         <font color="#b2590f">=</font> showGame game <font color=Black>&gt;&gt;</font> askForMove <font color=Black>&gt;&gt;=</font> reactOnMove game
+
+
+<font color=Black>showResults</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showResults</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>showGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showGame</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>askForMove</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Query</font>
+<font color=Black>askForMove</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>reactOnMove</font> <font color="#b2590f">=</font> undefined
+
+<font color="#2149c1">-- в модуль Game</font>
+
+<font color=Black>isGameOver</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>isGameOver</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Как определить закончилась игра или нет это скорее дело модуля <code><font color=Green>Game</font></code>. Все остальные функции принадлежат модулю <code><font color=Green>Loop</font></code>. Функция <code><font color=Black>askForMove</font></code> возвращает реплику пользователя и тут же направляет её в функцию <code><font color=Black>reactOnMove</font></code>. Функции <code><font color=Black>showGame</font></code> и <code><font color=Black>showResults</font></code> ничего не возвращают, они только меняют состояния экрана. После того как игра закончится мы предложим игроку начать новую.</p>
+<p>Обратите внимание на то, как даже не дав определение функции, мы всё же очерчиваем её смысл в объявлении типа. Так посмотрев на функцию <code><font color=Black>askForMove</font></code> и сопоставив тип с именем, мы можем понять, что эта функция предназначена для запроса значения типа <code><font color=Green>Query</font></code>, для запроса реплики пользователя. А по типу функции <code><font color=Black>showGame</font></code> мы можем понять, что она проводит какой-то побочный эффект, судя по имени что-то показывает, из типа видно что показывает значение типа <code><font color=Green>Game</font></code> или текущую позицию.</p>
+<h4 id="отображение-позиции"><a href="#TOC">Отображение позиции</a></h4>
+<p>Определим функции отображения результата и позиции. Когда игра закончится мы покажем итоговое положение и объявим результат.</p>
+<pre><font color=Black>showResults</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showResults</font> g <font color="#b2590f">=</font> showGame g <font color=Black>&gt;&gt;</font> putStrLn <font color=Black>"Игра окончена."</font></pre>
+<p>Теперь определим функцию <code><font color=Black>showGame</font></code>. Если тип <code><font color=Green>Game</font></code> является экземпляром класса <code><font color=Green>Show</font></code>, то определение окажется совсем простым:</p>
+<pre><font color="#2149c1">-- в модуль Loop</font>
+
+<font color=Black>showGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showGame</font> <font color="#b2590f">=</font> putStrLn <font color=Black>.</font> show 
+
+<font color="#2149c1">-- в модуль Game</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
+    show <font color="#b2590f">=</font> undefined</pre>
+<h4 id="реакция-на-реплики-пользователя"><a href="#TOC">Реакция на реплики пользователя</a></h4>
+<p>Теперь нужно определить функции <code><font color=Black>askForMove</font></code> и <code><font color=Black>reactOnMove</font></code>. Первая функция требует установить протокол реплик пользователя, в каком виде он будет набирать значения типа <code><font color=Green>Query</font></code>. Нам пока лень об этом думать и мы перейдём к функции <code><font color=Black>reactOnMove</font></code>. Вспомним её тип:</p>
+<pre><font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Функция принимает текущее положение и запрос пользователя. И ничего не возвращает, она продолжает игру. В любом случае в этой функции будет сопоставление с образцом по запросам пользователя так что можно написать:</p>
+<pre><font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>reactOnMove</font> game query <font color="#b2590f">=</font> <font color="#b2590f">case</font> query <font color="#b2590f">of</font>
+    <font color=Green>Quit</font>        <font color="#b2590f">-&gt;</font> 
+    <font color=Green>NewGame</font> n   <font color="#b2590f">-&gt;</font> 
+    <font color=Green>Play</font>    m   <font color="#b2590f">-&gt;</font> </pre>
+<p>Рассмотрим каждый из случаев. В первом случае пользователь говорит, что ему надоело и он уже наигрался. Чтож попрощаемся и вернём значение единичного типа.</p>
+<pre><font color=Black>...</font>
+    <font color=Green>Quit</font>        <font color="#b2590f">-&gt;</font> quit
+<font color=Black>...</font>
+
+<font color=Black>quit</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>quit</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"До встречи."</font> <font color=Black>&gt;&gt;</font> return <font color=Green>()</font></pre>
+<p>В следующем варианте пользователь хочет начать всё заново. Так начнём!</p>
+<pre>    <font color=Green>NewGame</font> n   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>=&lt;&lt;</font> shuffle n</pre>
+<p>Мы вызвали функцию перемешивания <code><font color=Black>shuffle</font></code> с заданным уровнем сложности. И рекурсивно вызвали цикл игры с новой позицией. Всё началось по новой. В третьей альтернативе пользователь делает ход, на это мы должны обновить позицию запустить цикл игры с новым значением:</p>
+<pre><font color="#2149c1">-- в модуль Loop</font>
+    <font color=Green>Play</font>    m   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>$</font> move m game
+
+<font color="#2149c1">-- в модуль Game</font>
+<font color=Black>move</font> <font color="#b2590f">::</font> <font color=Green>Move</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font>
+<font color=Black>move</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Функция <code><font color=Black>move</font></code> обновляет согласно правилам текущую позицию. Соберём все определения вместе:</p>
+<pre><font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>reactOnMove</font> game query <font color="#b2590f">=</font> <font color="#b2590f">case</font> query <font color="#b2590f">of</font>
+    <font color=Green>Quit</font>        <font color="#b2590f">-&gt;</font> quit
+    <font color=Green>NewGame</font> n   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>=&lt;&lt;</font> shuffle n
+    <font color=Green>Play</font>    m   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>$</font> move m game</pre>
+<h4 id="слушаем-игрока"><a href="#TOC">Слушаем игрока</a></h4>
+<p>Теперь всё же вернёмся к функции <code><font color=Black>askForMove</font></code>, научимся слушать пользователя. Сначала мы скажем какую-нибудь вводную фразу, предложение ходить (<code><font color=Black>showAsk</font></code>) затем запросим строку стандартной функцией <code><font color=Black>getLine</font></code>, потом нам нужно будет распознать (<code><font color=Black>parseQuery</font></code>) в строке значение типа <code><font color=Green>Query</font></code>. Если распознать его нам не удастся, мы напомним пользователю как с нами общаться (<code><font color=Black>remindMoves</font></code>) и попросим сходить вновь:</p>
+<pre><font color=Black>askForMove</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Query</font>
+<font color=Black>askForMove</font> <font color="#b2590f">=</font> showAsk <font color=Black>&gt;&gt;</font>
+    getLine <font color=Black>&gt;&gt;=</font> maybe askAgain return <font color=Black>.</font> parseQuery 
+    <font color="#b2590f">where</font> askAgain <font color="#b2590f">=</font> wrongMove <font color=Black>&gt;&gt;</font> askForMove
+
+
+<font color=Black>parseQuery</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Query</font>
+<font color=Black>parseQuery</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>wrongMove</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>wrongMove</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"Не могу распознать ход."</font> <font color=Black>&gt;&gt;</font> remindMoves
+
+<font color=Black>showAsk</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showAsk</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>remindMoves</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>remindMoves</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Механизм распознавания похож на случай с распознаванием числа. Значение завёрнуто в тип <code><font color=Green>Maybe</font></code>. И в самом деле функция определена лишь частично, ведь не все строки кодируют то, что нам нужно.</p>
+<p>Функции <code><font color=Black>parseQuery</font></code> и <code><font color=Black>remindMoves</font></code> тесно связаны. В первой мы распознаём ввод пользователя, а во второй напоминаем пользователю как мы закодировали его запросы. Тут стоит остановиться и серьёзно подумать. Как закодировать значения типа <code><font color=Green>Query</font></code>, чтобы пользователю было удобно набирать их? Но давайте отвлечёмся от этой задачи, она слишком серьёзная. Оставим её на потом, а пока проверим не ушли ли мы слишком далеко, возможно наша программа потеряла смысл. Проверим типы!</p>
+<pre><font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>r
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Game</font>             <font color=Black>(</font> <font color=Green>Game</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font></pre>
+<h3 id="приведём-код-в-порядок"><a href="#TOC">Приведём код в порядок</a></h3>
+<p>Нам осталось дописать функции распознавания запросов и несколько маленьких функций с фразами и модуль <code><font color=Green>Loop</font></code> будет готов. Но перед тем как сделать это давайте упорядочим функции. Видно, что у нас выделилось несколько задач по типу общения с пользователем. У нас есть задачи, в которых мы что-то показываем пользователю, меняем состояние экрана и есть задачи, в которых мы просим от пользователя какие-то данные, ожидаем запросы функцией <code><font color=Black>getLine</font></code>. Также в самом верху выражения программы у нас расположены функции, которые координируют действия остальных, это третья группа. Сгруппируем функции по этому принципу.</p>
+<h4 id="основные-функции"><a href="#TOC">Основные функции</a></h4>
+<pre><font color=Black>play</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>play</font> <font color="#b2590f">=</font> greetings <font color=Black>&gt;&gt;</font> setup <font color=Black>&gt;&gt;=</font> gameLoop
+
+<font color=Black>gameLoop</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>gameLoop</font> game 
+    <font color="#b2590f">|</font> isGameOver game   <font color="#b2590f">=</font> showResults game <font color=Black>&gt;&gt;</font> setup <font color=Black>&gt;&gt;=</font> gameLoop
+    <font color="#b2590f">|</font> otherwise         <font color="#b2590f">=</font> showGame game <font color=Black>&gt;&gt;</font> askForMove <font color=Black>&gt;&gt;=</font> reactOnMove game
+
+<font color=Black>setup</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>setup</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"Начнём новую игру?"</font> <font color=Black>&gt;&gt;</font>
+    putStrLn <font color=Black>"Укажите сложность (положительное целое число): "</font> <font color=Black>&gt;&gt;</font>
+    getLine <font color=Black>&gt;&gt;=</font> maybe setup shuffle <font color=Black>.</font> readInt </pre>
+<h4 id="запросы-от-пользователя"><a href="#TOC">Запросы от пользователя (<code><font color=Black>getLine</font></code>)</a></h4>
+<pre><font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>reactOnMove</font> game query <font color="#b2590f">=</font> <font color="#b2590f">case</font> query <font color="#b2590f">of</font>
+    <font color=Green>Quit</font>        <font color="#b2590f">-&gt;</font> quit
+    <font color=Green>NewGame</font> n   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>=&lt;&lt;</font> shuffle n
+    <font color=Green>Play</font>    m   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>$</font> move m game
+
+<font color=Black>askForMove</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Query</font>
+<font color=Black>askForMove</font> <font color="#b2590f">=</font> showAsk <font color=Black>&gt;&gt;</font>
+    getLine <font color=Black>&gt;&gt;=</font> maybe askAgain return <font color=Black>.</font> parseQuery 
+    <font color="#b2590f">where</font> askAgain <font color="#b2590f">=</font> wrongMove <font color=Black>&gt;&gt;</font> askForMove
+
+<font color=Black>parseQuery</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Query</font>
+<font color=Black>parseQuery</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>readInt</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font>
+<font color=Black>readInt</font> <font color="#b2590f">=</font> undefined</pre>
+<h4 id="ответы-пользователю"><a href="#TOC">Ответы пользователю (<code><font color=Black>putStrLn</font></code>)</a></h4>
+<pre><font color=Black>greetings</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>greetings</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>showResults</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showResults</font> g <font color="#b2590f">=</font> showGame g <font color=Black>&gt;&gt;</font> putStrLn <font color=Black>"Игра окончена."</font>
+
+<font color=Black>showGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showGame</font> <font color="#b2590f">=</font> putStrLn <font color=Black>.</font> show
+
+<font color=Black>showAsk</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showAsk</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>quit</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>quit</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"До встречи."</font> <font color=Black>&gt;&gt;</font> return <font color=Green>()</font></pre>
+<p>По этим функциям видно, что нам немного осталось. Теперь вернёмся к запросам пользователя.</p>
+<h3 id="формат-запросов"><a href="#TOC">Формат запросов</a></h3>
+<p>Можно вывести с помощью <code><font color="#b2590f">deriving</font></code> экземпляр класса <code><font color=Green>Read</font></code> для типа <code><font color=Green>Query</font></code> и читать их функцией <code><font color=Black>read</font></code>. Но это плохая идея, потому что пользователь нашей программы может и не знать Haskell. Лучше введём сокращённые имена для всех значений. Например такие:</p>
+<pre><font color=Black>left</font>        <font color="#2149c1">-- Play Left</font>
+<font color=Black>right</font>       <font color="#2149c1">-- Play Rigth</font>
+<font color=Black>up</font>          <font color="#2149c1">-- Play Up</font>
+<font color=Black>down</font>        <font color="#2149c1">-- Play Down</font>
+
+<font color=Black>quit</font>        <font color="#2149c1">-- Quit</font>
+<font color=Black>new</font> n       <font color="#2149c1">-- NewGame n</font></pre>
+<p>Можно обратить внимание на то, что все команды начинаются с разных букв. Воспользуемся этим и дадим пользователю возможность набирать команды одной буквой. Это приводит на с к таким определениям для функций разбора значения и напоминания ходов:</p>
+<pre><font color=Black>parseQuery</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Query</font>
+<font color=Black>parseQuery</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Black>"up"</font>    <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Up</font>
+    <font color=Black>"u"</font>     <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Up</font>
+    <font color=Black>"down"</font>  <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Down</font> 
+    <font color=Black>"d"</font>     <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Down</font> 
+    <font color=Black>"left"</font>  <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Left</font>
+    <font color=Black>"l"</font>     <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Left</font>
+    <font color=Black>"right"</font> <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Right</font>
+    <font color=Black>"r"</font>     <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Play</font> <font color=Green>Right</font>
+    <font color=Black>"quit"</font>  <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Quit</font>
+    <font color=Black>"q"</font>     <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>$</font> <font color=Green>Quit</font>
+
+    <font color=Black>'n'</font><font color="#b2590f">:</font><font color=Black>'e'</font><font color="#b2590f">:</font><font color=Black>'w'</font><font color="#b2590f">:</font><font color=Black>' '</font><font color="#b2590f">:</font>n   <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>.</font> <font color=Green>NewGame</font> <font color=Black>=&lt;&lt;</font> readInt n
+    <font color=Black>'n'</font><font color="#b2590f">:</font><font color=Black>' '</font><font color="#b2590f">:</font>n           <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>.</font> <font color=Green>NewGame</font> <font color=Black>=&lt;&lt;</font> readInt n  
+    <font color="#b2590f">_</font>       <font color="#b2590f">-&gt;</font> <font color=Green>Nothing</font>
+
+<font color=Black>remindMoves</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>remindMoves</font> <font color="#b2590f">=</font> mapM_ putStrLn talk
+    <font color="#b2590f">where</font> talk <font color="#b2590f">=</font> <font color="#b2590f">[</font>
+            <font color=Black>"Возможные ходы пустой клетки:"</font><font color=Black>,</font>
+            <font color=Black>"   left     или l       -- налево"</font><font color=Black>,</font>
+            <font color=Black>"   right    или r       -- направо"</font><font color=Black>,</font>
+            <font color=Black>"   up       или u       -- вверх"</font><font color=Black>,</font>
+            <font color=Black>"   down     или d       -- вниз"</font><font color=Black>,</font>
+            <font color=Black>"Другие действия:"</font><font color=Black>,</font>
+            <font color=Black>"   new int  или n int -- начать новую игру, int - целое число,"</font><font color=Black>,</font> 
+                                      <font color=Black>"указывающее на сложность"</font><font color=Black>,</font>
+            <font color=Black>"   quit     или q      -- выход из игры"</font><font color="#b2590f">]</font></pre>
+<p>Проверим работоспособность:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>Loop</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Game</font>             <font color=Black>(</font> <font color=Green>Game</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+
+<font color=Green>Loop</font><font color=Black>.</font>hs<font color="#b2590f">:</font><font color="#0000ee">46</font><font color="#b2590f">:</font><font color="#0000ee">28</font><font color="#b2590f">:</font>
+    <font color=Green>Ambiguous</font> occurrence <font color=Black>`</font><font color=Green>Left'</font>
+    <font color=Green>It</font> could refer to either <font color=Black>`</font><font color=Green>Prelude</font><font color=Black>.</font><font color=Green>Left'</font><font color=Black>,</font>
+                             imported from <font color=Black>`</font><font color=Green>Prelude'</font> at <font color=Green>Loop</font><font color=Black>.</font>hs<font color="#b2590f">:</font><font color="#0000ee">1</font><font color="#b2590f">:</font><font color="#0000ee">8</font><font color="#2149c1">-</font><font color="#0000ee">11</font>
+                             <font color=Black>(</font>and originally defined <font color="#b2590f">in</font> <font color=Black>`</font><font color=Green>Data</font><font color=Black>.</font><font color=Green>Either'</font><font color=Black>)</font>
+                          or <font color=Black>`</font><font color=Green>Game</font><font color=Black>.</font><font color=Green>Left'</font><font color=Black>,</font>
+                             imported from <font color=Black>`</font><font color=Green>Game'</font> at <font color=Green>Loop</font><font color=Black>.</font>hs<font color="#b2590f">:</font><font color="#0000ee">5</font><font color="#b2590f">:</font><font color="#0000ee">1</font><font color="#2149c1">-</font><font color="#0000ee">11</font>
+                             <font color=Black>(</font>and originally defined at <font color=Green>Game</font><font color=Black>.</font>hs<font color="#b2590f">:</font><font color="#0000ee">10</font><font color="#b2590f">:</font><font color="#0000ee">25</font><font color="#2149c1">-</font><font color="#0000ee">28</font><font color=Black>)</font>
+
+<font color=Green>Loop</font><font color=Black>.</font>hs<font color="#b2590f">:</font><font color="#0000ee">47</font><font color="#b2590f">:</font><font color="#0000ee">28</font><font color="#b2590f">:</font>
+    <font color=Green>Ambiguous</font> occurrence <font color=Black>`</font><font color=Green>Left'</font>
+<font color=Black>...</font>
+<font color=Black>...</font>
+<font color=Green>Failed</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Game</font><font color=Black>&gt;</font> </pre>
+<p>По ошибкам видно, что произошёл конфликт имён. Конструкторы <code><font color=Green>Left</font></code> и <code><font color=Green>Right</font></code> уже определены в <code><font color=Green>Prelude</font></code>. Это конструкторы типа <code><font color=Green>Either</font></code>. Давайте скроем их, добавим в модуль такую строчку:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Prelude</font> hiding <font color=Black>(</font><font color=Green>Either</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>)</font></pre>
+<p>Теперь проверим:</p>
+<pre><font color=Black>*</font><font color=Green>Game</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>r
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> </pre>
+<p>Всё работает, можно двигаться дальше.</p>
+<h3 id="последние-штрихи"><a href="#TOC">Последние штрихи</a></h3>
+<p>В модуле <code><font color=Green>Loop</font></code> нам осталось определить несколько маленьких функций. Поиск по слову <code><font color=Black>undefined</font></code> говорит нам о том, что осталось определить функции ``</p>
+<pre><font color=Black>greetings</font>   <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>readInt</font>     <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font>
+<font color=Black>showAsk</font>     <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Самая простая это функция <code><font color=Black>showAsk</font></code>, она приглашает игрока сделать ход:</p>
+<pre><font color=Black>showAsk</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showAsk</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"Ваш ход: "</font></pre>
+<p>Теперь функция распознавания целого числа:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Char</font> <font color=Black>(</font>isDigit<font color=Black>)</font>
+<font color=Black>...</font>
+
+<font color=Black>readInt</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font>
+<font color=Black>readInt</font> n 
+    <font color="#b2590f">|</font> all isDigit n <font color="#b2590f">=</font> <font color=Green>Just</font> <font color=Black>$</font> read n
+    <font color="#b2590f">|</font> otherwise     <font color="#b2590f">=</font> <font color=Green>Nothing</font></pre>
+<p>В первой альтернативе мы с помощью стандартной функции <code><font color=Black>isDigit</font> <font color="#b2590f">::</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code> проверяем, что строка состоит из одних только чисел. Если все символы числа, то мы пользуемся функцией из модуля <code><font color=Green>Read</font></code> и читаем целое число, иначе возвращаем <code><font color=Green>Nothing</font></code>.</p>
+<p>Последняя функция, это функция приветствия. Когда игрок входит в игру он сталкивается с её результатами. Определим её так:</p>
+<pre><font color="#2149c1">-- в модуль Loop</font>
+
+<font color=Black>greetings</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>greetings</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"Привет! Это игра пятнашки"</font> <font color=Black>&gt;&gt;</font>
+    showGame initGame <font color=Black>&gt;&gt;</font>
+    remindMoves
+
+<font color="#2149c1">-- в модуль Game</font>
+
+<font color=Black>initGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font>
+<font color=Black>initGame</font> <font color="#b2590f">=</font> undefined</pre>
+<p>Сначала мы приветствуем игрока, затем показываем состояние (<code><font color=Black>initGame</font></code>), к которому ему нужно стремиться, и напоминаем как делаются ходы. На этом определении мы раскрыли все выражения в модуле <code><font color=Green>Loop</font></code>, нам остался лишь модуль <code><font color=Green>Game</font></code>.</p>
+<h3 id="правила-игры"><a href="#TOC">Правила игры</a></h3>
+<p>Определим модуль <code><font color=Green>Game</font></code>, но мы будем определять его не с чистого листа. Те функции, которые нам нужны уже определились в ходе описания диалога с пользователем. Нам нужно уметь составлять начальное состояние <code><font color=Black>initGame</font></code>, уметь составлять перемешанное состояние игры <code><font color=Black>shuffle</font></code>, нам нужно уметь реагировать на ходы <code><font color=Black>move</font></code>, определять какая позиция является выигрышной <code><font color=Black>isGameOver</font></code> и уметь показывать фишки в красивом виде. Приступим!</p>
+<pre><font color=Black>initGame</font>    <font color="#b2590f">::</font> <font color=Green>Game</font>
+<font color=Black>shuffle</font>     <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>isGameOver</font>  <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>move</font>        <font color="#b2590f">::</font> <font color=Green>Move</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
+    show <font color="#b2590f">=</font> undefined</pre>
+<p>Таков наш план.</p>
+<h4 id="начальное-состояние"><a href="#TOC">Начальное состояние</a></h4>
+<p>Начнём с самой простой функции, составим начальное состояние:</p>
+<pre><font color=Black>initGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font>
+<font color=Black>initGame</font> <font color="#b2590f">=</font> <font color=Green>Game</font> <font color=Black>(</font><font color="#0000ee">3</font><font color=Black>,</font> <font color="#0000ee">3</font><font color=Black>)</font> <font color=Black>$</font> listArray <font color=Black>(</font><font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#0000ee">3</font><font color=Black>,</font> <font color="#0000ee">3</font><font color=Black>)</font><font color=Black>)</font> <font color=Black>$</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> <font color="#0000ee">15</font><font color="#b2590f">]</font></pre>
+<p>Мы будем кодировать фишки цифрами от нуля до 14, а пустая клетка будет равна 15. Это просто соглашения о внутреннем представлении фишек, показывать мы их будем совсем по-другому.</p>
+<p>С этим значением мы можем легко определить функцию определения конца игры. Нам нужно только добавить <code><font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Eq</font><font color=Black>)</font></code> к типу <code><font color=Green>Game</font></code>. Тогда функция <code><font color=Black>isGameOver</font></code> примет вид:</p>
+<pre><font color=Black>isGameOver</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>isGameOver</font> <font color="#b2590f">=</font> <font color=Black>(</font> <font color=Black>==</font> initGame<font color=Black>)</font></pre>
+<h4 id="делаем-ход"><a href="#TOC">Делаем ход</a></h4>
+<p>Напишем функцию:</p>
+<pre><font color=Black>move</font> <font color="#b2590f">::</font> <font color=Green>Move</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font></pre>
+<p>Она обновляет позицию после хода. В пятнашках не во всех позициях доступны все ходы. Если пустышка находится на краю, мы не можем вывести её за пределы доски. Это необходимо как-то учесть. Каждый ход задаёт направление обмена фишками. Если у нас есть текущее положение пустышки и ход, то по ходу мы можем узнать направление, а по направлению ту фишку, которая займёт место пустышки после хода. При этом нам необходимо проверять находится ли та фишка, которую мы хотим поместить на пустое место в пределах доски. Например если пустышка расположена в самом верху и мы хотим сделать ход <code><font color=Green>Up</font></code>, т.е.~передвинуть её ещё выше, то положение игры не должно измениться.</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Prelude</font> hiding <font color=Black>(</font><font color=Green>Either</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>)</font>
+
+<font color="#b2590f">newtype</font> <font color=Green>Vec</font> <font color="#b2590f">=</font> <font color=Green>Vec</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
+
+<font color=Black>move</font> <font color="#b2590f">::</font> <font color=Green>Move</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font>
+<font color=Black>move</font> m <font color=Black>(</font><font color=Green>Game</font> id board<font color=Black>)</font>  
+    <font color="#b2590f">|</font> within id' <font color="#b2590f">=</font> <font color=Green>Game</font> id' <font color=Black>$</font> board <font color=Black>//</font> updates
+    <font color="#b2590f">|</font> otherwise  <font color="#b2590f">=</font> <font color=Green>Game</font> id board
+    <font color="#b2590f">where</font> id' <font color="#b2590f">=</font> shift <font color=Black>(</font>orient m<font color=Black>)</font> id
+          updates <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color=Black>(</font>id<font color=Black>,</font> board <font color=Black>!</font> id'<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font>id'<font color=Black>,</font> emptyLabel<font color=Black>)</font><font color="#b2590f">]</font> 
+            
+<font color="#2149c1">-- определение того, что индексы внутри доски</font>
+<font color=Black>within</font> <font color="#b2590f">::</font> <font color=Green>Pos</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>within</font> <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">=</font> p a <font color=Black>&amp;&amp;</font> p b
+    <font color="#b2590f">where</font> p x <font color="#b2590f">=</font> x <font color=Black>&gt;=</font> <font color="#0000ee">0</font> <font color=Black>&amp;&amp;</font> x <font color=Black>&lt;=</font> <font color="#0000ee">3</font>
+
+<font color="#2149c1">-- смещение положение по направдению</font>
+<font color=Black>shift</font> <font color="#b2590f">::</font> <font color=Green>Vec</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pos</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pos</font>
+<font color=Black>shift</font> <font color=Black>(</font><font color=Green>Vec</font> <font color=Black>(</font>va<font color=Black>,</font> vb<font color=Black>)</font><font color=Black>)</font> <font color=Black>(</font>pa<font color=Black>,</font> pb<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>va <font color=Black>+</font> pa<font color=Black>,</font> vb <font color=Black>+</font> pb<font color=Black>)</font>
+
+<font color="#2149c1">-- направление хода</font>
+<font color=Black>orient</font> <font color="#b2590f">::</font> <font color=Green>Move</font> <font color="#b2590f">-&gt;</font> <font color=Green>Vec</font>
+<font color=Black>orient</font> m <font color="#b2590f">=</font> <font color=Green>Vec</font> <font color=Black>$</font> <font color="#b2590f">case</font> m <font color="#b2590f">of</font>
+    <font color=Green>Up</font>      <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+    <font color=Green>Down</font>    <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">1</font> <font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+    <font color=Green>Left</font>    <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0</font> <font color=Black>,</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font>
+    <font color=Green>Right</font>   <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">0</font> <font color=Black>,</font> <font color="#0000ee">1</font><font color=Black>)</font>
+
+<font color="#2149c1">-- метка для пустой фишки</font>
+<font color=Black>emptyLabel</font> <font color="#b2590f">::</font> <font color=Green>Label</font>
+<font color=Black>emptyLabel</font> <font color="#b2590f">=</font> <font color="#0000ee">15</font></pre>
+<p>Маленькие функции <code><font color=Black>within</font></code>, <code><font color=Black>shift</font></code>, <code><font color=Black>orient</font></code>, <code><font color=Black>emptyLabel</font></code> делают как раз то, что подписано в комментариях. Думаю, что их определение не сложно понять. Но есть одна тонкость, поскольку в функции <code><font color=Black>orient</font></code> мы пользуемся конструкторами <code><font color=Green>Left</font></code> и <code><font color=Green>Right</font></code> необходимо спрятать тип <code><font color=Green>Either</font></code> из <code><font color=Green>Prelude</font></code>. Мы ввели дополнительный тип <code><font color=Green>Vec</font></code> для обозначения смещения, чтобы случайно не подставить вместо него индексы.</p>
+<p>Разберёмся с функцией <code><font color=Black>move</font></code>. Сначала мы вычисляем положение фишки, которая пойдёт на пустое место <code><font color=Black>id'</font></code>. Мы делаем это, сместив (<code><font color=Black>shift</font></code>) положение пустышки (<code><font color=Black>id</font></code>) по направлению хода (<code><font color=Black>orient</font> a</code>).</p>
+<p>Мы обновляем массив, который описывает доску с помощью специальной функции <code><font color=Black>//</font></code>. Посмотрим на её тип:</p>
+<pre><font color=Black>(</font><font color=Black>//</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Ix</font> i <font color="#b2590f">=&gt;</font> <font color=Green>Array</font> i a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Black>(</font>i<font color=Black>,</font> a<font color=Black>)</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Array</font> i a</pre>
+<p>Она принимает массив и список обновлений в этом массиве. Обновления представлены в виде пары индекс-значение. В охранном выражении мы проверяем, если индекс перемещаемой фишки в пределах доски, то мы возвращаем новое положение, в котором пустышка уже находится в положении <code><font color=Black>id'</font></code> и массив обновлён. Мы составляем список обновлений <code><font color=Black>updates</font></code> bз двух элементов, это перемещения фишки и пустышки. Если же фишка за пределами доски, то мы возвращаем исходное положение.</p>
+<h4 id="перемешиваем-фишки"><a href="#TOC">Перемешиваем фишки</a></h4>
+<p>Игра начинается с такого положения, в котором все фишки перемешаны. Но перемешивать фишки произвольным образом было бы не честно, поскольку известно, что в пятнашках половина расстановок не приводит к выигрышу. Поэтому мы будем перемешивать так: мы стартуем из начального положения и делаем несколько ходов произвольным образом. Количество ходов определяет сложность игры:</p>
+<pre><font color=Black>randomGame</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>randomGame</font> n <font color="#b2590f">=</font> <font color=Black>(</font>iterate <font color=Black>(</font>shuffle <font color=Black>=&lt;&lt;</font><font color=Black>)</font> <font color=Black>$</font> pure initGame<font color=Black>)</font> <font color=Black>!!</font> n
+
+<font color=Black>shuffle</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Game</font>
+<font color=Black>shuffle</font> g <font color="#b2590f">=</font> flip move g <font color=Black>&lt;$&gt;</font> <font color=Black>(</font>randomElem <font color=Black>$</font> nextMoves g<font color=Black>)</font>
+   
+<font color=Black>randomElem</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a
+<font color=Black>randomElem</font> <font color="#b2590f">=</font> undefined
+
+<font color=Black>nextMoves</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Move</font><font color="#b2590f">]</font>
+<font color=Black>nextMoves</font> <font color="#b2590f">=</font> und</pre>
+<p>Сначала разберёмся с функцией <code><font color=Black>shuffle</font></code> она перемешивает позицию один раз. Мы делаем ход в текущей позиции, который мы выбрали случайным образом из списка доступных ходов. Выбором случайного элемента из списка, будет заниматься функция <code><font color=Black>randomElem</font></code>. Теперь вернёмся к функции составления случайной позиции. В ней мы пользуемся функцией <code><font color=Black>iterate</font></code> для того чтобы <code><font color=Black>n</font></code> раз перемешать позицию. Но мы не можем просто написать:</p>
+<pre><font color=Black>iterate</font> shuffle initGame</pre>
+<p>Так у нас не совпадут типы. Для функции <code><font color=Black>iterate</font></code> нужно чтобы вход и выход функции имели одинаковые типы. Поэтому мы пользуемся в функции <code><font color=Black>iterate</font></code> функцией применения специальных значений.</p>
+<p>Нам осталось определить всего две функции, и всё готово для игры. Определим выбор случайного элемента из списка:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font>
+<font color=Black>...</font>
+
+<font color=Black>randomElem</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a
+<font color=Black>randomElem</font> xs <font color="#b2590f">=</font> <font color=Black>(</font>xs <font color=Black>!!</font> <font color=Black>)</font> <font color=Black>&lt;$&gt;</font> randomRIO <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> length xs <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font></pre>
+<p>Мы генерируем случайное число в диапазоне индексов списка и затем извлекаем элемент. Теперь функция определения ходов в текущем положении:</p>
+<pre><font color=Black>nextMoves</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Move</font><font color="#b2590f">]</font>
+<font color=Black>nextMoves</font> g <font color="#b2590f">=</font> filter <font color=Black>(</font>within <font color=Black>.</font> flip shift <font color=Black>(</font>emptyField g<font color=Black>)</font> <font color=Black>.</font> orient<font color=Black>)</font> 
+    <font color="#b2590f">[</font><font color=Green>Up</font><font color=Black>,</font> <font color=Green>Down</font><font color=Black>,</font> <font color=Green>Left</font><font color=Black>,</font> <font color=Green>Right</font><font color="#b2590f">]</font></pre>
+<p>Мы выполняем схожие операции с теми, что были в функции <code><font color=Black>move</font></code>. Мы фильтруем из списка всех ходов те, что выводят пустую фишку за пределы доски.</p>
+<h4 id="отображение-положения"><a href="#TOC">Отображение положения</a></h4>
+<p>Я немного поторопился, нам осталась ещё одна функция. Это отображение позиции. Я не буду подробно останавливаться на теле функции, скажу лишь то, что она составляет строку так как это показано в комментарии к функции.</p>
+<pre><font color="#2149c1">--  +----+----+----+----+</font>
+<font color="#2149c1">--  |  1 |  2 |  3 |  4 |</font>
+<font color="#2149c1">--  +----+----+----+----+</font>
+<font color="#2149c1">--  |  5 |  6 |  7 |  8 |</font>
+<font color="#2149c1">--  +----+----+----+----+</font>
+<font color="#2149c1">--  |  9 | 10 | 11 | 12 |</font>
+<font color="#2149c1">--  +----+----+----+----+</font>
+<font color="#2149c1">--  | 13 | 14 | 15 |    |</font>
+<font color="#2149c1">--  +----+----+----+----+</font>
+<font color="#2149c1">--</font>
+<font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
+    show <font color=Black>(</font><font color=Green>Game</font> <font color="#b2590f">_</font> board<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>"\n"</font> <font color=Black>++</font> space <font color=Black>++</font> line <font color=Black>++</font>
+        <font color=Black>(</font>foldr <font color=Black>(</font><font color="#b2590f">\</font>a b <font color="#b2590f">-&gt;</font> a <font color=Black>++</font> space <font color=Black>++</font> line <font color=Black>++</font> b<font color=Black>)</font> <font color=Black>"\n"</font> <font color=Black>$</font> map column <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> <font color="#0000ee">3</font><font color="#b2590f">]</font><font color=Black>)</font>
+        <font color="#b2590f">where</font> post id <font color="#b2590f">=</font> showLabel <font color=Black>$</font> board <font color=Black>!</font> id 
+              showLabel n  <font color="#b2590f">=</font> cell <font color=Black>$</font> show <font color=Black>$</font> <font color="#b2590f">case</font> n <font color="#b2590f">of</font>
+                        <font color="#0000ee">15</font> <font color="#b2590f">-&gt;</font> <font color="#0000ee">0</font>
+                        n  <font color="#b2590f">-&gt;</font> n<font color=Black>+</font><font color="#0000ee">1</font>
+              cell <font color=Black>"0"</font>   <font color="#b2590f">=</font> <font color=Black>"    "</font>
+              cell <font color="#b2590f">[</font>x<font color="#b2590f">]</font>   <font color="#b2590f">=</font> <font color=Black>' '</font><font color="#b2590f">:</font><font color=Black>' '</font><font color="#b2590f">:</font> x <font color="#b2590f">:</font><font color=Black>' '</font><font color="#b2590f">:</font><font color=Green>[]</font>
+              cell <font color="#b2590f">[</font>a<font color=Black>,</font>b<font color="#b2590f">]</font> <font color="#b2590f">=</font> <font color=Black>' '</font><font color="#b2590f">:</font> a <font color="#b2590f">:</font> b <font color="#b2590f">:</font><font color=Black>' '</font><font color="#b2590f">:</font><font color=Green>[]</font> 
+              line <font color="#b2590f">=</font> <font color=Black>"+----+----+----+----+\n"</font>
+              nums <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>(</font>space <font color=Black>++</font> <font color=Black>"|"</font><font color=Black>)</font> <font color=Black>++</font> <font color=Black>)</font> <font color=Black>.</font> foldr <font color=Black>(</font><font color="#b2590f">\</font>a b <font color="#b2590f">-&gt;</font> a <font color=Black>++</font> <font color=Black>"|"</font> <font color=Black>++</font> b<font color=Black>)</font> <font color=Black>"\n"</font><font color=Black>.</font> 
+                        map post
+              column i <font color="#b2590f">=</font> nums <font color=Black>$</font> map <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> <font color=Black>(</font>i<font color=Black>,</font> x<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> <font color="#0000ee">3</font><font color="#b2590f">]</font>
+              space <font color="#b2590f">=</font> <font color=Black>"\t"</font></pre>
+<p>Теперь мы можем загрузить модуль <code><font color=Green>Loop</font></code> в интерпретатор и набрать <code><font color=Black>play</font></code>. Немного отвлечёмся и поиграем.</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>Loop</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Game</font>             <font color=Black>(</font> <font color=Green>Game</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Loop</font><font color=Black>,</font> <font color=Green>Game</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> play
+<font color=Green>Привет</font><font color=Black>!</font> <font color=Green>Это</font> игра пятнашки
+
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">1</font> <font color="#b2590f">|</font>  <font color="#0000ee">2</font> <font color="#b2590f">|</font>  <font color="#0000ee">3</font> <font color="#b2590f">|</font>  <font color="#0000ee">4</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">5</font> <font color="#b2590f">|</font>  <font color="#0000ee">6</font> <font color="#b2590f">|</font>  <font color="#0000ee">7</font> <font color="#b2590f">|</font>  <font color="#0000ee">8</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">9</font> <font color="#b2590f">|</font> <font color="#0000ee">10</font> <font color="#b2590f">|</font> <font color="#0000ee">11</font> <font color="#b2590f">|</font> <font color="#0000ee">12</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font> <font color="#0000ee">13</font> <font color="#b2590f">|</font> <font color="#0000ee">14</font> <font color="#b2590f">|</font> <font color="#0000ee">15</font> <font color="#b2590f">|</font>    <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+<font color=Green>Возможные</font> ходы пустой клетки<font color="#b2590f">:</font>
+   left     или l       <font color="#2149c1">-- налево</font>
+   right    или r       <font color="#2149c1">-- направо</font>
+   up       или u       <font color="#2149c1">-- вверх</font>
+   down     или d       <font color="#2149c1">-- вниз</font>
+<font color=Green>Другие</font> действия<font color="#b2590f">:</font>
+   new int  или n int <font color="#2149c1">-- начать новую игру, int - целое число,</font>
+<font color=Black>указывающее</font> на сложность
+   quit     или q      <font color="#2149c1">-- выход из игры</font>
+<font color=Green>Начнём</font> новую игру<font color=Black>?</font>
+<font color=Green>Укажите</font> сложность <font color=Black>(</font>положительное целое число<font color=Black>)</font><font color="#b2590f">:</font> 
+<font color="#0000ee">5</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">1</font> <font color="#b2590f">|</font>  <font color="#0000ee">2</font> <font color="#b2590f">|</font>  <font color="#0000ee">3</font> <font color="#b2590f">|</font>  <font color="#0000ee">4</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">5</font> <font color="#b2590f">|</font>  <font color="#0000ee">6</font> <font color="#b2590f">|</font>  <font color="#0000ee">7</font> <font color="#b2590f">|</font>  <font color="#0000ee">8</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">9</font> <font color="#b2590f">|</font>    <font color="#b2590f">|</font> <font color="#0000ee">10</font> <font color="#b2590f">|</font> <font color="#0000ee">11</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font> <font color="#0000ee">13</font> <font color="#b2590f">|</font> <font color="#0000ee">14</font> <font color="#b2590f">|</font> <font color="#0000ee">15</font> <font color="#b2590f">|</font> <font color="#0000ee">12</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+
+<font color=Green>Ваш</font> ход<font color="#b2590f">:</font> 
+<font color=Black>r</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">1</font> <font color="#b2590f">|</font>  <font color="#0000ee">2</font> <font color="#b2590f">|</font>  <font color="#0000ee">3</font> <font color="#b2590f">|</font>  <font color="#0000ee">4</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">5</font> <font color="#b2590f">|</font>  <font color="#0000ee">6</font> <font color="#b2590f">|</font>  <font color="#0000ee">7</font> <font color="#b2590f">|</font>  <font color="#0000ee">8</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">9</font> <font color="#b2590f">|</font> <font color="#0000ee">10</font> <font color="#b2590f">|</font>    <font color="#b2590f">|</font> <font color="#0000ee">11</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font> <font color="#0000ee">13</font> <font color="#b2590f">|</font> <font color="#0000ee">14</font> <font color="#b2590f">|</font> <font color="#0000ee">15</font> <font color="#b2590f">|</font> <font color="#0000ee">12</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+
+<font color=Green>Ваш</font> ход<font color="#b2590f">:</font> 
+<font color=Black>r</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">1</font> <font color="#b2590f">|</font>  <font color="#0000ee">2</font> <font color="#b2590f">|</font>  <font color="#0000ee">3</font> <font color="#b2590f">|</font>  <font color="#0000ee">4</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">5</font> <font color="#b2590f">|</font>  <font color="#0000ee">6</font> <font color="#b2590f">|</font>  <font color="#0000ee">7</font> <font color="#b2590f">|</font>  <font color="#0000ee">8</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">9</font> <font color="#b2590f">|</font> <font color="#0000ee">10</font> <font color="#b2590f">|</font> <font color="#0000ee">11</font> <font color="#b2590f">|</font>    <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font> <font color="#0000ee">13</font> <font color="#b2590f">|</font> <font color="#0000ee">14</font> <font color="#b2590f">|</font> <font color="#0000ee">15</font> <font color="#b2590f">|</font> <font color="#0000ee">12</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+
+<font color=Green>Ваш</font> ход<font color="#b2590f">:</font> 
+<font color=Black>d</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">1</font> <font color="#b2590f">|</font>  <font color="#0000ee">2</font> <font color="#b2590f">|</font>  <font color="#0000ee">3</font> <font color="#b2590f">|</font>  <font color="#0000ee">4</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">5</font> <font color="#b2590f">|</font>  <font color="#0000ee">6</font> <font color="#b2590f">|</font>  <font color="#0000ee">7</font> <font color="#b2590f">|</font>  <font color="#0000ee">8</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font>  <font color="#0000ee">9</font> <font color="#b2590f">|</font> <font color="#0000ee">10</font> <font color="#b2590f">|</font> <font color="#0000ee">11</font> <font color="#b2590f">|</font> <font color="#0000ee">12</font> <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+	<font color="#b2590f">|</font> <font color="#0000ee">13</font> <font color="#b2590f">|</font> <font color="#0000ee">14</font> <font color="#b2590f">|</font> <font color="#0000ee">15</font> <font color="#b2590f">|</font>    <font color="#b2590f">|</font>
+	<font color=Black>+----+----+----+----+</font>
+
+<font color=Green>Игра</font> окончена<font color=Black>.</font></pre>
+<p>Ураа, получилось. Мы так долго писали программу, проверяя лишь типы, и в самом конце, когда мы закончили определение, всё работает. Конечно не всё работает так гладко, я уже написал эту программу и объясняю готовое решение, но когда общая схема программы утряслась, возможные ошибки определяются на раз. Мы могли вызвать отображение позиции не в том порядке или забыть проверку конца игры, всё это несколько строчек изменений.</p>
+<p>Самые неприятные ошибки происходят, когда в середине выясняется, что мы ошиблись с типами. Типы, которые мы выбрали не могут описать явление, возможно мы не можем делать какие-то операции, которые нам, как неожиданно выяснилось, очень нужны. Это значит, что нужно менять каркас. Менять каркас, это значит сносить весь дом и строить новый. Возможно разрушения окажутся локальными, мы строим не дом, а город. И сносить придётся не всё, а несколько кварталов. Но это тоже большие перемены. Поэтому шаг определения типов очень важен. Впрочем сносить кварталы в Haskell одно удовольствие, посольку стоит нам изменить какой-нибудь тип, например убрать какой-нибудь тип или изменить имя, компилятор тут же подскажет нам какие функции стали бессмысленными. Более коварные изменения связаны с добавлением конструктора-альтернативы. Например нам вдруг не понравился тип <code><font color=Green>Bool</font></code> и мы решили сделать его более человечным. Мы решили добавить ещё одно значение:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Bool</font> <font color="#b2590f">=</font> <font color=Green>True</font> <font color="#b2590f">|</font> <font color=Green>False</font> <font color="#b2590f">|</font> <font color=Green>IDonTKnow</font></pre>
+<p>Это может привести к неполному рассмотрению альтернатив в <code><font color="#b2590f">case</font></code>-выражениях и сопоставлениях с образцом в аргументах функции. Такие ошибки крайн неприятны, поскольку они происходят на этапе выполнения программы, когда новое значение <code><font color=Green>IDonTKnow</font></code> дойдёт до <code><font color="#b2590f">case</font></code>. В этом случае нам на выручку может прийти функция свёртки, если мы вместе с типом изменим и функцию свёртки, это скажется на всех функциях, которые были определены через неё. Чем больше таких функций, тем больше ошибок мы поймаем.</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<ul>
+<li><p>Измените диалог с пользователем. Сделайте так чтобы у игры было главное меню, в котором игрок выбирает разные побочные функции, вроде выхода, начать новую игру, подсказка и игровое меню, в котором игрок только передвигает фишки. Когда игрок собирает игру он попадает в главное меню.</p></li>
+<li><p>Добавьте в игру подсчёт статистики. Если игрок дошёл до победной позиции он узнаёт за сколько ходов ему удалось решить задачу. Также ведётся история предыдущих попыток, по которой пользователь может следить как изменяются его результаты.</p></li>
+<li><p>Подумайте можно ли выделить интерфейс игры в отдельный класс так, чтобы модуль <code><font color=Green>Loop</font></code> не зависел от конкретной реализации игры. Чтобы можно было, опираясь на абстрактные методы, вроде <code><font color=Black>show</font></code> для <code><font color=Green>Game</font></code>, или реакции на ход, вести диалог с пользователем. Попробуйте переписать игру пятнашки с помощью такого класса.</p></li>
+<li><p>Попробуйте написать другую игру, например игру раскладывания пасьянса, крестики-нолики или шашки, не меняя модуля <code><font color=Green>Loop</font></code>. Так чтобы вы сделали необходимые экземпляры для классов из предыдущего упражнения, а всё остальное поведение следовало из них.</p></li>
+</ul>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="12.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="14.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="12" style="list-style-type: decimal">
+<li>Структурная рекурсия
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="14" style="list-style-type: decimal">
+<li>Лямбда-исчисление
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

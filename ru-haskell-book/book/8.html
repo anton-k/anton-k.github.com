@@ -1,0 +1,594 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#io">IO</a><ul>
+<li><a href="#чистота-и-побочные-эффекты">Чистота и побочные эффекты</a></li>
+<li><a href="#монада-io">Монада IO</a></li>
+<li><a href="#как-пишутся-программы">Как пишутся программы</a></li>
+<li><a href="#типичные-задачи-io">Типичные задачи IO</a><ul>
+<li><a href="#вывод-на-экран">Вывод на экран</a></li>
+<li><a href="#ввод-пользователя">Ввод пользователя</a></li>
+<li><a href="#чтение-и-запись-файлов">Чтение и запись файлов</a></li>
+<li><a href="#аргументы-программы">Аргументы программы</a></li>
+<li><a href="#вызов-других-программ">Вызов других программ</a></li>
+<li><a href="#случайные-значения">Случайные значения</a><ul>
+<li><a href="#цитатник">Цитатник</a></li>
+</ul></li>
+<li><a href="#исключения">Исключения</a></li>
+<li><a href="#потоки-текстовых-данных">Потоки текстовых данных</a></li>
+</ul></li>
+<li><a href="#форточка-в-мир-побочных-эффектов">Форточка в мир побочных эффектов</a><ul>
+<li><a href="#отладка-программ">Отладка программ</a></li>
+</ul></li>
+<li><a href="#композиция-монад">Композиция монад</a></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="7.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="9.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="io"><a href="#TOC">IO</a></h1>
+<p>Пока мы не написали ещё ни одной программы, которой можно было бы пользоваться вне интерпретатора. Предполагается, что программа как-то взаимодействует с пользователем (ожидает ввода с клавиатуры) и изменяет состояние компьютера (выводит сообщения на экран, записывает данные в файлы). Но пока что мы не знаем как взаимодействовать с окружающим миром.</p>
+<p>Самое время узнать! Сначала мы посмотрим какие проблемы связаны с реализацией взаимодействия с пользователем. Как эти проблемы решаются в Haskell. Потом мы научимся решать несколько типичных задач, связанных с вводом/выводом.</p>
+<h2 id="чистота-и-побочные-эффекты"><a href="#TOC">Чистота и побочные эффекты</a></h2>
+<p>Когда мы определяем новые функции или константы мы лишь даём новые имена комбинациям значений. В этом смысле у нас ничего не изменяется. По-другому это называется <em>функциональной чистотой</em> (referential transparency). Это свойство говорит о том, что мы свободно можем заменить в тексте программы любой синоним на его определение и это никак не скажется на результате.</p>
+<p>Функция является чистой, если её выход зависит только от её входов. В любой момент выполнения программы для одних и тех же входов будет один и тот же выход. Это свойство очень ценно. Оно облегчает понимание поведения функции. Оно говорит о том, что функция может зависеть от других функций только <em>явно</em>. Если мы видим, что другая функция используется в данной функции, то она используется в этой функции. У нас нет таинственных глобальных переменных, в которые мы можем записывать данные из одной функции и читать их с помощью другой. Мы вообще не можем ничего записывать и ничего читать. Мы не можем изменять состояния, мы можем лишь давать новые имена или строить новые выражения из уже существующих.</p>
+<p>Но в этот статичный мир описаний не вписывается взаимодействие с пользователем. Предположим, что мы хотим написать такую программу: мы набираем на клавиатуре имя файла, нажимаем <code><font color=Green>Enter</font></code> и программа показывает на экране содержимое этого файла, затем мы набираем текст, нажимаем <code><font color=Green>Enter</font></code> и текст дописывается в конец файла, файл сохраняется. Это описание предполагает упорядоченность действий. Мы не можем сначала сохранить текст, затем прочитать обновления. Тогда текст останется прежним.</p>
+<p>Ещё один пример. Предположим у нас есть функция <code><font color=Black>getChar</font></code>, которая читает букву с клавиатуры. И функция <code><font color=Black>print</font></code>, которая выводит строку на экран И посмотрим на такое выражение:</p>
+<pre><font color="#b2590f">let</font> c <font color="#b2590f">=</font> getChar
+<font color="#b2590f">in</font>  print <font color=Black>$</font> c <font color="#b2590f">:</font> c <font color="#b2590f">:</font> <font color=Green>[]</font></pre>
+<p>О чём говорит это выражение? Возможно, прочитай с клавиатуры букву и выведи её на экран дважды. Но возможен и другой вариант, если в нашем языке все определения это синонимы мы можем записать это выражение так:</p>
+<pre><font color=Black>print</font> <font color=Black>$</font> getChar <font color="#b2590f">:</font> getChar <font color="#b2590f">:</font> <font color=Green>[]</font></pre>
+<p>Это выражение уже говорит о том, что читать с клавиатуры необходимо дважды! А ведь мы сделали обычное преобразование, заменили вхождения синонима на его определение, но смысл изменился. Взаимодействие с пользователем нарушает чистоту функций, нечистые функции называются функциями с побочными эффектами.</p>
+<p>Как быть? Можно ли внести в мир описаний порядок выполнения, сохранив преимущества функциональной чистоты? Долгое время этот вопрос был очень трудным для чистых функциональных языков. Как можно пользоваться языком, который не позволяет сделать такие базовые вещи как ввод/вывод?</p>
+<h2 id="монада-io"><a href="#TOC">Монада IO</a></h2>
+<p> Где-то мы уже встречались с такой проблемой. Когда мы говорили о типе <code><font color=Green>ST</font></code> и обновлении значений. Там тоже были проблемы порядка вычислений, нам удалось преодолеть их с помощью скрытой передачи фиктивного состояния. Тогда наши обновления были <em>чистыми</em>, мы могли безболезненно скрыть их от пользователя. Теперь всё гораздо труднее. Нам всё-таки хочется взаимодействовать с внешним миром. Для обозначения внешнего мира мы определим специальный тип и назовём его <code><font color=Green>RealWorld</font></code>:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>IO</font><font color=Black>(</font>
+    <font color=Green>IO</font>
+<font color=Black>)</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">data</font> <font color=Green>RealWorld</font> <font color="#b2590f">=</font> <font color=Green>RealWorld</font>
+
+<font color="#b2590f">newtype</font> <font color=Green>IO</font> a <font color="#b2590f">=</font> <font color=Green>IO</font> <font color=Black>(</font><font color=Green>ST</font> <font color=Green>RealWorld</font> a<font color=Black>)</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Functor</font>        <font color=Green>IO</font> <font color="#b2590f">where</font> <font color=Black>...</font>
+<font color="#b2590f">instance</font> <font color=Green>Applicative</font>    <font color=Green>IO</font> <font color="#b2590f">where</font> <font color=Black>...</font>
+<font color="#b2590f">instance</font> <font color=Green>Monad</font>          <font color=Green>IO</font> <font color="#b2590f">where</font> <font color=Black>...</font></pre>
+<p>Тип <code><font color=Green>IO</font></code> (от англ.~input-output или ввод-вывод) обозначает взаимодействие с внешним миром. Внешний мир словно является состоянием наших вычислений. Экземпляры классов композиции специальных функций такие же как и для <code><font color=Green>ST</font></code> (а следовательно и для <code><font color=Green>State</font></code>). Но при этом, поскольку мы конкретизировали первый параметр типа <code><font color=Green>ST</font></code>, мы уже не сможем воспользоваться функцией <code><font color=Black>runST</font></code>.</p>
+<p>Тип <code><font color=Green>RealWorld</font></code> определён в модуле <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>ST</font></code>, там же можно найти и функцию:</p>
+<pre><font color=Black>stToIO</font> <font color="#b2590f">::</font> <font color=Green>ST</font> <font color=Green>RealWorld</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a</pre>
+<p>Интересно, что класс <code><font color=Green>Monad</font></code> был придуман как раз для решения проблемы ввода-вывода. Классы типов изначально задумывались для решения проблемы определения арифметических операций на разных числах и функции сравнения на равенство для разных типов, мало кто тогда догадывался, что классы типов сыграют такую роль, станут основополагающей особенностью языка.</p>
+
+<div>
+    
+<img src="../pic/8/io.png" alt="Композиция для монады IO" />
+</div>
+
+<p> Это рисунок для класса <code><font color=Green>Kleisli</font></code>. Здесь под <code><font color=Black>&gt;&gt;</font></code> понимается композиция, как мы её определяли в главе 6, а не метод класса <code><font color=Green>Monad</font></code>, вспомним определение:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Kleisli</font> m <font color="#b2590f">where</font>
+    idK  <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> m a
+    <font color=Black>(</font><font color=Black>&gt;&gt;</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> m b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> m c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> m c<font color=Black>)</font></pre>
+<p>Композиция специальных функций типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> b</code> вносит порядок вычисления. Считается, что сначала будет вычислена функция слева от композиции, а затем функция справа от композиции. Это происходит за счёт скрытой передачи фиктивного состояния. Теперь перейдём к классу <code><font color=Green>Monad</font></code>. Там композиция заменяется на применение или операция связывания:</p>
+<pre><font color=Black>ma</font> <font color=Black>&gt;&gt;=</font> mf</pre>
+<p>Для типа <code><font color=Green>IO</font></code> эта запись говорит о том, что сначала будет выполнено выражение <code><font color=Black>ma</font></code> и результат будет подставлен в выражение <code><font color=Black>mf</font></code> и только затем будет выполнено <code><font color=Black>mf</font></code>. Оператор связывания для специальных функций вида:</p>
+<pre><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> b</pre>
+<p>раскалывает наш статический мир на “до” и “после”. Однажды попав в сети <code><font color=Green>IO</font></code>, мы не можем из них выбраться, поскольку теперь у нас нет функции <code><font color=Black>runST</font></code>. Но это не так страшно. Тип <code><font color=Green>IO</font></code> дробит наш статический мир на кадры. Но мы спокойно можем создавать статические чистые функции и поднимать их в мир <code><font color=Green>IO</font></code> лишь там где это действительно нужно.</p>
+<p>Рассмотрим такой пример, программа читает с клавиатуры начальное значение, затем загружает файл настроек. Потом запускается, какая-то сложная функция и в самом конце мы выводим результат на экран.</p>
+<p>Схематично мы можем записать эту программу так:</p>
+<pre><font color=Black>program</font> <font color="#b2590f">=</font> liftA2 algorithm readInit <font color=Black>(</font>readConfig <font color=Black>"file"</font><font color=Black>)</font> <font color=Black>&gt;&gt;=</font> print
+
+<font color="#2149c1">-- функции с побочными эффектами</font>
+<font color=Black>readInit</font>   <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Int</font>
+<font color=Black>readConfig</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Config</font>
+<font color=Black>print</font>      <font color="#b2590f">::</font> <font color=Green>Show</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- большая и сложная, но !чистая! функция</font>
+<font color=Black>algorithm</font>  <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Config</font> <font color="#b2590f">-&gt;</font> <font color=Green>Result</font></pre>
+<p>Функция <code><font color=Black>readInit</font></code> читает начальное значение, функция <code><font color=Black>readConfig</font></code> читает из файла наcтройки, функция <code><font color=Black>print</font></code> выводит значение на экран, если это значение можно преобразовать в строку. Функция <code><font color=Black>algorithm</font></code> это большая функция, которая вычисляет какие-то данные. Фактически наше программа это и есть функция <code><font color=Black>algorithm</font></code>. В этой схеме мы добавили взаимодействие с пользователем лишь в одном месте, вся функция <code><font color=Black>algorithm</font></code> построена по правилам мира описаний. Так мы внесли порядок выполнения в программу, сохранив возможность определения чистых функций.</p>
+<p>Если у нас будет ещё один “кадр”, ещё одно действие, например как только функция <code><font color=Black>algorithm</font></code> закончила вычисления ей нужны дополнительные данные от пользователя, на основе которых мы сможем продолжить вычисления с помощью какой-нибудь другой функции. Тогда наша программа примет вид:</p>
+<pre><font color=Black>program</font> <font color="#b2590f">=</font> 
+    liftA2 algorithm2 readInit 
+        <font color=Black>(</font>liftA2 algorithm1 readInit <font color=Black>(</font>readConfig <font color=Black>"file"</font><font color=Black>)</font><font color=Black>)</font>
+    <font color=Black>&gt;&gt;=</font> print
+
+<font color="#2149c1">-- функции с побочными эффектами</font>
+<font color=Black>readInit</font>   <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Int</font>
+<font color=Black>readConfig</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Config</font>
+<font color=Black>print</font>      <font color="#b2590f">::</font> <font color=Green>Show</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- большие и сложные, но !чистые! функции</font>
+<font color=Black>algorithm1</font>  <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Config</font> <font color="#b2590f">-&gt;</font> <font color=Green>Result1</font>
+<font color=Black>algorithm2</font>  <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Result1</font> <font color="#b2590f">-&gt;</font> <font color=Green>Result2</font></pre>
+<p>Теперь у нас два кадра, программа выполняется в два этапа. Каждый из них разделён участками взаимодействия с пользователем. Но тип <code><font color=Green>IO</font></code> присутствует лишь в первых шести строчках, остальные два миллиона строк написаны в мире описаний, исключительно чистыми функциями, которые поднимаются в мир специальных функций с помощью функций <code><font color=Black>liftA2</font></code> и стыкуются с помощью операции связывания <code><font color=Black>&gt;&gt;=</font></code>.</p>
+<p>Попробуем тип <code><font color=Green>IO</font></code> в интерпретаторе. Мы будем пользоваться двумя стандартными функциями <code><font color=Black>getChar</font></code> и <code><font color=Black>print</font></code></p>
+<pre><font color="#2149c1">-- читает символ с клавиатуры</font>
+<font color=Black>getChar</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Char</font>
+
+<font color="#2149c1">-- выводит значение на экран</font>
+<font color=Black>print</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Функция <code><font color=Black>print</font></code> возвращает значение единичного типа, завёрнутое в тип <code><font color=Green>IO</font></code>, поскольку нас интересует не само значение а побочный эффект, который выполняет эта функция, в данном случае это вывод на экран.</p>
+<p>Закодируем два примера из первого раздела. В первом мы читаем один символ и печатаем его дважды:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>m <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+<font color=Green>Prelude</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> res <font color="#b2590f">=</font> <font color=Black>(</font><font color="#b2590f">\</font>c <font color="#b2590f">-&gt;</font> c<font color="#b2590f">:</font>c<font color="#b2590f">:</font><font color=Green>[]</font><font color=Black>)</font> <font color=Black>&lt;$&gt;</font> getChar <font color=Black>&gt;&gt;=</font> print
+<font color=Green>Prelude</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font><font color=Black>&gt;</font> res
+<font color=Black>q</font><font color=Black>"qq"</font></pre>
+<p>Мы сначала вызываем функцию <code><font color=Black>getChar</font></code> удваиваем результат функцией <code><font color="#b2590f">\</font>c <font color="#b2590f">-&gt;</font> c<font color="#b2590f">:</font>c<font color="#b2590f">:</font><font color=Green>[]</font></code> и затем выводим на экран.</p>
+<p>Во втором примере мы дважды запрашиваем символ с клавиатуры а затем печатаем их:</p>
+<pre><font color=Green>Prelude</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> res <font color="#b2590f">=</font> liftA2 <font color=Black>(</font><font color="#b2590f">\</font>a b <font color="#b2590f">-&gt;</font> a<font color="#b2590f">:</font>b<font color="#b2590f">:</font><font color=Green>[]</font><font color=Black>)</font> getChar getChar <font color=Black>&gt;&gt;=</font> print
+<font color=Green>Prelude</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font><font color=Black>&gt;</font> res
+<font color=Black>qw</font><font color=Black>"qw"</font></pre>
+<h2 id="как-пишутся-программы"><a href="#TOC">Как пишутся программы</a></h2>
+<p>Мы уже умеем читать с клавиатуры и выводить значения на экран. Давайте научимся писать самостоятельные программы. Программа обозначается специальным именем:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Если модуль называется <code><font color=Green>Main</font></code> или в нём нет директивы <code><font color="#b2590f">module</font> <font color=Black>...</font> <font color="#b2590f">where</font></code> и в модуле есть функция <code><font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font></code>, то после компиляции будет сделан исполняемый файл. Его можно запускать независимо от <code><font color=Black>ghci</font></code>. Просто нажимаем дважды мышкой или вызываем из командной строки.</p>
+<p>Напишем программу <code><font color=Green>Hello</font> world</code>. Единственное, что она делает это выводит на экран приветствие:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>"Hello World!"</font> </pre>
+<p>Теперь сохраним эти строчки в файле <code><font color=Green>Hello</font><font color=Black>.</font>hs</code>, перейдём в директорию файла и скомпилируем файл:</p>
+<pre><font color=Black>ghc</font> <font color="#2149c1">--make Hello</font></pre>
+<p>Появились объектный и интерфейсный файлы, а также появился третий бинарный файл. Это либо <code><font color=Green>Hello</font></code> без расширения (в Linux) или <code><font color=Green>Hello</font><font color=Black>.</font>exe</code> (в Windows). Запустим этот файл:</p>
+<pre>$ ./Hello
+"Hello World!"</pre>
+<p>Получилось! Это наша первая программа. Теперь напишем программу, которая принимает три символа с клавиатуры и выводит их в обратном порядке:</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+
+<font color=Black>f</font> <font color="#b2590f">::</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font>
+<font color=Black>f</font> a b c <font color="#b2590f">=</font> reverse <font color=Black>$</font> <font color="#b2590f">[</font>a<font color=Black>,</font>b<font color=Black>,</font>c<font color="#b2590f">]</font>
+
+<font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>main</font> <font color="#b2590f">=</font> print <font color=Black>=&lt;&lt;</font> f <font color=Black>&lt;$&gt;</font> getChar <font color=Black>&lt;*&gt;</font> getChar <font color=Black>&lt;*&gt;</font> getChar</pre>
+<p>Сохраним в файле <code><font color=Green>ReverseIO</font><font color=Black>.</font>hs</code> и скомпилируем:</p>
+<pre><font color=Black>ghc</font> <font color="#2149c1">--make ReverseIO -o rev3</font></pre>
+<p>Дополнительным флагом <code><font color="#2149c1">-</font>o</code> мы попросили компилятор чтобы он сохранил исполняемый файл под именем <code><font color=Black>rev3</font></code>. Теперь запустим в командной строке:</p>
+<pre>$ ./rev3
+qwe
+"ewq"</pre>
+<p>Набираем три символа и нажимаем ввод. И программа переворачивает ответ. Обратите внимание на то, что с помощью <code><font color=Black>print</font></code> мы выводим не просто строку на экран, а строку как значение. Поэтому добавляются двойные кавычки. Для того чтобы выводить строку существует функция <code><font color=Black>putStr</font></code>. Заменим <code><font color=Black>print</font></code> на <code><font color=Black>putStr</font></code>, перекомпилируем и посмотрим что получится:</p>
+<pre>$ ghc --make ReverseIOstr -o rev3str
+[1 of 1] Compiling Main             ( ReverseIOstr.hs, ReverseIOstr.o )
+Linking rev3str ...
+$ ./rev3str 
+123
+321$</pre>
+<p>Видно, что после вывода не произошёл перенос каретки, терминал приглашает нас к вводу команды сразу за ответом, если перенос нужен, можно воспользоваться функцией <code><font color=Black>putStrLn</font></code>. Обратите внимание на то, что кроме бинарного файла появились ещё два файла с расширениями <code><font color=Black>.</font>hi</code> и <code><font color=Black>.</font>o</code>. Первый файл называется интерфейсным он описывает какие в модуле определения, а второй файл называется объектным. Он содержит скомпилированный код модуля.</p>
+<h2 id="типичные-задачи-io"><a href="#TOC">Типичные задачи IO</a></h2>
+<h3 id="вывод-на-экран"><a href="#TOC">Вывод на экран</a></h3>
+<p>Нам уже встретилось несколько функций вывода на экран. Это функции: <code><font color=Black>print</font></code> (вывод значения из экземпляра класса <code><font color=Green>Show</font></code>), <code><font color=Black>putStr</font></code> (вывод строки) и <code><font color=Black>putStrLn</font></code> (вывод строки с переносом). Каждый раз когда мы набираем какое-нибудь выражение в строке интерпретатора и нажимаем <code><font color=Green>Enter</font></code>, интерпретатор применяет к выражению функцию <code><font color=Black>print</font></code> и мы видим его на экране.</p>
+<p>Из простейших функций вывода на экран осталось не рассмотренной лишь функция <code><font color=Black>putChar</font></code>, но я думаю вы без труда догадаетесь по типу и имени чем она занимается:</p>
+<pre><font color=Black>putChar</font> <font color="#b2590f">::</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Функции вывода на экран также можно вызывать в интерпретаторе:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> putStr <font color=Black>"Hello"</font> <font color=Black>&gt;&gt;</font> putChar <font color=Black>' '</font> <font color=Black>&gt;&gt;</font> putStrLn <font color=Black>"World!"</font> 
+<font color=Green>Hello</font> <font color=Green>World</font><font color=Black>!</font></pre>
+<p>Обратите внимание на применение постоянной функции для монад <code><font color=Black>&gt;&gt;</font></code>. В этом выражении нас интересует не результат, а те побочные эффекты, которые выполняются при композиции специальных функций. Также мы пользовались функцией <code><font color=Black>&gt;&gt;</font></code> в сочетании с монадой <code><font color=Green>Writer</font></code> для накопления результата.</p>
+<h3 id="ввод-пользователя"><a href="#TOC">Ввод пользователя</a></h3>
+<p>Мы уже умеем принимать от пользователя буквы. Это делается функцией <code><font color=Black>getChar</font></code>. Функцией <code><font color=Black>getLine</font></code> мы можем прочитать целую строчку. Строка читается до тех пор пока мы не нажмём <code><font color=Green>Enter</font></code>.</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> fmap reverse <font color=Black>$</font> getLine
+<font color=Green>Hello</font><font color="#2149c1">-</font>hello<font color=Black>!</font>
+<font color=Black>"!olleh-olleH"</font></pre>
+<p>Есть ещё одна функция для чтения строк, она называется <code><font color=Black>getContents</font></code>. Основное отличие от <code><font color=Black>getLine</font></code> заключается в том, что содержание не читается сразу, а откладывается на потом, когда содержание действительно понадобится. Это ленивый ввод. Для задачи чтения символов с терминала эта функция может показаться странной. Но часто в символы вводятся не вручную, а передаются из другого файла. Например если мы направим на ввод данные из-какого-нибудь большого-большого файла, файл не будет читаться сразу, и память не будет заполнена не нужным пока содержанием. Вместо этого программа отложит считывание на потом и будет заниматься им лишь тогда, когда оно понадобится в вычислениях. Это может существенно снизить расход памяти. Мы читаем файл в 2Гб моментально (мы делаем вид, что читаем его). А на самом деле сохраняем себе задачу на будущее: читать ввод, когда придёт пора.</p>
+<h3 id="чтение-и-запись-файлов"><a href="#TOC">Чтение и запись файлов</a></h3>
+<p>Для чтения и записи файлов есть три простые функции:</p>
+<pre><font color="#b2590f">type</font> <font color=Green>FilePath</font> <font color="#b2590f">=</font> <font color=Green>String</font>
+
+<font color="#2149c1">-- чтение файла</font>
+<font color=Black>readFile</font>    <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>String</font>
+
+<font color="#2149c1">-- запись строки в файл</font>
+<font color=Black>writeFile</font>   <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- добавление строки в конеци файла</font>
+<font color=Black>appendFile</font>  <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Напишем программу, которая сначала запрашивает путь к файлу. Затем показывает его содержание. Затем запрашивает ввод строки из терминала. А после этого добавляет текст в конец файла.</p>
+<pre><font color=Black>main</font> <font color="#b2590f">=</font> msg1 <font color=Black>&gt;&gt;</font> getLine <font color=Black>&gt;&gt;=</font> read <font color=Black>&gt;&gt;=</font> append
+    <font color="#b2590f">where</font> read   file <font color="#b2590f">=</font> readFile file <font color=Black>&gt;&gt;=</font> putStrLn <font color=Black>&gt;&gt;</font> return file
+          append file <font color="#b2590f">=</font> msg2 <font color=Black>&gt;&gt;</font> getLine <font color=Black>&gt;&gt;=</font> appendFile file
+          msg1        <font color="#b2590f">=</font> putStr <font color=Black>"input file: "</font>
+          msg2        <font color="#b2590f">=</font> putStr <font color=Black>"input text: "</font></pre>
+<p>В самом левом вызове <code><font color=Black>getLine</font></code> мы читаем имя файла, затем оно используется в локальной функции <code><font color=Black>read</font></code>. Там мы читаем содержание файла (<code><font color=Black>readLine</font></code>), выводим его на экран (<code><font color=Black>putStrLn</font></code>), и в самом конце мы возвращаем из функции имя файла. Оно нам понадобится в следующей части программы, в которой мы будем читать новые записи и добавлять их в файл. Новая запись читается функцией <code><font color=Black>getLine</font></code> в локальной функции <code><font color=Black>append</font></code>.</p>
+<p>Сохраним в модуле <code><font color=Green>File</font><font color=Black>.</font>hs</code> и посмотрим, что у нас получилось. Перед этим создадим в текущей директории тестовый пустой файл под именем <code><font color=Black>test</font></code>. В него мы будем добавлять новые записи.</p>
+<pre><font color=Black>*</font><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>File</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>File</font>             <font color=Black>(</font> <font color=Green>File</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>File</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>File</font><font color=Black>&gt;</font> main
+<font color=Black>input</font> file<font color="#b2590f">:</font> test
+
+<font color=Black>input</font> text<font color="#b2590f">:</font> <font color=Green>Hello</font><font color=Black>!</font>
+<font color=Black>*</font><font color=Green>File</font><font color=Black>&gt;</font> main
+<font color=Black>input</font> file<font color="#b2590f">:</font> test
+<font color=Green>Hello</font><font color=Black>!</font>
+<font color=Black>input</font> text<font color="#b2590f">:</font> <font color=Green>Hi</font><font color=Black>)</font>
+<font color=Black>*</font><font color=Green>File</font><font color=Black>&gt;</font> main
+<font color=Black>input</font> file<font color="#b2590f">:</font> test
+<font color=Green>Hello</font><font color=Black>!</font><font color=Green>Hi</font><font color=Black>)</font></pre>
+<p>В самом начале наш файл пуст, поэтому сначала мы видим пустую строчку вместо содержания, но потом мы начинаем добавлять в него новые записи.</p>
+<h3 id="аргументы-программы"><a href="#TOC">Аргументы программы</a></h3>
+<p>Пока программы, которые мы создавали просили пользователя ввести данные вручную при выполнении программы, они работали в интерактивном режиме, но чаще всего программы принимают какие-нибудь начальные данные, установки или флаги. Читать начальные данные можно с помощью функций из модуля <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font></code>.</p>
+<p>Узнать, что передаётся в программу можно функцией <code><font color=Black>getArgs</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font></code>. Она возвращает список строк. Это те строки, что мы написали за именем программы через пробел при вызове в терминале. Напишем простую программу, которая распечатывает свои аргументы по порядку, в виде пронумерованного списка.</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> getArgs <font color=Black>&gt;&gt;=</font> mapM_ putStrLn <font color=Black>.</font> zipWith f <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#b2590f">]</font>
+    <font color="#b2590f">where</font> f n a <font color="#b2590f">=</font> show n <font color=Black>++</font> <font color=Black>": "</font> <font color=Black>++</font> a</pre>
+<p>В локальной функции <code><font color=Black>f</font></code> мы присоединяем к строке номер через двоеточие. Функцией <code><font color=Black>mapM_</font></code> мы пробегаем по списку строк, отображая их с помощью функции <code><font color=Black>putStrLn</font></code>. Обратите внимание на краткость программы, с помощью функции композиции мы легко составили функцию, которая приписывает к аргументам числа, а затем выводит их на экран.</p>
+<p>Скомпилируем программу в интерпретаторе и вызовем её.</p>
+<pre><font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> ghc <font color="#2149c1">--make Args</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Main</font>             <font color=Black>(</font> <font color=Green>Args</font><font color=Black>.</font>hs<font color=Black>,</font> <font color=Green>Args</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color=Green>Linking</font> <font color=Green>Args</font> <font color=Black>...</font>
+<font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> <font color=Black>./</font><font color=Green>Args</font> hey hey hey <font color="#0000ee">23</font> <font color="#0000ee">54</font> <font color=Black>"qwe qwe qwe"</font> fin
+<font color="#0000ee">1</font><font color="#b2590f">:</font> hey
+<font color="#0000ee">2</font><font color="#b2590f">:</font> hey
+<font color="#0000ee">3</font><font color="#b2590f">:</font> hey
+<font color="#0000ee">4</font><font color="#b2590f">:</font> <font color="#0000ee">23</font>
+<font color="#0000ee">5</font><font color="#b2590f">:</font> <font color="#0000ee">54</font>
+<font color="#0000ee">6</font><font color="#b2590f">:</font> qwe qwe qwe
+<font color="#0000ee">7</font><font color="#b2590f">:</font> fin</pre>
+<p>Если мы хотим, чтобы аргумент-строка содержал пробелы мы заключаем его в двойные кавычки.</p>
+<p>С помощью функции <code><font color=Black>getProgName</font></code> можно узнать имя программы. Создадим программу, которая здоровается при вызове. И отвечает в зависимости от настроения программы. Настроение задаётся аргументом программы.</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> putStrLn <font color=Black>=&lt;&lt;</font> reply <font color=Black>&lt;$&gt;</font> getProgName <font color=Black>&lt;*&gt;</font> getArgs
+
+<font color=Black>reply</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font>
+<font color=Black>reply</font> name <font color=Black>(</font>x<font color="#b2590f">:</font><font color="#b2590f">_</font><font color=Black>)</font> <font color="#b2590f">=</font> hi name <font color=Black>++</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Black>"happy"</font>     <font color="#b2590f">-&gt;</font> <font color=Black>"What a lovely day. What's up?"</font>
+    <font color=Black>"sad"</font>       <font color="#b2590f">-&gt;</font> <font color=Black>"Ooohh. Have you got some news for me?"</font>
+    <font color=Black>"neutral"</font>   <font color="#b2590f">-&gt;</font> <font color=Black>"How are you?"</font>  
+<font color=Black>reply</font> name <font color="#b2590f">_</font>     <font color="#b2590f">=</font> reply name <font color="#b2590f">[</font><font color=Black>"neutral"</font><font color="#b2590f">]</font>
+
+
+<font color=Black>hi</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font>
+<font color=Black>hi</font> name <font color="#b2590f">=</font> <font color=Black>"Hi! My name is "</font> <font color=Black>++</font> name <font color=Black>++</font> <font color=Black>".\n"</font></pre>
+<p>В функции <code><font color=Black>reply</font></code> мы составляем реплику программы. Она зависит от имени программы и поступающих на вход аргументов. Посмотрим, что у нас получилось:</p>
+<pre><font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> ghc <font color="#2149c1">--make HowAreYou.hs -o ninja </font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Main</font>             <font color=Black>(</font> <font color=Green>HowAreYou</font><font color=Black>.</font>hs<font color=Black>,</font> <font color=Green>HowAreYou</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color=Green>Linking</font> ninja <font color=Black>...</font>
+<font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> <font color=Black>./</font>ninja happy
+<font color=Green>Hi</font><font color=Black>!</font> <font color=Green>My</font> name is ninja<font color=Black>.</font>
+<font color=Green>What</font> a lovely day<font color=Black>.</font> <font color=Green>What's</font> up<font color=Black>?</font>
+<font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> <font color=Black>./</font>ninja sad
+<font color=Green>Hi</font><font color=Black>!</font> <font color=Green>My</font> name is ninja<font color=Black>.</font>
+<font color=Green>Ooohh</font><font color=Black>.</font> <font color=Green>Have</font> you got some news for me<font color=Black>?</font></pre>
+<h3 id="вызов-других-программ"><a href="#TOC">Вызов других программ</a></h3>
+<p>Мы можем вызвать любую программу из нашей программы. Это делается с помощью функции <code><font color=Black>system</font></code>, которая живёт в модуле <code><font color=Green>System</font></code>.</p>
+<pre><font color=Black>system</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>ExitCode</font></pre>
+<p>Она принимает строку и запускает её в терминале. Так же как мы делали это с помощью приставки <code><font color="#b2590f">:!</font></code> в интерпретаторе. Значение типа <code><font color=Green>ExitCode</font></code> говорит о результате выполнения строки. Он может быть успешным, тогда функция вернёт <code><font color=Green>ExitSuccess</font></code> и закончиться ошибкой, тогда мы сможем узнать код ошибки по значению <code><font color=Green>ExitFailure</font> <font color=Green>Int</font></code>.</p>
+<h3 id="случайные-значения"><a href="#TOC">Случайные значения</a></h3>
+<p>Функции для создания случайных значений определены в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font></code>. Модуль <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font></code> входит в библиотеку <code><font color=Black>random</font></code>. Если в вашей поставке <code><font color=Black>ghc</font></code> его не оказалось, вы можете установить его вручную через интернет, набрав в командной строке <code><font color=Black>cabal</font> install random</code>. Сначала давайте разберёмся как генерируются случайные числа. Стандартные случайные числа очень похожи на те, что были у нас, когда мы рассматривали примеры специальных функций. У нас есть генератор случайных чисел типа <code><font color=Black>g</font></code> и с помощью функции <code><font color=Black>next</font></code> мы можем получить обновлённый генератор и случайное целое число:</p>
+<pre><font color=Black>next</font> <font color="#b2590f">::</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> g<font color=Black>)</font></pre>
+<p>Не правда ли этот тип очень похож на тип результата функций с состоянием. В качестве состояния теперь выступает генератор случайных чисел <code><font color=Black>g</font></code>. Это поведение описывается классом <code><font color=Green>RandomGen</font></code>:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>RandomGen</font> g <font color="#b2590f">where</font>
+    next     <font color="#b2590f">::</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> g<font color=Black>)</font>
+    split    <font color="#b2590f">::</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font>g<font color=Black>,</font> g<font color=Black>)</font>
+    geтRange <font color="#b2590f">::</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font></pre>
+<p>Функция <code><font color=Black>next</font></code> обновляет генератор и возвращает случайное значение типа <code><font color=Green>Int</font></code>. Функция <code><font color=Black>split</font></code> раскалывает один генератор на два. Функция <code><font color=Black>genRange</font></code> возвращает диапазон значений генерируемых случайных чисел. Первое значение в паре результата <code><font color=Black>genRange</font></code> должно быть всегда меньше второго. Для этого класса определён один экземпляр, это тип <code><font color=Green>StdGen</font></code>. Мы можем создать первый генератор по целому числу с помощью функции <code><font color=Black>mkStdGen</font></code>:</p>
+<pre><font color=Black>mkStdGen</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>StdGen</font></pre>
+<p>Давайте посмотрим как это происходит в интерпретаторе:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>m <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> g0 <font color="#b2590f">=</font> mkStdGen <font color="#0000ee">0</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> <font color=Black>(</font>n0<font color=Black>,</font> g1<font color=Black>)</font> <font color="#b2590f">=</font> next g0
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> <font color=Black>(</font>n1<font color=Black>,</font> g2<font color=Black>)</font> <font color="#b2590f">=</font> next g1
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> n0
+<font color="#0000ee">2147482884</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> n1
+<font color="#0000ee">2092764894</font></pre>
+<p>Мы создали первый генератор, а затем начали получать новые. Для того, чтобы получать новые случайные числа, нам придётся таскать везде за собой генератор случайных чисел. Мы можем обернуть его в функцию с состоянием и пользоваться методами классов <code><font color=Green>Functor</font></code>, <code><font color=Green>Applicative</font></code> и <code><font color=Green>Monad</font></code>. Обновление генератора будет происходить за ширмой, во время применения функций. Но у нас есть и другой путь.</p>
+<p>Вместо монады <code><font color=Green>State</font></code> мы можем воспользоваться монадой <code><font color=Green>IO</font></code>. Если нам лень определять генератор случайных чисел, мы можем попросить компьютер определить его за нас. В этом случае мы взаимодействуем с компьютером, мы запрашиваем глобальное для системы случайное значение, поэтому возвращаемое значение будет завёрнуто в тип <code><font color=Green>IO</font></code>. Для этого определены функции:</p>
+<pre><font color=Black>getStdGen</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>StdGen</font>
+<font color=Black>newStdGen</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>StdGen</font></pre>
+<p>Функция <code><font color=Black>getStdGen</font></code> запрашивает глобальный для системы генератор случайных чисел. Функция <code><font color=Black>newStdGen</font></code> не только запрашивает генератор, но также и обновляет его. Мы пользуемся этими функциями так же как и <code><font color=Black>mkStdGen</font></code>, только теперь мы спрашиваем первый аргумент у компьютера, а не передаём его вручную. Также есть ещё одна полезная функция:</p>
+<pre><font color=Black>getStdRandom</font>    <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>StdGen</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> <font color=Green>StdGen</font><font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a</pre>
+<p>Посмотрим, что получится, если передать в неё функцию <code><font color=Black>next</font></code>:</p>
+<pre><font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> getStdRandom next 
+<font color="#0000ee">1386438055</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> getStdRandom next 
+<font color="#0000ee">961860614</font></pre>
+<p>И не надо обновлять никаких генераторов. Но вместо одного неудобства мы получили другое. Теперь значение завёрнуто в оболочку <code><font color=Green>IO</font></code>.</p>
+<p>Генератор <code><font color=Green>StdGen</font></code> делает случайные числа из диапазона всех целых чисел. Что если мы хотим получить только числа из некоторого интервала? И как получить случайные значения других типов? Для этого существует класс <code><font color=Green>Random</font></code>. Он является удобной надстройкой над классом <code><font color=Green>RandomGen</font></code>. Посмотрим на его основные методы:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Random</font> a <font color="#b2590f">where</font>
+    randomR <font color="#b2590f">::</font> <font color=Green>RandomGen</font> g <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> g<font color=Black>)</font>
+    random  <font color="#b2590f">::</font> <font color=Green>RandomGen</font> g <font color="#b2590f">=&gt;</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> g<font color=Black>)</font></pre>
+<p>Метод <code><font color=Black>randomR</font></code> принимает диапазон значений, генератор случайных чисел и возвращает случайное число из указанного диапазона и обновлённый генератор. Метод <code><font color=Black>random</font></code> является синонимом метода <code><font color=Black>next</font></code> из класса <code><font color=Green>RandomGen</font></code>, только теперь мы можем получать не только целые числа.</p>
+<p>Есть и дополнительные методы. Есть методы, которые позволяют генерировать список всех возможных случайных значений для данного генератора:</p>
+<pre>    randomRs <font color="#b2590f">::</font> <font color=Green>RandomGen</font> g <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> g <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
+    randoms  <font color="#b2590f">::</font> <font color=Green>RandomGen</font> g <font color="#b2590f">=&gt;</font> g <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></pre>
+<p>За счёт лени мы будем получать новые значения по мере необходимости.</p>
+<pre>    randomRIO   <font color="#b2590f">::</font> <font color=Black>(</font>a<font color=Black>,</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a
+    randomIO    <font color="#b2590f">::</font> <font color=Green>IO</font> a</pre>
+<p>Эти функции выполняют тоже, что и основные функции класса, но им не нужен генератор случайных чисел, они создают его с помощью функции <code><font color=Black>getStdRandom</font></code>. Экземпляры <code><font color=Green>Random</font></code> определены для <code><font color=Green>Bool</font></code>, <code><font color=Green>Char</font></code>, <code><font color=Green>Double</font></code>, <code><font color=Green>Float</font></code>, <code><font color=Green>Int</font></code> и <code><font color=Green>Integer</font></code>. Например так мы можем подбросить кости десять раз:</p>
+<pre><font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">10</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color="#0000ee">1</font><font color=Black>,</font> <font color="#0000ee">6</font><font color=Black>)</font><font color=Black>)</font> getStdGen
+<font color="#b2590f">[</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">4</font><font color="#b2590f">]</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">10</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color="#0000ee">1</font><font color=Black>,</font> <font color="#0000ee">6</font><font color=Black>)</font><font color=Black>)</font> getStdGen
+<font color="#b2590f">[</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">4</font><font color="#b2590f">]</font></pre>
+<p>Обратите внимание на то, что функция <code><font color=Black>getStdGen</font></code> не обновляет генератор случайных чисел. Мы запрашиваем глобальное состояние. Поэтому, дважды подбросив кубик, мы получили одни и те же результаты. Генератор будет обновляться, если воспользоваться функцией <code><font color=Black>newStdGen</font></code>:</p>
+<pre><font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">10</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color="#0000ee">1</font><font color=Black>,</font> <font color="#0000ee">6</font><font color=Black>)</font><font color=Black>)</font> newStdGen
+<font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">3</font><font color="#b2590f">]</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">10</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color="#0000ee">1</font><font color=Black>,</font> <font color="#0000ee">6</font><font color=Black>)</font><font color=Black>)</font> newStdGen
+<font color="#b2590f">[</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">6</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">5</font><font color=Black>,</font><font color="#0000ee">2</font><font color="#b2590f">]</font></pre>
+<p>Создадим случайные слова из пяти букв:</p>
+<pre><font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">5</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color=Black>'a'</font><font color=Black>,</font> <font color=Black>'z'</font><font color=Black>)</font><font color=Black>)</font> newStdGen
+<font color=Black>"maclg"</font>
+<font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">5</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color=Black>'a'</font><font color=Black>,</font> <font color=Black>'z'</font><font color=Black>)</font><font color=Black>)</font> newStdGen
+<font color=Black>"nfjoa"</font></pre>
+<h4 id="цитатник"><a href="#TOC">Цитатник</a></h4>
+<p>Напишем небольшую программу, которая будет выводить на экран в случайном порядке цитаты. Цитаты хранятся в виде списка пар <code><font color=Black>(</font>автор<font color=Black>,</font> высказывание<font color=Black>)</font></code>. Сначала мы генерируем случайное число в диапазоне длины списка, затем выбираем цитату под этим номером и выводим её на экран.</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> 
+    format <font color=Black>.</font> <font color=Black>(</font>quotes <font color=Black>!!</font> <font color=Black>)</font> <font color=Black>&lt;$&gt;</font> randomRIO <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> length quotes <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font>
+    <font color=Black>&gt;&gt;=</font> putStrLn
+
+<font color=Black>format</font> <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">=</font> b  <font color=Black>++</font> space <font color=Black>++</font> a <font color=Black>++</font> space
+    <font color="#b2590f">where</font> space <font color="#b2590f">=</font> <font color=Black>"\n\n"</font>
+
+<font color=Black>quotes</font> <font color="#b2590f">=</font> <font color="#b2590f">[</font>
+    <font color=Black>(</font><font color=Black>"Бьёрн Страуструп"</font><font color=Black>,</font> 
+     <font color=Black>"Есть лишь два вида языков программирования: те, \
+        \ на которые вечно жалуются, и те, которые никогда \
+        \ не используются."</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Мохатма Ганди"</font><font color=Black>,</font> <font color=Black>"Ты должен быть теми изменениями, которые\
+        \ ты хочешь видеть вокруг."</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Сократ"</font><font color=Black>,</font> <font color=Black>"Я знаю лишь то, что ничего не знаю."</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Китайская народная мудрость"</font><font color=Black>,</font> <font color=Black>"Сохранив спокойствие в минуту\
+     \ гнева, вы можете избежать сотни дней сожалений"</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Жан Батист Мольер"</font><font color=Black>,</font> <font color=Black>"Медленно растущие деревья приносят лучшие плоды"</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Антуан де Сент-Экзюпери"</font><font color=Black>,</font> <font color=Black>"Жить это значит медленно рождаться"</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Альберт Эйнштейн"</font><font color=Black>,</font> <font color=Black>"Фантазия важнее знания."</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Тони Хоар"</font><font color=Black>,</font> <font color=Black>"Внутри любой большой программы всегда есть\
+     \ маленькая, что рвётся на свободу"</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Пифагор"</font><font color=Black>,</font> <font color=Black>"Не гоняйся за счастьем, оно всегда находится в тебе самом"</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>"Лао Цзы"</font><font color=Black>,</font> <font color=Black>"Путешествие в тысячу ли начинается с одного шага"</font><font color=Black>)</font><font color="#b2590f">]</font></pre>
+<p>Функция <code><font color=Black>format</font></code> приводит цитату к виду приятному для чтения. Попробуем программу в интерпретаторе:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> ghc <font color="#2149c1">--make Quote -o hi</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Main</font>             <font color=Black>(</font> <font color=Green>Quote</font><font color=Black>.</font>hs<font color=Black>,</font> <font color=Green>Quote</font><font color=Black>.</font>o <font color=Black>)</font>
+<font color=Green>Linking</font> hi <font color=Black>...</font>
+<font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> <font color=Black>./</font>hi
+<font color=Green>Путешествие</font> в тысячу ли начинается с одного шага
+
+<font color=Green>Лао</font> <font color=Green>Цзы</font>
+
+
+<font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> <font color=Black>./</font>hi
+<font color=Green>Не</font> гоняйся за счастьем<font color=Black>,</font> оно всегда находится в тебе самом
+
+<font color=Green>Пифагор</font></pre>
+<h3 id="исключения"><a href="#TOC">Исключения</a></h3>
+<p>Мы уже знаем несколько типов, с помощью которых функции могут сказать, что что-то случилось не так. Это типы <code><font color=Green>Maybe</font></code> и <code><font color=Green>Either</font></code>. Если функции не удалось вычислить значение она возвращает специальное значение <code><font color=Green>Nothing</font></code> или <code><font color=Green>Left</font> reason</code>, по которому следующая функция может опознать ошибку и предпринять какие-нибудь действия. Так обрабатываются ошибки в чистых функциях. В этом разделе мы узнаем о том, как обрабатываются ошибки, которые происходят при взаимодействии с внешним миром, ошибки, которые происходят внутри типа <code><font color=Green>IO</font></code>.</p>
+<p>Ошибки функций с побочными эффектами обрабатываются с помощью специальной функции <code><font color=Black>catch</font></code>, она определена в <code><font color=Green>Prelude</font></code>:</p>
+<pre><font color=Black>catch</font> <font color="#b2590f">::</font> <font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>IOError</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a</pre>
+<p>Эта функция принимает значение, которое содержит побочные эффекты и функцию, которая обрабатывает исключительные ситуации. К примеру если мы попытаемся прочитать данные из файла, к которому у нас нет доступа, произойдёт ошибка. Мы можем не дать программе упасть и обработать ошибку с помощью функции <code><font color=Black>catch</font></code>.</p>
+<p>Например программа, в которой мы дописывали данные в файл, упадёт, если мы передадим не существующий файл. Но мы можем исправить это поведение с помощью функции <code><font color=Black>catch</font></code>. Мы можем перезапускать программу, если произошла ошибка:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>FileSafe</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> try <font color=Black>`catch`</font> const main
+
+<font color=Black>try</font> <font color="#b2590f">=</font> msg1 <font color=Black>&gt;&gt;</font> getLine <font color=Black>&gt;&gt;=</font> read <font color=Black>&gt;&gt;=</font> append
+    <font color="#b2590f">where</font> read   file <font color="#b2590f">=</font> readFile file <font color=Black>&gt;&gt;=</font> putStrLn <font color=Black>&gt;&gt;</font> return file
+          append file <font color="#b2590f">=</font> msg2 <font color=Black>&gt;&gt;</font> getLine <font color=Black>&gt;&gt;=</font> appendFile file
+          msg1        <font color="#b2590f">=</font> putStr <font color=Black>"input file: "</font>
+          msg2        <font color="#b2590f">=</font> putStr <font color=Black>"input text: "</font></pre>
+<p>Часто функции двух аргументов называют так, чтобы при инфиксной форме записи получалась фраза из английского языка. Так если мы запишем <code><font color=Black>catch</font></code> в инфиксной форме получится очень наглядное выражение. Функция обработки ошибок реагирует на любую ошибку перезапуском программы. Попробуем взломать программу:</p>
+<pre><font color=Black>*</font><font color=Green>FileSafe</font><font color=Black>&gt;</font> main
+<font color=Black>input</font> file<font color="#b2590f">:</font> fsldfksld
+<font color=Black>input</font> file<font color="#b2590f">:</font> sd<font color=Black>;</font>fls<font color=Black>;</font>dfl<font color=Black>;</font>vll<font color=Black>;</font> d<font color=Black>;</font>fld<font color=Black>;</font>f
+<font color=Black>input</font> file<font color="#b2590f">:</font> dflks<font color=Black>;</font>ldkf ldkfldkfld
+<font color=Black>input</font> file<font color="#b2590f">:</font> lsdkfksdlf ksdkflsdfkls<font color=Black>;</font>dfk
+<font color=Black>input</font> file<font color="#b2590f">:</font> bfk
+<font color=Black>input</font> file<font color="#b2590f">:</font> test
+<font color=Green>Hello</font><font color=Black>!</font><font color=Green>Hi</font><font color=Black>)</font>
+<font color=Black>input</font> text<font color="#b2590f">:</font> <font color=Green>HowHow</font></pre>
+<p>Функция будет запрашивать файл до тех пор, пока мы не введём корректное значение. Мы можем добавить сообщение об ошибке, немного изменив функцию обработки:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">=</font> try <font color=Black>`catch`</font> const <font color=Black>(</font>msg <font color=Black>&gt;&gt;</font> main<font color=Black>)</font>
+    <font color="#b2590f">where</font> msg <font color="#b2590f">=</font> putStrLn <font color=Black>"Wrong filename, try again."</font></pre>
+<p>А что делать если нам хочется различать ошибки по типу и предпринимать различные действия в зависимости от типа ошибки? Ошибки распознаются с помощью специальных предикатов, которые определены в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Error</font></code>. Рассмотрим некоторые из них.</p>
+<p>Например с помощью с помощью предиката <code><font color=Black>isDoesNotExistErrorType</font></code> мы можем опознать ошибки, которые случились из-за того, что один из аргументов функции не существует. С помощью предиката <code><font color=Black>isPermissionErrorType</font></code> мы можем узнать, что ошибка произошла из-за того, что мы пытались получить доступ к данным, на которые у нас нет прав. Мы можем, немного изменив функцию-обработчик исключений, выводить более информативные сообщения об ошибках перед перезапуском:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">=</font> try <font color=Black>`catch`</font> handler
+
+<font color=Black>handler</font> <font color="#b2590f">::</font> <font color=Green>IOError</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>handler</font> <font color="#b2590f">=</font> <font color=Black>(</font> <font color=Black>&gt;&gt;</font> main<font color=Black>)</font> <font color=Black>.</font> putStrLn <font color=Black>.</font> msg2 <font color=Black>.</font> msg1
+
+<font color=Black>msg1</font> e 
+    <font color="#b2590f">|</font> isDoesNotExistErrorType e <font color="#b2590f">=</font> <font color=Black>"File does not exist. "</font>
+    <font color="#b2590f">|</font> isPermissionErrorType e   <font color="#b2590f">=</font> <font color=Black>"Access denied. "</font>
+    <font color="#b2590f">|</font> otherwise                 <font color="#b2590f">=</font> <font color=Black>""</font>
+
+<font color=Black>msg2</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>++</font> <font color=Black>"Try again."</font><font color=Black>)</font></pre>
+<p>В модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Error</font></code> вы можете найти ещё много разных предикатов.</p>
+<h3 id="потоки-текстовых-данных"><a href="#TOC">Потоки текстовых данных</a></h3>
+<p>Обмен данными, чтение и запись происходят с помощью потоков. Каждый поток имеет <em>дескриптор</em> (handle), через него мы можем общаться с потоком, например считывать данные или записывать. Функции для работы с потоками данных определены в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font></code>.</p>
+<p>В любой момент в системе открыты три стандартных потока:</p>
+<ul>
+<li><p><code><font color=Black>stdin</font></code> – стандартный ввод</p></li>
+<li><p><code><font color=Black>stdout</font></code> – стандартный вывод</p></li>
+<li><p><code><font color=Black>stderr</font></code> – поток ошибок и отладочных сообщений</p></li>
+</ul>
+<p>Например когда мы выводим строку на экран, на самом деле мы записываем строку в поток <code><font color=Black>stdout</font></code>. А когда мы читаем символ с клавиатуры, мы считываем его из потока <code><font color=Black>stdin</font></code>.</p>
+<p>Файлы также являются потоками. При открытии файлу присваивается дескриптор через который, мы можем обмениваться данными. Файл может быть открыт для чтения, записи, дополнения (записи в конец файла) или чтения и записи. Файл открывается функцией:</p>
+<pre><font color=Black>openFile</font> <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>IOMode</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Handle</font></pre>
+<p>Функция принимает путь к файлу и режим работы с файлом и возвращает дескриптор. Режим может принимать одно из значений:</p>
+<ul>
+<li><p><code><font color=Green>ReadMode</font></code> – чтение</p></li>
+<li><p><code><font color=Green>WriteMode</font></code> – запись</p></li>
+<li><p><code><font color=Green>AppendMode</font></code> – добавление (запись в конец файла)</p></li>
+<li><p><code><font color=Green>ReadWriteMode</font></code> – чтение и запись</p></li>
+</ul>
+<p>Открыв дескриптор, мы можем начать обмениваться данными. Для этого определены функции аналогичные тем, что мы уже рассмотрели. Функции для записи данных:</p>
+<pre><font color="#2149c1">-- запись символа</font>
+<font color=Black>hPutChar</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- запись строки</font>
+<font color=Black>hPutStr</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- запись строки с переносом каретки</font>
+<font color=Black>hPutStrLn</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- запись значения</font>
+<font color=Black>hPrint</font> <font color="#b2590f">::</font> <font color=Green>Show</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Все функции принимают первым аргументом дескриптор потока. Дескриптор должен позволять записывать данные. Например для дескриптора, открытого в режиме <code><font color=Green>ReadMode</font></code>, выполнение этих функций приведёт к ошибке.</p>
+<p>Из потоков также можно читать данные. Эти функции похожи на те, что мы уже рассмотрели:</p>
+<pre><font color="#2149c1">-- чтение одного символа</font>
+<font color=Black>hGetChar</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Char</font>
+
+<font color="#2149c1">-- чтение строки</font>
+<font color=Black>hGetLine</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>String</font>
+
+<font color="#2149c1">-- ленивое чтение строки</font>
+<font color=Black>hGetContents</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>String</font></pre>
+<p>Как только, мы закончим работу с файлом, его необходимо закрыть. Нам нужно освободить дескриптор. Сделать это можно функцией <code><font color=Black>hClose</font></code>:</p>
+<pre><font color=Black>hClose</font> <font color="#b2590f">::</font> <font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Стандартные функции ввода/вывода, которые мы рассмотрели ранее определены через функции работы с дескрипторами. Например так мы выводим строку на экран:</p>
+<pre><font color=Black>putStr</font>          <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>putStr</font> s        <font color="#b2590f">=</font>  hPutStr stdout s</pre>
+<p>А так читаем строку с клавиатуры:</p>
+<pre><font color=Black>getLine</font>         <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>String</font>
+<font color=Black>getLine</font>         <font color="#b2590f">=</font>  hGetLine stdin</pre>
+<p>В этих функциях используются дескрипторы стандартных потоков данных <code><font color=Black>stdin</font></code> и <code><font color=Black>stdout</font></code>. Отметим функцию <code><font color=Black>withFile</font></code>:</p>
+<pre><font color=Black>withFile</font> <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>IOMode</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Handle</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> r<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> r</pre>
+<p>Она открывает файл в заданном режиме выполняет функцию на его дескрипторе и и закрывает файл. Например через эту функцию определены функции <code><font color=Black>readFile</font></code> и <code><font color=Black>appendFile</font></code>:</p>
+<pre><font color=Black>appendFile</font>      <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>appendFile</font> f txt <font color="#b2590f">=</font> withFile f <font color=Green>AppendMode</font> <font color=Black>(</font><font color="#b2590f">\</font>hdl <font color="#b2590f">-&gt;</font> hPutStr hdl txt<font color=Black>)</font>
+
+<font color=Black>writeFile</font> <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>writeFile</font> f txt <font color="#b2590f">=</font> withFile f <font color=Green>WriteMode</font> <font color=Black>(</font><font color="#b2590f">\</font>hdl <font color="#b2590f">-&gt;</font> hPutStr hdl txt<font color=Black>)</font></pre>
+<h2 id="форточка-в-мир-побочных-эффектов"><a href="#TOC">Форточка в мир побочных эффектов</a></h2>
+<p>В самом начале главы я сказал о том, что из мира <code><font color=Green>IO</font></code><br />нет выхода. Нет функции с типом <code><font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> a</code>. На самом деле выход есть. Функция с таким типом живёт в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Unsafe</font></code>:</p>
+<pre><font color=Black>unsafePerformIO</font> <font color="#b2590f">::</font> <font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>Длинное имя функции намекает на то, что её необходимо использовать с <em>крайней</em> осторожностью. Поскольку последствия могут быть непредсказуемыми.</p>
+<p>Эта функция используется при чтении конфигурационных файлов. Если есть уверенность в том, что файл будет только читаться и во время выполнения программы файл не может быть изменён другой программой, то мы можем считать, что его значение окажется неизменным на протяжении работы программы. Это говорит о том, что нам не важно когда читать данные. Поэтому здесь мы вроде бы ничем не рискуем. “Вроде бы” потому что ответственность за постоянство файла лежит на наших плечах.</p>
+<p>Эта функция часто используется при вызове функций С через Haskell. В Haskell есть возможность вызывать функции, написанные на C. Но по умолчанию такие функции заворачиваются в тип <code><font color=Green>IO</font></code>. Если функция является чистой в С, то она будет чистой и при вызове через Haskell. Мы можем поручиться за её чистоту и вычислитель нам поверит. Но если мы его обманули, мы пожнём плоды своего обмана.</p>
+<h3 id="отладка-программ"><a href="#TOC">Отладка программ</a></h3>
+<p>Раз уж речь зашла о “грязных” возможностях языка стоит упомянуть функцию <code><font color=Black>trace</font></code> из модуля <code><font color=Green>Debug</font><font color=Black>.</font><font color=Green>Trace</font></code>. Посмотрим на её тип:</p>
+<pre><font color=Black>trace</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>Это служебная функция эхо-печати. Когда дело доходит до вычисления функции <code><font color=Black>trace</font></code> на экран выводится строка, которая была передана в неё первым аргументом, после чего функция возвращает второй аргумент. Это функция <code><font color=Black>id</font></code> с побочным эффектом вывода сообщения на экран. Ею можно пользоваться для отладки. Например так можно вернуть значение и распечатать его:</p>
+<pre><font color=Black>echo</font> <font color="#b2590f">::</font> <font color=Green>Show</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>echo</font> a <font color="#b2590f">=</font> trace <font color=Black>(</font>show a<font color=Black>)</font> a</pre>
+<h2 id="композиция-монад"><a href="#TOC">Композиция монад</a></h2>
+<p>Эта глава завершает наше путешествие в мире типов-монад. Мы начали наше знакомство с монадами с композиции, мы определили класс <code><font color=Green>Monad</font></code> через класс <code><font color=Green>Kleisli</font></code>, который упрощал составление специальных функций вида <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> m b</code>. Тогда мы познакомились с самыми простыми типами монадами (списки и частично определённые функции), потом мы перешли к типам посложнее, мы научились проводить вычисления с состоянием. В этой главе мы рассмотрели самый важный тип монаду <code><font color=Green>IO</font></code>. Мне бы хотелось замкнуть этот рассказ на теме композиции. Мы поговорим о композиции нескольких монад.<br />Если вы посмотрите в исходный код библиотеки <code><font color=Black>transformers</font></code>, то увидите совсем другое определение для <code><font color=Green>State</font></code>:</p>
+<pre><font color="#b2590f">type</font> <font color=Green>State</font> s <font color="#b2590f">=</font> <font color=Green>StateT</font> s <font color=Green>Identity</font>
+
+<font color="#b2590f">newtype</font> <font color=Green>StateT</font> s m a <font color="#b2590f">=</font> <font color=Green>StateT</font> <font color=Black>{</font> runStateT <font color="#b2590f">::</font> s <font color="#b2590f">-&gt;</font> m <font color=Black>(</font>a<font color=Black>,</font>s<font color=Black>)</font> <font color=Black>}</font>
+<font color="#b2590f">newtype</font> <font color=Green>Identity</font> a <font color="#b2590f">=</font> <font color=Green>Identity</font> <font color=Black>{</font> runIdentity <font color="#b2590f">::</font> a <font color=Black>}</font></pre>
+<p>Но так ли оно далеко от нашего? Давайте разберёмся. <code><font color=Green>Identity</font></code> это тривиальный тип обёртка. Мы просто заворачиваем значение в конструктор и ничего с ним не делаем. Вы наверняка сможете догадаться как определить экземпляры всех рассмотренных в этой главе классов для этого типа. Тип <code><font color=Green>StateT</font></code> больше похож на наше определение для <code><font color=Green>State</font></code>, единственное отличие – это дополнительный параметр <code><font color=Black>m</font></code> в который завёрнут результат функции обновления состояния. Если мы сотрём <code><font color=Black>m</font></code>, то получим наше определение. Это и сказано в определении для <code><font color=Green>State</font></code></p>
+<pre><font color="#b2590f">type</font> <font color=Green>State</font> s <font color="#b2590f">=</font> <font color=Green>StateT</font> s <font color=Green>Identity</font></pre>
+<p>Мы передаём дополнительным параметром в <code><font color=Green>StateT</font></code> тип <code><font color=Green>Identity</font></code>, который как раз ничего и не делает с типом. Так мы получим наше исходное определение, но зачем такие премудрости? Такой тип принято называть <em>монадным трансформером</em> (monad transformer). Он определяет композицию из нескольких монад в данном случае одной из монад является <code><font color=Green>State</font></code>. Посмотрим на экземпляр класса <code><font color=Green>Monad</font></code> для <code><font color=Green>StateT</font></code></p>
+<pre><font color="#b2590f">instance</font> <font color=Black>(</font><font color=Green>Monad</font> m<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Monad</font> <font color=Black>(</font><font color=Green>StateT</font> s m<font color=Black>)</font> <font color="#b2590f">where</font>
+    return a <font color="#b2590f">=</font> <font color=Green>StateT</font> <font color=Black>$</font> <font color="#b2590f">\</font>s <font color="#b2590f">-&gt;</font> return <font color=Black>(</font>s<font color=Black>,</font> a<font color=Black>)</font>
+    
+    a <font color=Black>&gt;&gt;=</font> f <font color="#b2590f">=</font> <font color=Green>StateT</font> <font color=Black>$</font> <font color="#b2590f">\</font>s0 <font color="#b2590f">-&gt;</font>
+        runStateT a s0 <font color=Black>&gt;&gt;=</font> <font color="#b2590f">\</font><font color=Black>(</font>b<font color=Black>,</font> s1<font color=Black>)</font> <font color="#b2590f">-&gt;</font> runStateT <font color=Black>(</font>f b<font color=Black>)</font> s1            </pre>
+<p>В этом определении мы пропускаем состояние через сито методов класса <code><font color=Green>Monad</font></code> для типа <code><font color=Black>m</font></code>. В остальном это определение ничем не отличается от нашего. Также определены и <code><font color=Green>ReaderT</font></code>, <code><font color=Green>WriterT</font></code>, <code><font color=Green>ListT</font></code> и <code><font color=Green>MaybeT</font></code>. Ключевым классом для всех этих типов является класс <code><font color=Green>MonadTrans</font></code>:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>MonadTrans</font> t <font color="#b2590f">where</font>
+    lift <font color="#b2590f">::</font> <font color=Green>Monad</font> m <font color="#b2590f">=&gt;</font> m a <font color="#b2590f">-&gt;</font> t m a </pre>
+<p>Этот тип позволяет нам заворачивать специальные значения типа <code><font color=Black>m</font></code> в значения типа <code><font color=Black>t</font></code>. Посмотрим на определение для <code><font color=Green>StateT</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>MonadTrans</font> <font color=Black>(</font><font color=Green>StateT</font> s<font color=Black>)</font> <font color="#b2590f">where</font>
+    lift m <font color="#b2590f">=</font> <font color=Green>StateT</font> <font color=Black>$</font> <font color="#b2590f">\</font>s <font color="#b2590f">-&gt;</font> liftM <font color=Black>(</font><font color=Black>,</font>s<font color=Black>)</font> m</pre>
+<p>Напомню, что функция <code><font color=Black>liftM</font></code> это тоже самое , что и функция <code><font color=Black>fmap</font></code>, только она определена через методы класса <code><font color=Green>Monad</font></code>. Мы создали функцию обновлнения состояния, которая ничего не делает с состоянием, а лишь прицепляет его к значению.</p>
+<p>Приведём простой пример применения трансформеров. Вернёмся к примеру <code><font color=Green>FSM</font></code> из предыдущей главы. Предположим, что наш конечный автомат не только реагирует на действия, но и ведёт журнал, в который записываются все поступающие на вход события. За переход состояний будет по прежнему отвечать тип <code><font color=Green>State</font></code> только теперь он станет трансформером, для того чтобы включить воможность журналирования. За ведение журнала будет отвечать тип <code><font color=Green>Writer</font></code>. Ведь мы просто накапливаем записи.</p>
+<p>Интересно, что для добавления новой возможности нам нужно изменить лишь определение типа <code><font color=Green>FSM</font></code> и функцию <code><font color=Black>fsm</font></code>, теперь они примут вид:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>FSMt</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>Trans</font><font color=Black>.</font><font color=Green>Class</font>
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>Trans</font><font color=Black>.</font><font color=Green>State</font>
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>Trans</font><font color=Black>.</font><font color=Green>Writer</font>
+
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Monoid</font>
+
+<font color="#b2590f">type</font> <font color=Green>FSM</font> s <font color="#b2590f">=</font> <font color=Green>StateT</font> s <font color=Black>(</font><font color=Green>Writer</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font><font color=Black>)</font> s
+
+<font color=Black>fsm</font> <font color="#b2590f">::</font> <font color=Green>Show</font> ev <font color="#b2590f">=&gt;</font> <font color=Black>(</font>ev <font color="#b2590f">-&gt;</font> s <font color="#b2590f">-&gt;</font> s<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>ev <font color="#b2590f">-&gt;</font> <font color=Green>FSM</font> s<font color=Black>)</font>
+<font color=Black>fsm</font> transition e <font color="#b2590f">=</font> log e <font color=Black>&gt;&gt;</font> run e
+    <font color="#b2590f">where</font> run e <font color="#b2590f">=</font> <font color=Green>StateT</font> <font color=Black>$</font> <font color="#b2590f">\</font>s <font color="#b2590f">-&gt;</font> return <font color=Black>(</font>s<font color=Black>,</font> transition e s<font color=Black>)</font>  
+          log e <font color="#b2590f">=</font> lift <font color=Black>$</font> tell <font color="#b2590f">[</font>show e<font color="#b2590f">]</font> </pre>
+<p>Все остальные функции останутся прежними. Сначала мы подключили все необходимые модули из библиотеки <code><font color=Black>transformers</font></code>. В подфункции <code><font color=Black>log</font></code> мы сохраняем сообщение в журнал, а в подфункции <code><font color=Black>run</font></code> мы выполняем функцию перехода. Посмотрим, что у нас получилось:</p>
+<pre><font color=Black>*</font><font color=Green>FSMt</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> res <font color="#b2590f">=</font> mapM speaker session
+<font color=Black>*</font><font color=Green>FSMt</font><font color=Black>&gt;</font> runWriter <font color=Black>$</font> runStateT res <font color=Black>(</font><font color=Green>Sleep</font><font color=Black>,</font> <font color=Green>Level</font> <font color="#0000ee">2</font><font color=Black>)</font>
+<font color=Black>(</font><font color=Black>(</font><font color="#b2590f">[</font><font color=Black>(</font><font color=Green>Sleep</font><font color=Black>,</font><font color=Green>Level</font> <font color="#0000ee">2</font><font color=Black>)</font><font color=Black>,</font><font color=Black>(</font><font color=Green>Work</font><font color=Black>,</font><font color=Green>Level</font> <font color="#0000ee">2</font><font color=Black>)</font><font color=Black>,</font><font color=Black>(</font><font color=Green>Work</font><font color=Black>,</font><font color=Green>Level</font> <font color="#0000ee">3</font><font color=Black>)</font><font color=Black>,</font><font color=Black>(</font><font color=Green>Work</font><font color=Black>,</font><font color=Green>Level</font> <font color="#0000ee">2</font><font color=Black>)</font><font color=Black>,</font>
+ <font color=Black>(</font><font color=Green>Sleep</font><font color=Black>,</font><font color=Green>Level</font> <font color="#0000ee">2</font><font color=Black>)</font><font color="#b2590f">]</font><font color=Black>,</font><font color=Black>(</font><font color=Green>Sleep</font><font color=Black>,</font><font color=Green>Level</font> <font color="#0000ee">3</font><font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+ <font color="#b2590f">[</font><font color=Black>"Button"</font><font color=Black>,</font><font color=Black>"Louder"</font><font color=Black>,</font><font color=Black>"Quieter"</font><font color=Black>,</font><font color=Black>"Button"</font><font color=Black>,</font><font color=Black>"Louder"</font><font color="#b2590f">]</font><font color=Black>)</font>
+<font color=Black>*</font><font color=Green>FSMt</font><font color=Black>&gt;</font> session
+<font color="#b2590f">[</font><font color=Green>Button</font><font color=Black>,</font><font color=Green>Louder</font><font color=Black>,</font><font color=Green>Quieter</font><font color=Black>,</font><font color=Green>Button</font><font color=Black>,</font><font color=Green>Louder</font><font color="#b2590f">]</font></pre>
+<p>Мы видим, что цепочка событий была успешно записана в журнал.</p>
+<p>Для трансформеров с типом <code><font color=Green>IO</font></code> определён специальный класс:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Monad</font> m <font color="#b2590f">=&gt;</font> <font color=Green>MonadIO</font> m <font color="#b2590f">where</font>
+    liftIO <font color="#b2590f">::</font> <font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> m a</pre>
+<p>Этот класс живёт в модуле <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Class</font></code>. С его помощью мы можем выполнять <code><font color=Green>IO</font></code>-действия ввнутри другой монады. Эта возможность бывает очень полезной. Вам она обязательно понадобится, если вы начнёте писать веб-сайты на Haskell (например в happstack) или будете пользоваться библиотеками, которые надстроены над C (например физический движок Hipmunk).</p>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>Наконец-то мы научились писать программы! Программы, которые можно исполнять за пределами интерпретатора. Для этого нам пришлось познакомиться с типом <code><font color=Green>IO</font></code>. Экземпляр класса <code><font color=Green>Monad</font></code> для этого типа интерпретируется специальным образом. Он вносит упорядоченность в выполнение программы. В нашем статическом мире описаний появляются такие понятия как “сначала”, “затем”, “до” и “после”. Но они не смогут нанести много вреда.</p>
+<p>Вычисление операций с побочными эффектами разбивает программу на кадры. Но это не мешает нам писать основные функции в чистом виде, подставляя их по мере необходимости в изменчивый мир побочных эффектов с помощью методов из классов <code><font color=Green>Functor</font></code>, <code><font color=Green>Applicative</font></code>, <code><font color=Green>Monad</font></code>.</p>
+<p>Мы узнали как в Haskell обстоят дела с такими типичными задачами мира побочных эффектов как ввод/вывод, чтение/запись файлов, генерация случайных значений, выполнение внешних программ, инициализация программ с помощью флагов. Также мы узнали о том, как обрабатываются специфические для типа <code><font color=Green>IO</font></code> исключения.</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<p>Старайтесь свести присутствие функций с побочными эффектами к минимуму. Идеальный случай, когда тип <code><font color=Green>IO</font></code> встречается только в функции <code><font color=Black>main</font></code>. Часто программы устроены более хитрым образом и функции с побочными эффектами пытаются расползтись по всему коду. Но даже в этом случае программу можно разделить на две части: в одной живут подлинные источники побочных эффектов, такие как чтение файлов, генерация случайных значений, а в другой – чистые функции. Старайтесь устроить программу так, чтобы она была максимально чистой. Чистые функции гораздо проще комбинировать, понимать, изменять.</p>
+<ul>
+<li><p>Это упражнение даёт вам возможность почувствовать преимущества чистого кода. Вспомните функцию поиска корней методом неподвижной точки (этот пример встречался в главе о ленивых вычислениях). Напишите на основе этого примера программу, которая будет распечатывать решение и последовательность приближений. Последовательность приближений состоит из текущего значения корня и расстоянии между корнями.</p>
+<p>Напишите два варианта программы, в одном вы измените алгоритм так, чтобы печать происходила одновременно с вычислениями (не пользуясь функцией из модуля <code><font color=Green>Debug</font><font color=Black>.</font><font color=Green>Trace</font></code>). А в другом варианте алгоритм останется прежним. Но теперь вместо решения найдите список первых приближений до решения. А затем передайте его в отдельную функцию печати результатов.</p>
+<p>В первом варианте алгоритм смешан с печатью. А во втором программа распадается на две части, часть вычислений и часть вывода результатов на экран. Сравните два подхода.</p></li>
+<li><p>Напишите программу для угадывания чисел. Компьютер загадал число в заданном диапазоне и просит вас угадать его. Если вы ошибаетесь он подсказывает: “холодно-горячо” или “больше-меньше”. Программа принимает два аргумента, которые определяют диапазон возможных значений для неизвестного числа.</p></li>
+<li><p>С помощью стандартных функций для генерации случайных чисел напишите программу, которая проводит состязание по игре в кости. Программа принимает аргументом суммарное число очков необходимых для победы. Двое игроков бросают по очереди кости побеждает тот, кто первым наберёт заданную сумму.</p>
+<p>Сделайте так чтобы результаты выводились постепенно. С каждым нажатием на <code><font color=Green>Enter</font></code> вы подбрасываете кости (два шестигранных кубика). После каждого раунда программа выводит промежуточные результаты.</p></li>
+<li><p>Напишите программу, которая принимает два аргумента: набор слов разделённых пробелами и файл. А выводит она строки файла, в которых встречается данное слово.</p>
+<p>Воспользуйтесь стандартными функциями из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font></code></p>
+<pre><font color="#2149c1">-- разбиение строки на подстроки по переносам каретки</font>
+<font color=Black>lines</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font>
+
+<font color="#2149c1">-- разбиение строки на подстроки по пробелам</font>
+<font color=Black>words</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font>
+
+<font color="#2149c1">-- возвращает True только в том случае, если </font>
+<font color="#2149c1">-- первый список полностью содержится во втором</font>
+<font color=Black>isInfixOf</font> <font color="#b2590f">::</font> <font color=Green>Eq</font> a <font color="#b2590f">=&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></pre></li>
+<li><p>Классы <code><font color=Green>Functor</font></code> и <code><font color=Green>Applicative</font></code> замкнуты относительно композиции. Это свойство говорит о том, что композиция (аппликативных) функторов снова является (аппликативным) функтором. Докажите это! Пусть дан тип, который описывает композицию двух типов:</p>
+<pre><font color="#b2590f">newtype</font> <font color=Green>O</font> f g a <font color="#b2590f">=</font> <font color=Green>O</font> <font color=Black>{</font> unO <font color="#b2590f">::</font> f <font color=Black>(</font>g a<font color=Black>)</font> <font color=Black>}</font></pre>
+<p>Определите экземпляры классов:</p>
+<pre><font color="#b2590f">instance</font> <font color=Black>(</font><font color=Green>Functor</font> f<font color=Black>,</font> <font color=Green>Functor</font> g<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Functor</font> <font color=Black>(</font><font color=Green>O</font> f g<font color=Black>)</font> <font color="#b2590f">where</font> <font color=Black>...</font>
+
+<font color="#b2590f">instance</font> <font color=Black>(</font><font color=Green>Applicative</font> f<font color=Black>,</font> <font color=Green>Applicative</font> g<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Applicative</font> <font color=Black>(</font><font color=Green>O</font> f g<font color=Black>)</font> <font color="#b2590f">where</font> <font color=Black>...</font></pre>
+<p>Подсказка: если совсем не получается, ответ можно подсмотреть в библиотеке <code><font color=Green>TypeCompose</font></code>. Но пока мы не знаем как устанавливать библиотеки и где они живут, всё-таки попытайтесь решить это упражнение самостоятельно.</p></li>
+</ul>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="7.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="9.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="7" style="list-style-type: decimal">
+<li>Функторы и монады: примеры
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="9" style="list-style-type: decimal">
+<li>Редукция выражений
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

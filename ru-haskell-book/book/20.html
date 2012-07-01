@@ -1,0 +1,884 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#императивное-программирование">Императивное программирование</a><ul>
+<li><a href="#описание-игры">Описание игры</a></li>
+<li><a href="#основные-библиотеки">Основные библиотеки</a><ul>
+<li><a href="#изменяемые-значения">Изменяемые значения</a><ul>
+<li><a href="#ioref">IORef</a></li>
+<li><a href="#statevar">StateVar</a></li>
+</ul></li>
+<li><a href="#opengl">OpenGL</a><ul>
+<li><a href="#анимация">Анимация</a></li>
+</ul></li>
+<li><a href="#chipmunk">Chipmunk</a></li>
+</ul></li>
+<li><a href="#боремся-с-io">Боремся с IO</a></li>
+<li><a href="#определяемся-с-типами">Определяемся с типами</a></li>
+<li><a href="#структура-проекта">Структура проекта</a></li>
+<li><a href="#детализируем-функции-обновления-состояния-игры">Детализируем функции обновления состояния игры</a></li>
+<li><a href="#детализируем-дальше">Детализируем дальше</a></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="19.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="21.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="императивное-программирование"><a href="#TOC">Императивное программирование</a></h1>
+<p>В этой главе мы потренируемся в укрощении императивного кода. В Haskell все побочные эффекты огорожены от чистых функций бетонной стеной <code><font color=Green>IO</font></code>. Однажды оступившись, мы не можем свернуть с пути побочных эффектов, мы вынуждены тащить на себе груз <code><font color=Green>IO</font></code> до самого конца программы. Тип <code><font color=Green>IO</font></code>, хоть и обволакивает программу, всё же позволяет пользоваться благами чистых вычислений. От программиста зависит насколько сильна будет хватка <code><font color=Green>IO</font></code>. Необходимо уметь выделять точки, в которых применение побочных вычислений действительно необходимо, подключая в них чистые функции через методы классов <code><font color=Green>Functor</font></code>, <code><font color=Green>Applicative</font></code> и <code><font color=Green>Monad</font></code>. Тип <code><font color=Green>IO</font></code> похож на дорогу с контрольными пунктами, в которых необходимо отчитаться перед компилятором за “грязный код”. При неумелом проектировании написание программ, насыщенных побочными эффектами, может превратится в пытку. Контрольные пункты будут встречаться в каждой функции.</p>
+<p>Естественный источник побочных эффектов – это пользователь программы. Но, к сожалению, это не единственный источник. Haskell – открытый язык программирования. В нём можно пользоваться программами из низкоуровневого языка C. Основное преимущество С заключается в непревзойдённой скорости программ. Этот язык позволяет программисту работать с памятью компьютера напрямую. Но за эту силу приходится платить. Возможны очень неприятные и трудноуловимые ошибки. Утечки памяти, обращение по неверному адресу в памяти, неожиданное обновление переменных. Ещё один плюс С в том, что это язык с историей, на нём написано много хороших библиотек. Некоторые из них встроены в Haskell с помощью специального механизма FFI (foreign function interface). Обсуждение того, как устроен FFI выходит за рамки этой книги. Интересующийся читатель может обратиться к книге <em>Real World Haskell</em>. Мы же потренируемся в использовании таких библиотек. Язык C является императивным, поэтому, применяя его функций в Haskell, мы неизбежно сталкиваемся с типом <code><font color=Green>IO</font></code>, поскольку большинство интересных функций в С изменяют состояние своих аргументов. В С пишут и чистые функции, такие функции переносятся в Haskell без потери чистоты, но это не всегда возможно.</p>
+<p>В этой главе мы напишем небольшую 2D-игру, подключив две FFI-библиотеки, это графическая библиотека <code><font color=Green>OpenGL</font></code> и физический движок <code><font color=Green>Chipmunk</font></code>.</p>
+<h4 id="описание-игры"><a href="#TOC">Описание игры</a></h4>
+<p>Игра происходит на бильярдной доске. Игрок управляет красным шаром, кликнув в любую точку экрана, он может изменить направление вектора скорости красного шара. Шар покатится туда, куда кликнул пользователь в последний раз. Из луз будут вылетать шары трёх типов: синие, зелёные и оранжевые. Столкновение красного шара с синим означает минус одну жизнь, с зелёным – плюс одну жизнь, оранжевый шар означает бонус. Если шар игрока сталкивается с оранжевым шаром все шары в определённом радиусе от места столкновения исчезают и записываются в бонусные очки, за каждый шар по одному очку, при этом шар с которым произошло столкновение не считается. Все столкновения – абсолютно упругие, поэтому при столкновении энергия сохраняется и шары никогда не остановятся. Если шар попадает в лузу, то он исчезает. Если в лузу попал шар игрока – это означает, что игра окончена. Игрок стартует с несколькими жизнями, когда их число подходит к нулю игра останавливается. После столкновения с зелёным шаром, шар пропадает, а после столкновения с синим – нет. В итоге все против игрока, кроме зелёных и оранжевых шаров.</p>
+<h2 id="основные-библиотеки"><a href="#TOC">Основные библиотеки</a></h2>
+<p>Контролировать физику игрового мира будет библиотека <code><font color=Green>Chipmunk</font></code>, а библиотека <code><font color=Green>OpenGL</font></code> будет рисовать (конечно если мы её этому научим). Пришло время с ними познакомится.</p>
+<h3 id="изменяемые-значения"><a href="#TOC">Изменяемые значения</a></h3>
+<p>Перед тем как мы перейдём к библиотекам нам нужно узнать ещё кое-что. В Haskell мы не можем изменять значения. Но в С это делается постоянно, а соответственно и в библиотеках написанных на С тоже. Для того чтобы имитировать в Haskell механизм обновления значений были придуманы специальные типы. Мы можем объявить изменяемое значение и обновлять его, но только в пределах типа <code><font color=Green>IO</font></code>.</p>
+<h4 id="ioref"><a href="#TOC">IORef</a></h4>
+<p>Тип <code><font color=Green>IORef</font></code> из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>IORef</font></code> описывает изменяемые значения:</p>
+<pre><font color=Black>newIORef</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>IORef</font>
+
+<font color=Black>readIORef</font>   <font color="#b2590f">::</font> <font color=Green>IORef</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a
+<font color=Black>writeIORef</font>  <font color="#b2590f">::</font> <font color=Green>IORef</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>modifyIORef</font> <font color="#b2590f">::</font> <font color=Green>IORef</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Функция <code><font color=Black>newIORef</font></code> создаёт изменяемое значение и инициализирует его некоторым значением, которые мы можем считать с помощью функции <code><font color=Black>readIORef</font></code> или обновить с помощью функций <code><font color=Black>writeIORef</font></code> или <code><font color=Black>modifyIORef</font></code>. Посмотрим как это работает:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>IORef</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> var <font color=Black>&gt;&gt;=</font> <font color=Black>(</font><font color="#b2590f">\</font>v <font color="#b2590f">-&gt;</font> 
+       readIORef v <font color=Black>&gt;&gt;=</font> print 
+    <font color=Black>&gt;&gt;</font> writeIORef v <font color="#0000ee">4</font> 
+    <font color=Black>&gt;&gt;</font> readIORef v <font color=Black>&gt;&gt;=</font> print<font color=Black>)</font>
+    <font color="#b2590f">where</font> var <font color="#b2590f">=</font> newIORef <font color="#0000ee">2</font>    </pre>
+<p>Теперь посмотрим на ответ <code><font color=Black>ghci</font></code>:</p>
+<pre><font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>HelloIORef</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Main</font>             <font color=Black>(</font> <font color=Green>HelloIORef</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Main</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> main
+<font color="#0000ee">2</font>
+<font color="#0000ee">4</font></pre>
+<p>Самое время вернуться к главе 17 и вспомнить о <code><font color="#b2590f">do</font></code>-нотации. Такой императивный код гораздо нагляднее писать так:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    var <font color="#b2590f">&lt;-</font> newIORef <font color="#0000ee">2</font>
+    x <font color="#b2590f">&lt;-</font> readIORef var
+    print x
+    writeIORef var <font color="#0000ee">4</font>
+    x <font color="#b2590f">&lt;-</font> readIORef var
+    print x</pre>
+<p>Эта запись выглядит как последовательность действий. Не правда ли очень похоже на обычный императивный язык. Такие переменные встречаются очень часто в библиотеках, заимствованных из~С.</p>
+<h4 id="statevar"><a href="#TOC">StateVar</a></h4>
+<p>В модуле <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>StateVar</font></code> определены типы, которые накладывают ограничение на права по чтению и записи. Мы можем определять переменные доступные только для чтения (<code><font color=Green>GettableStateVar</font> a</code>), только для записи (<code><font color=Green>SettableStateVar</font> a</code>) или обычные изменяемые переменные (<code><font color=Green>SetVar</font> a</code>).</p>
+<p>Операции чтения и записи описываются с помощью классов:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>HasGetter</font> s <font color="#b2590f">where</font>
+    get <font color="#b2590f">::</font> s a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a
+
+<font color="#b2590f">class</font> <font color=Green>HasSetter</font> s <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color=Black>$=</font><font color=Black>)</font> <font color="#b2590f">::</font> s a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Тип <code><font color=Green>IORef</font></code> принадлежит и тому, и другому классу:</p>
+<pre><font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    var <font color="#b2590f">&lt;-</font> newIORef <font color="#0000ee">2</font>
+    x   <font color="#b2590f">&lt;-</font> get var
+    print x
+    var <font color=Black>$=</font> <font color="#0000ee">4</font>
+    x   <font color="#b2590f">&lt;-</font> get var
+    print x</pre>
+<h3 id="opengl"><a href="#TOC">OpenGL</a></h3>
+<p><code><font color=Green>OpenGL</font></code> является ярким примером библиотеки построенной на изменяемых переменных. <code><font color=Green>OpenGL</font></code> можно представить как большой конечный автомат. Каждая строчка кода – это запрос на изменение состояния. Причём этот автомат является глобальной переменной. Его текущее состояние зависит от всей цепочки предыдущих команд. Параметры рисования задаются глобальными переменными (тип <code><font color=Green>StateVar</font></code>).</p>
+<p><code><font color=Green>OpenGL</font></code> не зависит от конкретной оконной системы, она отвечает лишь за рисование. Для того чтобы создать окно и перехватывать в нём действия пользователя нам понадобится отдельная библиотека. Для этого мы воспользуемся <code><font color=Green>GLFW</font></code>, это библиотека также пришла в Haskell из С. Интерфейсы <code><font color=Green>GLFW</font></code> и <code><font color=Green>OpenGL</font></code> очень похожи. Мы будем обновлять различные параметры библиотеки с помощью типа <code><font color=Green>StateVar</font></code>. Давайте создадим окно и закрасим фон белым цветом:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>UI</font><font color=Black>.</font><font color=Green>GLFW</font>           
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>Rendering</font><font color=Black>.</font><font color=Green>OpenGL</font>
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Exit</font>
+
+<font color=Black>title</font> <font color="#b2590f">=</font> <font color=Black>"Hello OpenGL"</font>
+
+<font color=Black>width</font>   <font color="#b2590f">=</font> <font color="#0000ee">700</font>
+<font color=Black>height</font>  <font color="#b2590f">=</font> <font color="#0000ee">600</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    initialize
+    openWindow <font color=Black>(</font><font color=Green>Size</font> width height<font color=Black>)</font> <font color=Green>[]</font> <font color=Green>Window</font>
+    windowTitle <font color=Black>$=</font> title
+      
+    clearColor <font color=Black>$=</font> <font color=Green>Color4</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font>
+    
+    windowCloseCallback <font color=Black>$=</font> exitWith <font color=Green>ExitSuccess</font>
+    loop
+
+<font color=Black>loop</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    display
+    loop
+
+<font color=Black>display</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    clear <font color="#b2590f">[</font><font color=Green>ColorBuffer</font><font color="#b2590f">]</font>
+    swapBuffers</pre>
+<p>Мы инициализируем <code><font color=Green>GLFW</font></code>, задаём параметры окна. Устанавливаем цвет фона. Цвет имеет четыре параметра это RGB-цвета и параметр прозрачности. Затем мы говорим, что программе делать при закрытии окна. Мы устанавливаем функцию обратного вызова (callback) <code><font color=Black>windowCloseCallback</font></code>. В самом конце мы входим в цикл, который только и делает, что стирает окно цветом фона и делает рабочий буфер видимым. Что такое буфер? Буфер – это место в котором мы рисуем. У нас есть два буфера. Один мы показываем пользователю, а в другом в это в время рисуем, когда приходит время обновлять картинку мы просто меняем их местами командой <code><font color=Black>swapBuffers</font></code>.</p>
+<p>Посмотрим, что у нас получилось:</p>
+<pre>$ ghc --make HelloOpenGL.hs
+$ ./HelloOpenGL</pre>
+<p>Нарисуем упрощённое начальное положение нашей игры: прямоугольную рамку и в ней – красный шар:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>UI</font><font color=Black>.</font><font color=Green>GLFW</font>           
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>Rendering</font><font color=Black>.</font><font color=Green>OpenGL</font>
+
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Exit</font>
+
+<font color=Black>title</font> <font color="#b2590f">=</font> <font color=Black>"Hello OpenGL"</font>
+
+<font color=Black>width</font><font color=Black>,</font> height <font color="#b2590f">::</font> <font color=Green>GLsizei</font>
+
+<font color=Black>width</font>   <font color="#b2590f">=</font> <font color="#0000ee">700</font>
+<font color=Black>height</font>  <font color="#b2590f">=</font> <font color="#0000ee">600</font>
+    
+<font color=Black>w2</font><font color=Black>,</font> h2 <font color="#b2590f">::</font> <font color=Green>GLfloat</font>
+
+<font color=Black>w2</font> <font color="#b2590f">=</font> <font color=Black>(</font>fromIntegral <font color=Black>$</font> width<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font>
+<font color=Black>h2</font> <font color="#b2590f">=</font> <font color=Black>(</font>fromIntegral <font color=Black>$</font> height<font color=Black>)</font>  <font color=Black>/</font> <font color="#0000ee">2</font>
+
+<font color=Black>dw2</font><font color=Black>,</font> dh2 <font color="#b2590f">::</font> <font color=Green>GLdouble</font>
+
+<font color=Black>dw2</font> <font color="#b2590f">=</font> fromRational <font color=Black>$</font> toRational w2
+<font color=Black>dh2</font> <font color="#b2590f">=</font> fromRational <font color=Black>$</font> toRational h2
+
+<font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    initialize
+    openWindow <font color=Black>(</font><font color=Green>Size</font> width height<font color=Black>)</font> <font color=Green>[]</font> <font color=Green>Window</font>
+    windowTitle <font color=Black>$=</font> title
+
+    clearColor <font color=Black>$=</font> <font color=Green>Color4</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font>
+    ortho <font color=Black>(</font><font color="#2149c1">-</font>dw2<font color="#2149c1">-</font><font color="#0000ee">50</font><font color=Black>)</font> <font color=Black>(</font>dw2<font color=Black>+</font><font color="#0000ee">50</font><font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>dh2<font color="#2149c1">-</font><font color="#0000ee">50</font><font color=Black>)</font> <font color=Black>(</font>dh2<font color=Black>+</font><font color="#0000ee">50</font><font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font> <font color="#0000ee">1</font>
+   
+    windowCloseCallback <font color=Black>$=</font> exitWith <font color=Green>ExitSuccess</font>
+    windowSizeCallback  <font color=Black>$=</font> <font color=Black>(</font><font color="#b2590f">\</font>size <font color="#b2590f">-&gt;</font> viewport <font color=Black>$=</font> <font color=Black>(</font><font color=Green>Position</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font><font color=Black>,</font> size<font color=Black>)</font><font color=Black>)</font>
+
+    loop
+
+<font color=Black>loop</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    display
+    loop
+
+<font color=Black>display</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    clear <font color="#b2590f">[</font><font color=Green>ColorBuffer</font><font color="#b2590f">]</font>
+
+    color black
+    line <font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>h2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>)</font> h2
+    line <font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>)</font> h2    w2    h2
+    line w2    h2    w2    <font color=Black>(</font><font color="#2149c1">-</font>h2<font color=Black>)</font>
+    line w2   <font color=Black>(</font><font color="#2149c1">-</font>h2<font color=Black>)</font>  <font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>h2<font color=Black>)</font>
+
+    color red
+    circle <font color="#0000ee">0</font> <font color="#0000ee">0</font> <font color="#0000ee">10</font>
+
+    swapBuffers
+
+
+<font color=Black>vertex2f</font> <font color="#b2590f">::</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>vertex2f</font> a b <font color="#b2590f">=</font> vertex <font color=Black>(</font><font color=Green>Vertex3</font> a b <font color="#0000ee">0</font><font color=Black>)</font>
+
+<font color="#2149c1">-- colors</font>
+
+<font color=Black>white</font> <font color="#b2590f">=</font> <font color=Green>Color4</font> <font color=Black>(</font><font color="#0000ee">0</font><font color="#b2590f">::</font><font color=Green>GLfloat</font><font color=Black>)</font>
+<font color=Black>black</font> <font color="#b2590f">=</font> <font color=Green>Color4</font> <font color=Black>(</font><font color="#0000ee">0</font><font color="#b2590f">::</font><font color=Green>GLfloat</font><font color=Black>)</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font> <font color="#0000ee">1</font>
+<font color=Black>red</font>   <font color="#b2590f">=</font> <font color=Green>Color4</font> <font color=Black>(</font><font color="#0000ee">1</font><font color="#b2590f">::</font><font color=Green>GLfloat</font><font color=Black>)</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font> <font color="#0000ee">1</font>
+
+<font color="#2149c1">-- primitives</font>
+
+<font color=Black>line</font> <font color="#b2590f">::</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>line</font> ax ay bx by <font color="#b2590f">=</font> renderPrimitive <font color=Green>Lines</font> <font color=Black>$</font> <font color="#b2590f">do</font>
+    vertex2f ax ay
+    vertex2f bx by
+
+
+<font color=Black>circle</font> <font color="#b2590f">::</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>circle</font> cx cy rad <font color="#b2590f">=</font> 
+    renderPrimitive <font color=Green>Polygon</font> <font color=Black>$</font> mapM_ <font color=Black>(</font>uncurry vertex2f<font color=Black>)</font> points
+    <font color="#b2590f">where</font> n <font color="#b2590f">=</font> <font color="#0000ee">50</font>
+          points <font color="#b2590f">=</font> zip xs ys
+          xs <font color="#b2590f">=</font> fmap <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> cx <font color=Black>+</font> rad <font color=Black>*</font> sin <font color=Black>(</font><font color="#0000ee">2</font><font color=Black>*</font>pi<font color=Black>*</font>x<font color=Black>/</font>n<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> n<font color="#b2590f">]</font>
+          ys <font color="#b2590f">=</font> fmap <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> cy <font color=Black>+</font> rad <font color=Black>*</font> cos <font color=Black>(</font><font color="#0000ee">2</font><font color=Black>*</font>pi<font color=Black>*</font>x<font color=Black>/</font>n<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> n<font color="#b2590f">]</font></pre>
+<div>
+<img src="../pic/20/Static.png" alt="Начальное положение" />
+</div>
+
+<p></p>
+<p>Мы рисуем с помощью функции <code><font color=Black>renderPrimitive</font></code>. Она принимает метку элемента, который мы собираемся рисовать и набор вершин. Так метка <code><font color=Green>Lines</font></code> обозначает линии, а метка <code><font color=Green>Polygon</font></code> – закрашенные многоугольники. В <code><font color=Green>OpenGL</font></code> нет специальной операции для рисования окружностей, поэтому нам придётся представить окружность в виде многоугольника (<code><font color=Black>circle</font></code>). Функция <code><font color=Black>ortho</font></code> устанавливает область видимости рисунка, шесть аргументов функции обозначают пары диапазонов по каждой из трёх координат. При этом вершины передаются не списком а в специальном <code><font color="#b2590f">do</font></code>-блоке. За счёт этого мы можем изменить какие-нибудь параметры <code><font color=Green>OpenGL</font></code> во время рисования. Обратите внимание на то, как мы изменяем цвет примитива. Перед тем как рисовать примитив мы устанавливаем значение цвета (<code><font color=Black>color</font></code>).</p>
+<h4 id="анимация"><a href="#TOC">Анимация</a></h4>
+<p>Оживим нашу картинку. При клике мышкой шарик игрока последует в направлении курсора. Для того чтобы картинка задвигалась нам необходимо обновлять рисунок с определённой частотой. Мы будем регулировать частоту обновления с помощью функции <code><font color=Black>sleep</font></code>, с её помощью мы можем задержать выполнение программы (время измеряется в секундах):</p>
+<pre><font color=Black>sleep</font> <font color="#b2590f">::</font> <font color=Green>Double</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>За перехват действий пользователя отвечает функции:</p>
+<pre><font color=Black>getMouseButton</font>  <font color="#b2590f">::</font> <font color=Green>MouseButton</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>KeyButtonState</font>
+<font color=Black>mousePos</font>        <font color="#b2590f">::</font> <font color=Green>StateVar</font> <font color=Green>Position</font></pre>
+<p>Функция <code><font color=Black>getMouseButton</font></code> сообщает текущее состояние кнопок мыши, мы будем перехватывать положение мыши во время нажатия левой кнопки:</p>
+<pre><font color=Black>onMouse</font> ball <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    mb <font color="#b2590f">&lt;-</font> getMouseButton <font color=Green>ButtonLeft</font>
+    when <font color=Black>(</font>mb <font color=Black>==</font> <font color=Green>Press</font><font color=Black>)</font> <font color=Black>(</font>get mousePos <font color=Black>&gt;&gt;=</font> updateVel ball<font color=Black>)</font></pre>
+<p>Стандартная функция <code><font color=Black>when</font></code> из модуля <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font></code> выполняет действие только в том случае, если первый аргумент равен <code><font color=Green>True</font></code>. Для обновления положения и направления скорости шарика нам придётся воспользоваться глобальной переменной типа <code><font color=Green>IORef</font> <font color=Green>Ball</font></code>:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Ball</font> <font color="#b2590f">=</font> <font color=Green>Ball</font>
+    <font color=Black>{</font> ballPos <font color="#b2590f">::</font> <font color=Green>Vec2d</font>
+    <font color=Black>,</font> ballVel <font color="#b2590f">::</font> <font color=Green>Vec2d</font>
+    <font color=Black>}</font></pre>
+<p>Код программы:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>IORef</font>
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>UI</font><font color=Black>.</font><font color=Green>GLFW</font>
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>Rendering</font><font color=Black>.</font><font color=Green>OpenGL</font>
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Exit</font>
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font>
+
+<font color="#b2590f">type</font> <font color=Green>Time</font> <font color="#b2590f">=</font> <font color=Green>Double</font>
+
+<font color=Black>title</font> <font color="#b2590f">=</font> <font color=Black>"Hello OpenGL"</font>
+
+<font color=Black>width</font><font color=Black>,</font> height <font color="#b2590f">::</font> <font color=Green>GLsizei</font>
+
+<font color=Black>fps</font> <font color="#b2590f">::</font> <font color=Green>Int</font>
+<font color=Black>fps</font> <font color="#b2590f">=</font> <font color="#0000ee">60</font>
+
+<font color=Black>frameTime</font> <font color="#b2590f">::</font> <font color=Green>Time</font>
+<font color=Black>frameTime</font> <font color="#b2590f">=</font> <font color="#0000ee">1000</font> <font color=Black>*</font> <font color=Black>(</font><font color=Black>(</font><font color="#0000ee">1</font><font color="#b2590f">::</font><font color=Green>Double</font><font color=Black>)</font> <font color=Black>/</font> fromIntegral fps<font color=Black>)</font>
+
+<font color=Black>width</font>   <font color="#b2590f">=</font> <font color="#0000ee">700</font>
+<font color=Black>height</font>  <font color="#b2590f">=</font> <font color="#0000ee">600</font>
+    
+<font color=Black>w2</font><font color=Black>,</font> h2 <font color="#b2590f">::</font> <font color=Green>GLfloat</font>
+
+<font color=Black>w2</font> <font color="#b2590f">=</font> <font color=Black>(</font>fromIntegral <font color=Black>$</font> width<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font>
+<font color=Black>h2</font> <font color="#b2590f">=</font> <font color=Black>(</font>fromIntegral <font color=Black>$</font> height<font color=Black>)</font>  <font color=Black>/</font> <font color="#0000ee">2</font>
+
+<font color=Black>dw2</font><font color=Black>,</font> dh2 <font color="#b2590f">::</font> <font color=Green>GLdouble</font>
+
+<font color=Black>dw2</font> <font color="#b2590f">=</font> fromRational <font color=Black>$</font> toRational w2
+<font color=Black>dh2</font> <font color="#b2590f">=</font> fromRational <font color=Black>$</font> toRational h2
+
+<font color="#b2590f">type</font> <font color=Green>Vec2d</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Green>GLfloat</font><font color=Black>,</font> <font color=Green>GLfloat</font><font color=Black>)</font>
+
+<font color="#b2590f">data</font> <font color=Green>Ball</font> <font color="#b2590f">=</font> <font color=Green>Ball</font>
+    <font color=Black>{</font> ballPos <font color="#b2590f">::</font> <font color=Green>Vec2d</font>
+    <font color=Black>,</font> ballVel <font color="#b2590f">::</font> <font color=Green>Vec2d</font>
+    <font color=Black>}</font>
+
+<font color=Black>initBall</font> <font color="#b2590f">=</font> <font color=Green>Ball</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font>
+
+<font color=Black>dt</font> <font color="#b2590f">::</font> <font color=Green>GLfloat</font>
+<font color=Black>dt</font> <font color="#b2590f">=</font> <font color="#0000ee">0.3</font>
+
+<font color=Black>minVel</font> <font color="#b2590f">=</font> <font color="#0000ee">10</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    initialize
+    openWindow <font color=Black>(</font><font color=Green>Size</font> width height<font color=Black>)</font> <font color=Green>[]</font> <font color=Green>Window</font>
+    windowTitle <font color=Black>$=</font> title
+
+    clearColor <font color=Black>$=</font> <font color=Green>Color4</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font>
+    ortho <font color=Black>(</font><font color="#2149c1">-</font>dw2<font color=Black>)</font> <font color=Black>(</font>dw2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>dh2<font color=Black>)</font> <font color=Black>(</font>dh2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font> <font color="#0000ee">1</font>
+    
+    ball <font color="#b2590f">&lt;-</font> newIORef initBall
+
+    windowCloseCallback <font color=Black>$=</font> exitWith <font color=Green>ExitSuccess</font>
+    windowSizeCallback  <font color=Black>$=</font> <font color=Black>(</font><font color="#b2590f">\</font>size <font color="#b2590f">-&gt;</font> viewport <font color=Black>$=</font> <font color=Black>(</font><font color=Green>Position</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font><font color=Black>,</font> size<font color=Black>)</font><font color=Black>)</font>
+
+    loop ball
+
+<font color=Black>loop</font> <font color="#b2590f">::</font> <font color=Green>IORef</font> <font color=Green>Ball</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>loop</font> ball <font color="#b2590f">=</font> <font color="#b2590f">do</font>    
+    display ball
+    onMouse ball
+    sleep frameTime
+    loop ball
+
+<font color=Black>display</font> ball <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    <font color=Black>(</font>px<font color=Black>,</font> py<font color=Black>)</font> <font color="#b2590f">&lt;-</font> ballPos <font color=Black>&lt;$&gt;</font> get ball
+    <font color=Black>(</font>vx<font color=Black>,</font> vy<font color=Black>)</font> <font color="#b2590f">&lt;-</font> ballVel <font color=Black>&lt;$&gt;</font> get ball
+    ball <font color=Black>$=</font> <font color=Green>Ball</font> <font color=Black>(</font>px <font color=Black>+</font> dt<font color=Black>*</font>vx<font color=Black>,</font> py <font color=Black>+</font> dt<font color=Black>*</font>vy<font color=Black>)</font> <font color=Black>(</font>vx<font color=Black>,</font> vy<font color=Black>)</font>
+
+    clear <font color="#b2590f">[</font><font color=Green>ColorBuffer</font><font color="#b2590f">]</font>
+
+    color black
+    line <font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>oh2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>)</font> oh2
+    line <font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>)</font> oh2    ow2    oh2
+    line ow2    oh2    ow2    <font color=Black>(</font><font color="#2149c1">-</font>oh2<font color=Black>)</font>
+    line ow2   <font color=Black>(</font><font color="#2149c1">-</font>oh2<font color=Black>)</font>  <font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>oh2<font color=Black>)</font>
+
+    color red
+    circle px py <font color="#0000ee">10</font>
+
+    swapBuffers
+    <font color="#b2590f">where</font> ow2 <font color="#b2590f">=</font> w2 <font color="#2149c1">-</font> <font color="#0000ee">50</font> 
+          oh2 <font color="#b2590f">=</font> h2 <font color="#2149c1">-</font> <font color="#0000ee">50</font>  
+    
+<font color=Black>onMouse</font> ball <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    mb <font color="#b2590f">&lt;-</font> getMouseButton <font color=Green>ButtonLeft</font>
+    when <font color=Black>(</font>mb <font color=Black>==</font> <font color=Green>Press</font><font color=Black>)</font> <font color=Black>(</font>get mousePos <font color=Black>&gt;&gt;=</font> updateVel ball<font color=Black>)</font>
+   
+<font color=Black>updateVel</font> ball pos <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    <font color=Black>(</font>p0x<font color=Black>,</font> p0y<font color=Black>)</font> <font color="#b2590f">&lt;-</font> ballPos <font color=Black>&lt;$&gt;</font> get ball
+    v0  <font color="#b2590f">&lt;-</font> ballVel <font color=Black>&lt;$&gt;</font> get ball
+    size <font color="#b2590f">&lt;-</font> get windowSize
+    <font color="#b2590f">let</font> <font color=Black>(</font>p1x<font color=Black>,</font> p1y<font color=Black>)</font> <font color="#b2590f">=</font> mouse2canvas size pos 
+        v1 <font color="#b2590f">=</font> scaleV <font color=Black>(</font>max minVel <font color=Black>$</font> len v0<font color=Black>)</font> <font color=Black>$</font> norm <font color=Black>(</font>p1x <font color="#2149c1">-</font> p0x<font color=Black>,</font> p1y <font color="#2149c1">-</font> p0y<font color=Black>)</font>
+    ball <font color=Black>$=</font> <font color=Green>Ball</font> <font color=Black>(</font>p0x<font color=Black>,</font> p0y<font color=Black>)</font> v1
+    <font color="#b2590f">where</font> norm v<font color="#b2590f">@</font><font color=Black>(</font>x<font color=Black>,</font> y<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>x <font color=Black>/</font> len v<font color=Black>,</font> y <font color=Black>/</font> len v<font color=Black>)</font>
+          len  <font color=Black>(</font>x<font color=Black>,</font> y<font color=Black>)</font> <font color="#b2590f">=</font> sqrt <font color=Black>(</font>x<font color=Black>*</font>x <font color=Black>+</font> y<font color=Black>*</font>y<font color=Black>)</font> 
+          scaleV k <font color=Black>(</font>x<font color=Black>,</font> y<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>k<font color=Black>*</font>x<font color=Black>,</font> k<font color=Black>*</font>y<font color=Black>)</font>
+
+<font color=Black>mouse2canvas</font> <font color="#b2590f">::</font> <font color=Green>Size</font> <font color="#b2590f">-&gt;</font> <font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>GLfloat</font><font color=Black>,</font> <font color=Green>GLfloat</font><font color=Black>)</font>
+<font color=Black>mouse2canvas</font> <font color=Black>(</font><font color=Green>Size</font> sx sy<font color=Black>)</font> <font color=Black>(</font><font color=Green>Position</font> mx my<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>x<font color=Black>,</font> y<font color=Black>)</font>
+    <font color="#b2590f">where</font> d a b  <font color="#b2590f">=</font> fromIntegral a <font color=Black>/</font> fromIntegral b
+          x  <font color="#b2590f">=</font> fromIntegral width <font color=Black>*</font> <font color=Black>(</font>d mx sx <font color="#2149c1">-</font> <font color="#0000ee">0.5</font><font color=Black>)</font>
+          y  <font color="#b2590f">=</font> fromIntegral height <font color=Black>*</font> <font color=Black>(</font>negate <font color=Black>$</font> d my sy <font color="#2149c1">-</font> <font color="#0000ee">0.5</font><font color=Black>)</font>
+
+<font color=Black>vertex2f</font> <font color="#b2590f">::</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>vertex2f</font> a b <font color="#b2590f">=</font> vertex <font color=Black>(</font><font color=Green>Vertex3</font> a b <font color="#0000ee">0</font><font color=Black>)</font>
+
+<font color="#2149c1">-- colors</font>
+<font color=Black>...</font> white<font color=Black>,</font> black<font color=Black>,</font> red  
+
+<font color="#2149c1">-- primitives</font>
+<font color=Black>line</font>    <font color="#b2590f">::</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>circle</font>  <font color="#b2590f">::</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Теперь функция <code><font color=Black>display</font></code> принимает ссылку на глобальную переменную, которая отвечает за движение шарика. Функция <code><font color=Black>mouse2canvas</font></code> переводит координаты в окне <code><font color=Green>GLFW</font></code> в координаты <code><font color=Green>OpenGL</font></code>. В <code><font color=Green>GLFW</font></code> начало координат лежит в левом верхнем углу окна и ось <code><font color=Green>Oy</font></code> направлена вниз. Мы же переместили начало координат в центр окна и ось Oy направлена вверх.</p>
+<p>Посмотрим что у нас получилось:</p>
+<pre>$ ghc --make Animation.hs
+$ ./Animation</pre>
+<h3 id="chipmunk"><a href="#TOC">Chipmunk</a></h3>
+<p>Картинка ожила, но шарик движется не реалистично. Он проходит сквозь стены. Добавим в нашу программу немного физики. Воспользуемся библиотекой <code><font color=Green>Hipmunk</font></code></p>
+<pre><font color=Black>cabal</font> install <font color=Green>Hipmunk</font></pre>
+<p>Она даёт возможность вызывать из Haskell функции С-библиотеки <code><font color=Green>Chipmunk</font></code>. Эта библиотека позволяет строить двухмерные физические модели. Основным элементом модели является пространство (<code><font color=Green>Space</font></code>). К нему мы можем добавлять различные объекты. Объект состоит из двух компонент: тела (<code><font color=Green>Body</font></code>) и формы (<code><font color=Green>Shape</font></code>). Тело отвечает за такие физические характеристики как масса, момент инерции, восприимчивость к силам. По форме определяются моменты столкновения тел. Форма может состоять из нескольких примитивов: окружностей, линий и выпуклых многоугольников. Также мы можем добавлять различные ограничения (<code><font color=Green>Constraint</font></code>) они имитируют пружинки, шарниры. Мы можем назначать выполнение <code><font color=Green>IO</font></code>-действий на столкновения.</p>
+<p>Опишем в <code><font color=Green>Hipmunk</font></code> модель шарика бегающего в замкнутой коробке:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font> 
+
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>StateVar</font>
+<font color="#b2590f">import</font> <font color=Green>Physics</font><font color=Black>.</font><font color=Green>Hipmunk</font>
+
+<font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    initChipmunk
+    space <font color="#b2590f">&lt;-</font> newSpace
+    initWalls space
+    ball <font color="#b2590f">&lt;-</font> initBall space initPos initVel
+    loop <font color="#0000ee">100</font> space ball
+
+<font color=Black>loop</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>Body</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>loop</font> <font color="#0000ee">0</font> <font color="#b2590f">_</font>     <font color="#b2590f">_</font>    <font color="#b2590f">=</font> return <font color=Green>()</font>     
+<font color=Black>loop</font> n space ball <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    showPosition ball
+    step space <font color="#0000ee">0.5</font>
+    loop <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font> space ball
+  
+<font color=Black>showPosition</font> <font color="#b2590f">::</font> <font color=Green>Body</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>showPosition</font> ball <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    pos <font color="#b2590f">&lt;-</font> get <font color=Black>$</font> position ball
+    print pos
+
+<font color=Black>initWalls</font> <font color="#b2590f">::</font> <font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>initWalls</font> space <font color="#b2590f">=</font> mapM_ <font color=Black>(</font>uncurry <font color=Black>$</font> initWall space<font color=Black>)</font> wallPoints
+
+<font color=Black>initWall</font> <font color="#b2590f">::</font> <font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>initWall</font> space a b <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    body    <font color="#b2590f">&lt;-</font> newBody infinity infinity
+    shape   <font color="#b2590f">&lt;-</font> newShape body <font color=Black>(</font><font color=Green>LineSegment</font> a b wallThickness<font color=Black>)</font> <font color="#0000ee">0</font>
+    elasticity shape <font color=Black>$=</font> nearOne
+    spaceAdd space body
+    spaceAdd space shape
+
+<font color=Black>initBall</font> <font color="#b2590f">::</font> <font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>Velocity</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Body</font>
+<font color=Black>initBall</font> space pos vel <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    body    <font color="#b2590f">&lt;-</font> newBody ballMass ballMoment 
+    shape   <font color="#b2590f">&lt;-</font> newShape body <font color=Black>(</font><font color=Green>Circle</font> ballRadius<font color=Black>)</font> <font color="#0000ee">0</font>
+    position body <font color=Black>$=</font> pos
+    velocity body <font color=Black>$=</font> vel
+    elasticity shape <font color=Black>$=</font> nearOne
+    spaceAdd space body
+    spaceAdd space shape
+    return body
+    
+<font color="#2149c1">----------------------------</font>
+<font color="#2149c1">-- inits</font>
+
+<font color=Black>nearOne</font> <font color="#b2590f">=</font> <font color="#0000ee">0.9999</font>
+<font color=Black>ballMass</font> <font color="#b2590f">=</font> <font color="#0000ee">20</font>
+<font color=Black>ballMoment</font> <font color="#b2590f">=</font> momentForCircle ballMass <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> ballRadius<font color=Black>)</font> <font color="#0000ee">0</font>
+<font color=Black>ballRadius</font> <font color="#b2590f">=</font> <font color="#0000ee">10</font>
+    
+<font color=Black>initPos</font> <font color="#b2590f">=</font> <font color=Green>Vector</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font>
+<font color=Black>initVel</font> <font color="#b2590f">=</font> <font color=Green>Vector</font> <font color="#0000ee">10</font> <font color="#0000ee">5</font>
+
+<font color=Black>wallThickness</font> <font color="#b2590f">=</font> <font color="#0000ee">1</font>
+
+<font color=Black>wallPoints</font> <font color="#b2590f">=</font> fmap <font color=Black>(</font>uncurry f<font color=Black>)</font> <font color="#b2590f">[</font>
+    <font color=Black>(</font><font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>,</font> <font color="#2149c1">-</font>h2<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>,</font> h2<font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>,</font> h2<font color=Black>)</font><font color=Black>,</font>  <font color=Black>(</font>w2<font color=Black>,</font> h2<font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>(</font>w2<font color=Black>,</font> h2<font color=Black>)</font><font color=Black>,</font>   <font color=Black>(</font>w2<font color=Black>,</font> <font color="#2149c1">-</font>h2<font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>(</font>w2<font color=Black>,</font> <font color="#2149c1">-</font>h2<font color=Black>)</font><font color=Black>,</font>  <font color=Black>(</font><font color="#2149c1">-</font>w2<font color=Black>,</font> <font color="#2149c1">-</font>h2<font color=Black>)</font><font color=Black>)</font><font color="#b2590f">]</font>
+    <font color="#b2590f">where</font> f a b <font color="#b2590f">=</font> <font color=Black>(</font>g a<font color=Black>,</font> g b<font color=Black>)</font> 
+          g <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> a b  
+
+<font color=Black>h2</font> <font color="#b2590f">=</font> <font color="#0000ee">100</font>
+<font color=Black>w2</font> <font color="#b2590f">=</font> <font color="#0000ee">100</font></pre>
+<p>Функция <code><font color=Black>initChipmunk</font></code> инициализирует библиотеку <code><font color=Green>Chipmunk</font></code>. Она должна быть вызвана один раз до любой из функций библиотеки <code><font color=Green>Hipmunk</font></code>. Функции <code><font color=Black>new</font><font color="#b2590f">[</font><font color=Green>Body</font><font color="#b2590f">|</font><font color=Green>Shape</font><font color="#b2590f">|</font><font color=Green>Space</font><font color="#b2590f">]</font></code> создают объекты модели. Мы сделали стены неподвижными, присвоив им бесконечную массу и момент инерции (<code><font color=Black>initWall</font></code>). Упругость удара определяется переменной <code><font color=Black>elasticity</font></code>, она не может быть больше единицы. Единица обозначает абсолютно упругое столкновение. В документации к <code><font color=Green>Hipmunk</font></code> не рекомендуют присваивать значение равное единице из-за возможных погрешностей округления, поэтому мы выбираем число близкое к единице. После инициализации элементов модели мы запускаем цикл, в котором происходит обновление модели (<code><font color=Black>step</font></code>) и печать положения шарика. Обратите внимание на то, что координаты шарика никогда не выйдут за установленные рамки.</p>
+<p>Теперь объединим OpenGL и Hipmunk:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font>
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>StateVar</font>
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>IORef</font>
+<font color="#b2590f">import</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>UI</font><font color=Black>.</font><font color=Green>GLFW</font>
+<font color="#b2590f">import</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Exit</font>
+<font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font>
+
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Physics</font><font color=Black>.</font><font color=Green>Hipmunk</font>  <font color="#b2590f">as</font> <font color=Green>H</font>
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>UI</font><font color=Black>.</font><font color=Green>GLFW</font> <font color="#b2590f">as</font> <font color=Green>G</font>
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Graphics</font><font color=Black>.</font><font color=Green>Rendering</font><font color=Black>.</font><font color=Green>OpenGL</font> <font color="#b2590f">as</font> <font color=Green>G</font>
+  
+<font color=Black>title</font> <font color="#b2590f">=</font> <font color=Black>"in the box"</font>
+
+<font color="#2149c1">----------------------------</font>
+<font color="#2149c1">-- inits</font>
+
+<font color="#b2590f">type</font> <font color=Green>Time</font> <font color="#b2590f">=</font> <font color=Green>Double</font>
+
+<font color="#2149c1">-- frames per second</font>
+<font color=Black>fps</font> <font color="#b2590f">::</font> <font color=Green>Int</font>
+<font color=Black>fps</font> <font color="#b2590f">=</font> <font color="#0000ee">60</font>
+
+<font color="#2149c1">-- frame time in milliseconds</font>
+<font color=Black>frameTime</font> <font color="#b2590f">::</font> <font color=Green>Time</font>
+<font color=Black>frameTime</font> <font color="#b2590f">=</font> <font color="#0000ee">1000</font> <font color=Black>*</font> <font color=Black>(</font><font color=Black>(</font><font color="#0000ee">1</font><font color="#b2590f">::</font><font color=Green>Double</font><font color=Black>)</font> <font color=Black>/</font> fromIntegral fps<font color=Black>)</font>
+
+
+<font color=Black>nearOne</font> <font color="#b2590f">=</font> <font color="#0000ee">0.9999</font>
+<font color=Black>ballMass</font> <font color="#b2590f">=</font> <font color="#0000ee">20</font>
+<font color=Black>ballMoment</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font>momentForCircle ballMass <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> ballRadius<font color=Black>)</font> <font color="#0000ee">0</font>
+<font color=Black>ballRadius</font> <font color="#b2590f">=</font> <font color="#0000ee">10</font>
+    
+<font color=Black>initPos</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font>
+<font color=Black>initVel</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font>
+
+<font color=Black>wallThickness</font> <font color="#b2590f">=</font> <font color="#0000ee">1</font>
+
+<font color=Black>wallPoints</font> <font color="#b2590f">=</font> fmap <font color=Black>(</font>uncurry f<font color=Black>)</font> <font color="#b2590f">[</font>
+    <font color=Black>(</font><font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>,</font> <font color="#2149c1">-</font>oh2<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>,</font> oh2<font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>,</font> oh2<font color=Black>)</font><font color=Black>,</font>  <font color=Black>(</font>ow2<font color=Black>,</font> oh2<font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>(</font>ow2<font color=Black>,</font> oh2<font color=Black>)</font><font color=Black>,</font>  <font color=Black>(</font>ow2<font color=Black>,</font> <font color="#2149c1">-</font>oh2<font color=Black>)</font><font color=Black>)</font><font color=Black>,</font>
+    <font color=Black>(</font><font color=Black>(</font>ow2<font color=Black>,</font> <font color="#2149c1">-</font>oh2<font color=Black>)</font><font color=Black>,</font>   <font color=Black>(</font><font color="#2149c1">-</font>ow2<font color=Black>,</font> <font color="#2149c1">-</font>oh2<font color=Black>)</font><font color=Black>)</font><font color="#b2590f">]</font>
+    <font color="#b2590f">where</font> f a b <font color="#b2590f">=</font> <font color=Black>(</font>g a<font color=Black>,</font> g b<font color=Black>)</font> 
+          g <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> a b  
+
+<font color=Black>dt</font> <font color="#b2590f">::</font> <font color=Green>Double</font>
+<font color=Black>dt</font> <font color="#b2590f">=</font> <font color="#0000ee">0.5</font>
+
+<font color=Black>minVel</font> <font color="#b2590f">::</font> <font color=Green>Double</font>
+<font color=Black>minVel</font> <font color="#b2590f">=</font> <font color="#0000ee">10</font>
+
+<font color=Black>width</font><font color=Black>,</font> height <font color="#b2590f">::</font> <font color=Green>Double</font>
+
+<font color=Black>height</font> <font color="#b2590f">=</font> <font color="#0000ee">500</font>
+<font color=Black>width</font> <font color="#b2590f">=</font> <font color="#0000ee">700</font>
+
+<font color=Black>w2</font><font color=Black>,</font> h2 <font color="#b2590f">::</font> <font color=Green>Double</font>
+
+<font color=Black>h2</font> <font color="#b2590f">=</font> height <font color=Black>/</font> <font color="#0000ee">2</font>
+<font color=Black>w2</font> <font color="#b2590f">=</font> width <font color=Black>/</font> <font color="#0000ee">2</font>
+
+<font color=Black>ow2</font><font color=Black>,</font> oh2 <font color="#b2590f">::</font> <font color=Green>Double</font>
+    
+<font color=Black>ow2</font> <font color="#b2590f">=</font> w2 <font color="#2149c1">-</font> <font color="#0000ee">50</font> 
+<font color=Black>oh2</font> <font color="#b2590f">=</font> h2 <font color="#2149c1">-</font> <font color="#0000ee">50</font>  
+
+<font color="#b2590f">data</font> <font color=Green>State</font> <font color="#b2590f">=</font> <font color=Green>State</font> 
+    <font color=Black>{</font> stateBall     <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Body</font>
+    <font color=Black>,</font> stateSpace    <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Space</font>
+    <font color=Black>}</font>
+
+<font color=Black>ballPos</font> <font color="#b2590f">::</font> <font color=Green>State</font> <font color="#b2590f">-&gt;</font> <font color=Green>StateVar</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font>
+<font color=Black>ballPos</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font>position <font color=Black>.</font> stateBall
+
+<font color=Black>ballVel</font> <font color="#b2590f">::</font> <font color=Green>State</font> <font color="#b2590f">-&gt;</font> <font color=Green>StateVar</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Velocity</font>
+<font color=Black>ballVel</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font>velocity <font color=Black>.</font> stateBall
+
+
+<font color=Black>main</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    <font color=Green>H</font><font color=Black>.</font>initChipmunk
+    initGLFW
+    state <font color="#b2590f">&lt;-</font> newIORef <font color=Black>=&lt;&lt;</font> initState
+    loop state
+
+<font color=Black>loop</font> <font color="#b2590f">::</font> <font color=Green>IORef</font> <font color=Green>State</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>loop</font> state <font color="#b2590f">=</font> <font color="#b2590f">do</font>    
+    display state
+    onMouse state
+    sleep frameTime
+    loop state
+
+<font color=Black>simulate</font> <font color="#b2590f">::</font> <font color=Green>State</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Time</font>
+<font color=Black>simulate</font> a <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    t0 <font color="#b2590f">&lt;-</font> get <font color=Green>G</font><font color=Black>.</font>time
+    <font color=Green>H</font><font color=Black>.</font>step <font color=Black>(</font>stateSpace a<font color=Black>)</font> dt 
+    t1 <font color="#b2590f">&lt;-</font> get <font color=Green>G</font><font color=Black>.</font>time
+    return <font color=Black>(</font>t1 <font color="#2149c1">-</font> t0<font color=Black>)</font>
+
+<font color=Black>initGLFW</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>initGLFW</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    <font color=Green>G</font><font color=Black>.</font>initialize
+    <font color=Green>G</font><font color=Black>.</font>openWindow <font color=Black>(</font><font color=Green>G</font><font color=Black>.</font><font color=Green>Size</font> <font color=Black>(</font>d2gli width<font color=Black>)</font> <font color=Black>(</font>d2gli height<font color=Black>)</font><font color=Black>)</font> <font color=Green>[]</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>Window</font>
+    <font color=Green>G</font><font color=Black>.</font>windowTitle <font color=Black>$=</font> title
+    <font color=Green>G</font><font color=Black>.</font>windowCloseCallback <font color=Black>$=</font> exitWith <font color=Green>ExitSuccess</font>
+    <font color=Green>G</font><font color=Black>.</font>windowSizeCallback  <font color=Black>$=</font> <font color=Black>(</font><font color="#b2590f">\</font>size <font color="#b2590f">-&gt;</font> <font color=Green>G</font><font color=Black>.</font>viewport <font color=Black>$=</font> <font color=Black>(</font><font color=Green>G</font><font color=Black>.</font><font color=Green>Position</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font><font color=Black>,</font> size<font color=Black>)</font><font color=Black>)</font>
+    <font color=Green>G</font><font color=Black>.</font>clearColor <font color=Black>$=</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>Color4</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font> <font color="#0000ee">1</font>
+    <font color=Green>G</font><font color=Black>.</font>ortho <font color=Black>(</font><font color="#2149c1">-</font>dw2<font color=Black>)</font> <font color=Black>(</font>dw2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>dh2<font color=Black>)</font> <font color=Black>(</font>dh2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font> <font color="#0000ee">1</font>
+    <font color="#b2590f">where</font> dw2 <font color="#b2590f">=</font> realToFrac w2
+          dh2 <font color="#b2590f">=</font> realToFrac h2  
+
+<font color=Black>initState</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>State</font>
+<font color=Black>initState</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    space <font color="#b2590f">&lt;-</font> <font color=Green>H</font><font color=Black>.</font>newSpace 
+    initWalls space
+    ball <font color="#b2590f">&lt;-</font> initBall space initPos initVel
+    return <font color=Black>$</font> <font color=Green>State</font> ball space
+
+<font color=Black>initWalls</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>initWalls</font> space <font color="#b2590f">=</font> mapM_ <font color=Black>(</font>uncurry <font color=Black>$</font> initWall space<font color=Black>)</font> wallPoints
+
+<font color=Black>initWall</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>initWall</font> space a b <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    body    <font color="#b2590f">&lt;-</font> <font color=Green>H</font><font color=Black>.</font>newBody <font color=Green>H</font><font color=Black>.</font>infinity <font color=Green>H</font><font color=Black>.</font>infinity
+    shape   <font color="#b2590f">&lt;-</font> <font color=Green>H</font><font color=Black>.</font>newShape body <font color=Black>(</font><font color=Green>H</font><font color=Black>.</font><font color=Green>LineSegment</font> a b wallThickness<font color=Black>)</font> <font color="#0000ee">0</font>
+    <font color=Green>H</font><font color=Black>.</font>elasticity shape <font color=Black>$=</font> nearOne
+    <font color=Green>H</font><font color=Black>.</font>spaceAdd space body
+    <font color=Green>H</font><font color=Black>.</font>spaceAdd space shape
+
+<font color=Black>initBall</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Space</font> <font color="#b2590f">-&gt;</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Velocity</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Body</font>
+<font color=Black>initBall</font> space pos vel <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    body    <font color="#b2590f">&lt;-</font> <font color=Green>H</font><font color=Black>.</font>newBody ballMass ballMoment 
+    shape   <font color="#b2590f">&lt;-</font> <font color=Green>H</font><font color=Black>.</font>newShape body <font color=Black>(</font><font color=Green>H</font><font color=Black>.</font><font color=Green>Circle</font> ballRadius<font color=Black>)</font> <font color="#0000ee">0</font>
+    <font color=Green>H</font><font color=Black>.</font>position body <font color=Black>$=</font> pos
+    <font color=Green>H</font><font color=Black>.</font>velocity body <font color=Black>$=</font> vel
+    <font color=Green>H</font><font color=Black>.</font>elasticity shape <font color=Black>$=</font> nearOne
+    <font color=Green>H</font><font color=Black>.</font>spaceAdd space body
+    <font color=Green>H</font><font color=Black>.</font>spaceAdd space shape
+    return body
+
+<font color="#2149c1">-------------------------------</font>
+<font color="#2149c1">-- graphics</font>
+
+<font color=Black>display</font> state <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    drawState <font color=Black>=&lt;&lt;</font> get state
+    simTime <font color="#b2590f">&lt;-</font> simulate <font color=Black>=&lt;&lt;</font> get state    
+    sleep <font color=Black>(</font>max <font color="#0000ee">0</font> <font color=Black>$</font> frameTime <font color="#2149c1">-</font> simTime<font color=Black>)</font> 
+    
+
+<font color=Black>drawState</font> <font color="#b2590f">::</font> <font color=Green>State</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>drawState</font> st <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    pos <font color="#b2590f">&lt;-</font> get <font color=Black>$</font> ballPos st
+    <font color=Green>G</font><font color=Black>.</font>clear <font color="#b2590f">[</font><font color=Green>G</font><font color=Black>.</font><font color=Green>ColorBuffer</font><font color="#b2590f">]</font>
+    drawWalls
+    drawBall pos
+    <font color=Green>G</font><font color=Black>.</font>swapBuffers
+
+<font color=Black>drawBall</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>drawBall</font> pos <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    <font color=Green>G</font><font color=Black>.</font>color red
+    circle x y <font color=Black>$</font> d2gl ballRadius
+    <font color="#b2590f">where</font> <font color=Black>(</font>x<font color=Black>,</font> y<font color=Black>)</font> <font color="#b2590f">=</font> vec2gl pos
+
+<font color=Black>drawWalls</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>drawWalls</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    <font color=Green>G</font><font color=Black>.</font>color black
+    line <font color=Black>(</font><font color="#2149c1">-</font>dow2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>doh2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>dow2<font color=Black>)</font> doh2
+    line <font color=Black>(</font><font color="#2149c1">-</font>dow2<font color=Black>)</font> doh2    dow2    doh2
+    line dow2    doh2    dow2    <font color=Black>(</font><font color="#2149c1">-</font>doh2<font color=Black>)</font>
+    line dow2   <font color=Black>(</font><font color="#2149c1">-</font>doh2<font color=Black>)</font>  <font color=Black>(</font><font color="#2149c1">-</font>dow2<font color=Black>)</font> <font color=Black>(</font><font color="#2149c1">-</font>doh2<font color=Black>)</font>
+    <font color="#b2590f">where</font> dow2 <font color="#b2590f">=</font> d2gl ow2 
+          doh2 <font color="#b2590f">=</font> d2gl oh2  
+
+
+<font color=Black>onMouse</font> state <font color="#b2590f">=</font> <font color="#b2590f">do</font>    
+    mb <font color="#b2590f">&lt;-</font> <font color=Green>G</font><font color=Black>.</font>getMouseButton <font color=Green>ButtonLeft</font>
+    when <font color=Black>(</font>mb <font color=Black>==</font> <font color=Green>Press</font><font color=Black>)</font> <font color=Black>(</font>get <font color=Green>G</font><font color=Black>.</font>mousePos <font color=Black>&gt;&gt;=</font> updateVel state<font color=Black>)</font>
+   
+<font color=Black>updateVel</font> state pos <font color="#b2590f">=</font> <font color="#b2590f">do</font>   
+    size <font color="#b2590f">&lt;-</font> get <font color=Green>G</font><font color=Black>.</font>windowSize
+    st <font color="#b2590f">&lt;-</font> get state
+    p0 <font color="#b2590f">&lt;-</font> get <font color=Black>$</font> ballPos st
+    v0 <font color="#b2590f">&lt;-</font> get <font color=Black>$</font> ballVel st
+    <font color="#b2590f">let</font> p1 <font color="#b2590f">=</font> mouse2canvas size pos
+    ballVel st <font color=Black>$=</font> 
+        <font color=Green>H</font><font color=Black>.</font>scale <font color=Black>(</font><font color=Green>H</font><font color=Black>.</font>normalize <font color=Black>$</font> p1 <font color="#2149c1">-</font> p0<font color=Black>)</font> <font color=Black>(</font>max minVel <font color=Black>$</font> <font color=Green>H</font><font color=Black>.</font>len v0<font color=Black>)</font>
+
+<font color=Black>mouse2canvas</font> <font color="#b2590f">::</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>Size</font> <font color="#b2590f">-&gt;</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font>
+<font color=Black>mouse2canvas</font> <font color=Black>(</font><font color=Green>G</font><font color=Black>.</font><font color=Green>Size</font> sx sy<font color=Black>)</font> <font color=Black>(</font><font color=Green>G</font><font color=Black>.</font><font color=Green>Position</font> mx my<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> x y
+    <font color="#b2590f">where</font> d a b  <font color="#b2590f">=</font> fromIntegral a <font color=Black>/</font> fromIntegral b
+          x  <font color="#b2590f">=</font> width <font color=Black>*</font> <font color=Black>(</font>d mx sx <font color="#2149c1">-</font> <font color="#0000ee">0.5</font><font color=Black>)</font>
+          y  <font color="#b2590f">=</font> height <font color=Black>*</font> <font color=Black>(</font>negate <font color=Black>$</font> d my sy <font color="#2149c1">-</font> <font color="#0000ee">0.5</font><font color=Black>)</font>
+
+
+<font color=Black>vertex2f</font> <font color="#b2590f">::</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>GLfloat</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>vertex2f</font> a b <font color="#b2590f">=</font> <font color=Green>G</font><font color=Black>.</font>vertex <font color=Black>(</font><font color=Green>G</font><font color=Black>.</font><font color=Green>Vertex3</font> a b <font color="#0000ee">0</font><font color=Black>)</font>
+
+<font color=Black>vec2gl</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>G</font><font color=Black>.</font><font color=Green>GLfloat</font><font color=Black>,</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>GLfloat</font><font color=Black>)</font>
+<font color=Black>vec2gl</font> <font color=Black>(</font><font color=Green>H</font><font color=Black>.</font><font color=Green>Vector</font> x y<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>d2gl x<font color=Black>,</font> d2gl y<font color=Black>)</font>
+
+<font color=Black>d2gl</font> <font color="#b2590f">::</font> <font color=Green>Double</font> <font color="#b2590f">-&gt;</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>GLfloat</font>
+<font color=Black>d2gl</font> <font color="#b2590f">=</font> realToFrac
+
+<font color=Black>d2gli</font> <font color="#b2590f">::</font> <font color=Green>Double</font> <font color="#b2590f">-&gt;</font> <font color=Green>G</font><font color=Black>.</font><font color=Green>GLsizei</font>
+<font color=Black>d2gli</font> <font color="#b2590f">=</font> toEnum <font color=Black>.</font> fromEnum <font color=Black>.</font> d2gl
+
+<font color=Black>...</font></pre>
+<p>Функции не претерпевшие особых изменений пропущены. Теперь наше глобальное состояние (<code><font color=Green>State</font></code>) содержит тело шара (оно пригодится нам для вычисления его положения) и пространство, в котором живёт наша модель. Стоит отметить функцию <code><font color=Black>simulate</font></code>. В ней происходит обновление состояния модели. При этом мы возвращаем время, которое ушло на вычисление этой функции. Оно нужно нам для того, чтобы показывать новые кадры равномерно. Мы вычтем время симуляции из общего времени, которое мы можем потратить на один кадр (<code><font color=Black>frameTime</font></code>).</p>
+<h2 id="боремся-с-io"><a href="#TOC">Боремся с IO</a></h2>
+<p>Кажется, что мы попали в какой-то другой язык. Это совсем не тот элегантный Haskell, знакомый нам по предыдущим главам. Столько <code><font color="#b2590f">do</font></code> и <code><font color=Green>IO</font></code> разбросано по всему коду. И такой примитивный результат в итоге. Если так будет продолжаться и дальше, то мы можем не вытерпеть и бросить и нашу задачу и Haskell…</p>
+<p>Не отчаивайтесь!</p>
+<p>Давайте лучше подумаем как свести этот псевдо-Haskell к минимуму. Подумаем какие источники <code><font color=Green>IO</font></code> точно будут в нашей программе. Это инициализация <code><font color=Green>GLFW</font></code> и <code><font color=Green>Hipmunk</font></code>, клики мышью, обновление модели в <code><font color=Green>Hipmunk</font></code>, также для рисования нам придётся считывать положения шаров. Нам придётся удалять и создавать новые шары, добавляя их к пространству модели. Также в <code><font color=Green>IO</font></code> происходит отрисовка игры. <code><font color=Green>Hipmunk</font></code> будет контролировать столкновения шаров, и эти данные нам тоже надо будет считывать из глобальных переменных. Сколько всего! Голова идёт кругом.</p>
+<p>Но помимо всего этого у нас есть логика игры. Логика игры отвечает за реакцию игрового мира на различные события. Например столкновение с “плохим” шаром влечёт к уменьшению жизней, если игрок сталкивается с бонусным шаром, определённые шары необходимо удалить. Приходит момент и мы выпусткаем новый шар из лузы новый шар. Давайте подумаем как сохранить логику игры в чистоте.</p>
+<p>Тип <code><font color=Green>IO</font></code> обычно отвечает за связь с внешним миром, это глаза, уши, руки и ноги программы. Через <code><font color=Green>IO</font></code> мы получаем информацию из внешнего мира и отправляем её обратно. Но в нашем случае он проник в сердце программы. За обновление объектов отвечает насыщенная <code><font color=Green>IO</font></code> библиотека <code><font color=Green>Hipmunk</font></code>.</p>
+<p>Мы постараемся побороться с <code><font color=Green>IO</font></code>-кодом так. Сначала мы выделем те параметры, которые могут быть обновлены чистыми функциями. Это все те параметры, для которых не нужен <code><font color=Green>Hipmunk</font></code>. Этот шаг разбивает наш мир на два лагеря: “чистый” и “грязный”:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>World</font> <font color="#b2590f">=</font> <font color=Green>World</font> 
+    <font color=Black>{</font> worldPure   <font color="#b2590f">::</font> <font color=Green>Pure</font>
+    <font color=Black>,</font> worldDirty  <font color="#b2590f">::</font> <font color=Green>Dirty</font> <font color=Black>}</font></pre>
+<p>Чистые данные хотят как-то узнать о том, что происходит в грязных данных. Также чистые данные могут рассказать грязным, как им нужно измениться. Это приводит нас к определению двух языков запросов, на которых чистый и грязный мир общаются между собой:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Query</font> <font color="#b2590f">=</font> <font color=Green>Remove</font> <font color=Green>Ball</font> <font color="#b2590f">|</font> <font color=Green>HeroVelocity</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Velocity</font> <font color="#b2590f">|</font> <font color=Green>MakeBall</font> <font color=Green>Freq</font>
+
+<font color="#b2590f">data</font> <font color=Green>Event</font> <font color="#b2590f">=</font> <font color=Green>Touch</font> <font color=Green>Ball</font> <font color="#b2590f">|</font> <font color=Green>UserClick</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font>
+
+<font color="#b2590f">data</font> <font color=Green>Sense</font> <font color="#b2590f">=</font> <font color=Green>Sense</font> 
+    <font color=Black>{</font> senseHero     <font color="#b2590f">::</font> <font color=Green>HeroBall</font>
+    <font color=Black>,</font> senseBalls    <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Ball</font><font color="#b2590f">]</font>  <font color=Black>}</font></pre>
+<p>Через <code><font color=Green>Query</font></code> чистые данные могут рассказать грязным о том, что необходимо удалить шар из игры, обновить скорость шара игрока или создать новый шар (<code><font color=Green>Freq</font></code> отвечает за параметры создания шара). Грязные данные могут рассказать чистым на языке <code><font color=Green>Event</font></code> и <code><font color=Green>Sense</font></code> о том, что один из шаров коснулся до шара игрока, или игрок кликнул мышкой в определённой точке. Также мы сообщаем все обновлённые положения параметры шаров в типе <code><font color=Green>Sense</font></code>. Тип <code><font color=Green>Event</font></code> отвечает за события, которые происходят иногда, а тип <code><font color=Green>Sense</font></code> за те параметры, которые мы наблюдаем непрерывно (это типы глазарук), <code><font color=Green>Query</font></code> – это язык действий (это тип руконог). Нам понадобится ещё один маленький язык, на котором мы будем объясняться с <code><font color=Green>OpenGL</font></code>.</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Picture</font> <font color="#b2590f">=</font> <font color=Green>Prim</font> <font color=Green>Color</font> <font color=Green>Primitive</font>
+             <font color="#b2590f">|</font> <font color=Green>Join</font> <font color=Green>Picture</font> <font color=Green>Picture</font>
+
+<font color="#b2590f">data</font> <font color=Green>Primitive</font> <font color="#b2590f">=</font> <font color=Green>Line</font> <font color=Green>Point</font> <font color=Green>Point</font> <font color="#b2590f">|</font> <font color=Green>Circle</font> <font color=Green>Point</font> <font color=Green>Radius</font>
+
+<font color="#b2590f">data</font> <font color=Green>Point</font>  <font color="#b2590f">=</font> <font color=Green>Point</font> <font color=Green>Double</font> <font color=Green>Double</font>
+<font color="#b2590f">type</font> <font color=Green>Radius</font> <font color="#b2590f">=</font> <font color=Green>Double</font>   
+
+<font color="#b2590f">data</font> <font color=Green>Color</font> <font color="#b2590f">=</font> <font color=Green>Color</font> <font color=Green>Double</font> <font color=Green>Double</font> <font color=Green>Double</font></pre>
+<p>Эти три языка станут барьером, которым мы ограничим влияние <code><font color=Green>IO</font></code>. У нас будут функции:</p>
+<pre><font color=Black>percept</font>     <font color="#b2590f">::</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Black>(</font><font color=Green>Sense</font><font color=Black>,</font> <font color="#b2590f">[</font><font color=Green>Event</font><font color="#b2590f">]</font><font color=Black>)</font>
+<font color=Black>updatePure</font>  <font color="#b2590f">::</font> <font color=Green>Sense</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Event</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Pure</font><font color=Black>,</font> <font color="#b2590f">[</font><font color=Green>Query</font><font color="#b2590f">]</font><font color=Black>)</font>
+<font color=Black>react</font>       <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Query</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color=Black>updateDirty</font> <font color="#b2590f">::</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color=Black>picture</font>     <font color="#b2590f">::</font> <font color=Green>Pure</font> <font color="#b2590f">-&gt;</font> <font color=Green>Picture</font>
+<font color=Black>draw</font>        <font color="#b2590f">::</font> <font color=Green>Picture</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
+<p>Вся логика игры будет происходить в чистой функции <code><font color=Black>updatePure</font></code>, обновлять модель мира мы будем в <code><font color=Black>updateDirty</font></code>. Давайте опять начнём проектироваание сверху-вниз. С этими функциями мы уже можем написать основную функцию цикла игры:</p>
+<pre><font color=Black>loop</font> <font color="#b2590f">::</font> <font color=Green>IORef</font> <font color=Green>World</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>loop</font> worldRef <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    world <font color="#b2590f">&lt;-</font> get worldRef
+    drawWorld world
+    <font color=Black>(</font>world<font color=Black>,</font> dt<font color=Black>)</font> <font color="#b2590f">&lt;-</font> updateWorld world
+    worldRef <font color=Black>$=</font> world
+    <font color=Green>G</font><font color=Black>.</font>addTimerCallback <font color=Black>(</font>max <font color="#0000ee">0</font> <font color=Black>$</font> frameTime <font color="#2149c1">-</font> dt<font color=Black>)</font> <font color=Black>$</font> loop worldRef
+
+<font color=Black>updateWorld</font> <font color="#b2590f">::</font> <font color=Green>World</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Black>(</font><font color=Green>World</font><font color=Black>,</font> <font color=Green>Time</font><font color=Black>)</font>
+<font color=Black>updateWorld</font> world <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    t0 <font color="#b2590f">&lt;-</font> get <font color=Green>G</font><font color=Black>.</font>elapsedTime
+    <font color=Black>(</font>sense<font color=Black>,</font> events<font color=Black>)</font> <font color="#b2590f">&lt;-</font> percept dirty
+    <font color="#b2590f">let</font> <font color=Black>(</font>pure'<font color=Black>,</font> queries<font color=Black>)</font> <font color="#b2590f">=</font> updatePure sense events pure
+    dirty' <font color="#b2590f">&lt;-</font> updateDirty <font color=Black>=&lt;&lt;</font> react queries dirty    
+    t1 <font color="#b2590f">&lt;-</font> get <font color=Green>G</font><font color=Black>.</font>elapsedTime
+    return <font color=Black>(</font><font color=Green>World</font> pure' dirty'<font color=Black>,</font> t1 <font color="#2149c1">-</font> t0<font color=Black>)</font>
+    <font color="#b2590f">where</font> dirty <font color="#b2590f">=</font> worldDirty world
+          pure  <font color="#b2590f">=</font> worldPure  world  
+
+<font color=Black>drawWorld</font> <font color="#b2590f">::</font> <font color=Green>World</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>drawWorld</font> <font color="#b2590f">=</font> draw <font color=Black>.</font> picture <font color=Black>.</font> worldPure</pre>
+<h2 id="определяемся-с-типами"><a href="#TOC">Определяемся с типами</a></h2>
+<p>Давайте подумаем, из чего состоят типы <code><font color=Green>Dirty</font></code> и <code><font color=Green>Pure</font></code>. Начнём с <code><font color=Green>Pure</font></code>. Там точно будет вся информация необходимая нам для рисования картинки (ведь функция <code><font color=Black>picture</font></code> определена на <code><font color=Green>Pure</font></code>). Для рисования нам необходимо знать положения всех шаров и их типы (они определяют цвет). На картинке мы будем показывать разную статистику (данные о жизнях, бонусные очки). Также из типа <code><font color=Green>Pure</font></code> мы будем управлять созданием шаров. Так мы приходим к типу:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Pure</font> <font color="#b2590f">=</font> <font color=Green>Pure</font>
+    <font color=Black>{</font> pureScores     <font color="#b2590f">::</font> <font color=Green>Scores</font>
+    <font color=Black>,</font> pureHero       <font color="#b2590f">::</font> <font color=Green>HeroBall</font>
+    <font color=Black>,</font> pureBalls      <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Ball</font><font color="#b2590f">]</font>
+    <font color=Black>,</font> pureStat       <font color="#b2590f">::</font> <font color=Green>Stat</font>
+    <font color=Black>,</font> pureCreation   <font color="#b2590f">::</font> <font color=Green>Creation</font>
+    <font color=Black>}</font></pre>
+<p>Что нам нужно знать о шаре героя? Нам нужно его положение для отрисовки и модуль вектора скорости (он понадобится нам при обновлении вектора скорости шара игрока):</p>
+<pre><font color="#b2590f">data</font> <font color=Green>HeroBall</font> <font color="#b2590f">=</font> <font color=Green>HeroBall</font>
+    <font color=Black>{</font> heroPos   <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font>
+    <font color=Black>,</font> heroVel   <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>CpFloat</font>
+    <font color=Black>}</font></pre>
+<p>Для остальных шаров нам нужно знать только тип шара, его положение и идентификатор шара. По идентификатору потом мы сможем понять какой шар удалить из грязных данных:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Ball</font> <font color="#b2590f">=</font> <font color=Green>Ball</font>
+    <font color=Black>{</font> ballType      <font color="#b2590f">::</font> <font color=Green>BallType</font>
+    <font color=Black>,</font> ballPos       <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font>
+    <font color=Black>,</font> ballId        <font color="#b2590f">::</font> <font color=Green>Id</font>
+    <font color=Black>}</font>
+
+<font color="#b2590f">data</font> <font color=Green>BallType</font> <font color="#b2590f">=</font> <font color=Green>Hero</font> <font color="#b2590f">|</font> <font color=Green>Good</font> <font color="#b2590f">|</font> <font color=Green>Bad</font> <font color="#b2590f">|</font> <font color=Green>Bonus</font>
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>,</font> <font color=Green>Enum</font><font color=Black>)</font>
+
+<font color="#b2590f">type</font> <font color=Green>Id</font> <font color="#b2590f">=</font> <font color=Green>Int</font></pre>
+<p>Статистика игры состоит из числа жизней и бонусных очков:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Scores</font> <font color="#b2590f">=</font> <font color=Green>Scores</font> 
+    <font color=Black>{</font> scoresLives <font color="#b2590f">::</font> <font color=Green>Int</font>
+    <font color=Black>,</font> scoresBonus <font color="#b2590f">::</font> <font color=Green>Int</font>
+    <font color=Black>}</font> </pre>
+<p>Как будет происходить создание новых шаров? Если плохих шаров будет слишком много, то играть будет не интересно, игрок слишком быстро проиграет. Если хороших шаров будет слишком много, то игроку также быстро надоест. Будет очень легко. Нам необходимо поддерживать определённый баланс шаров. Создание шаров будет происходить случайным образом через равные промежутки времени, но создание нового шара будет зависеть от пропорции шаров на доске в данный момент. Если у нас слишком много плохих шаров, то скорее всего мы создадим хороший шар и наоборот. Если общее число шаров велико, то мы не будем усложнять игроку жизнь новыми шарами, дождёмся пока какие-нибудь шары не покинут пределы поля или не будут уничтожены игроком. Эти рассуждения приводят нас к типам:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Creation</font> <font color="#b2590f">=</font> <font color=Green>Creation</font> 
+    <font color=Black>{</font> creationStat      <font color="#b2590f">::</font> <font color=Green>Stat</font>
+    <font color=Black>,</font> creationGoalStat  <font color="#b2590f">::</font> <font color=Green>Stat</font>
+    <font color=Black>,</font> creationTick      <font color="#b2590f">::</font> <font color=Green>Int</font>
+    <font color=Black>}</font>
+
+<font color="#b2590f">data</font> <font color=Green>Stat</font> <font color="#b2590f">=</font> <font color=Green>Stat</font>
+    <font color=Black>{</font> goodCount     <font color="#b2590f">::</font> <font color=Green>Int</font>
+    <font color=Black>,</font> badCount      <font color="#b2590f">::</font> <font color=Green>Int</font>
+    <font color=Black>,</font> bonusCount    <font color="#b2590f">::</font> <font color=Green>Int</font>
+    <font color=Black>}</font> 
+
+<font color="#b2590f">data</font> <font color=Green>Freq</font> <font color="#b2590f">=</font> <font color=Green>Freq</font> 
+    <font color=Black>{</font> freqGood      <font color="#b2590f">::</font> <font color=Green>Float</font>
+    <font color=Black>,</font> freqBad       <font color="#b2590f">::</font> <font color=Green>Float</font>
+    <font color=Black>,</font> freqBonus     <font color="#b2590f">::</font> <font color=Green>Float</font>
+    <font color=Black>}</font> </pre>
+<p>Поле <code><font color=Black>creationStat</font></code> содержит текущее число шаров на поле, поле <code><font color=Black>creationGoalStat</font></code> – число шаров, к которому мы стремимся. Значение типа <code><font color=Green>Freq</font></code> содержит веса вероятностей создания нового шара определённого типа. На каждом шаге мы будем прибавлять единицу к <code><font color=Black>creationTiсk</font></code>, как только оно достигнет определённого значения мы попробуем создать новый шар.</p>
+<p>Перейдём к грязным данным. Там мы будем хранить информацию, необходимую для обновления модели в <code><font color=Green>Hipmunk</font></code>, и значение, в которое <code><font color=Green>GLFW</font></code> будет записывать состояние мыши, также мы будем следить за тем, кто столкнулся с шаром игрока в данный момент:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Dirty</font> <font color="#b2590f">=</font> <font color=Green>Dirty</font> 
+    <font color=Black>{</font> dirtyHero     <font color="#b2590f">::</font> <font color=Green>Obj</font>
+    <font color=Black>,</font> dirtyObjs     <font color="#b2590f">::</font> <font color=Green>IxMap</font> <font color=Green>Obj</font>
+    <font color=Black>,</font> dirtySpace    <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Space</font>
+    <font color=Black>,</font> dirtyTouchVar <font color="#b2590f">::</font> <font color=Green>Sensor</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Shape</font>
+    <font color=Black>,</font> dirtyMouse    <font color="#b2590f">::</font> <font color=Green>Sensor</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font>
+    <font color=Black>}</font>
+
+<font color="#b2590f">data</font> <font color=Green>Obj</font> <font color="#b2590f">=</font> <font color=Green>Obj</font> 
+    <font color=Black>{</font> objType     <font color="#b2590f">::</font> <font color=Green>BallType</font>
+    <font color=Black>,</font> objShape    <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Shape</font>
+    <font color=Black>,</font> objBody     <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Body</font>
+    <font color=Black>}</font> 
+
+<font color="#b2590f">type</font> <font color=Green>Sensor</font> a <font color="#b2590f">=</font> <font color=Green>IORef</font> <font color=Black>(</font><font color=Green>Maybe</font> a<font color=Black>)</font></pre>
+<p>Особая структура <code><font color=Green>IxMap</font></code> отвечает за хранение значений вместе с индексами. Пока остановимся на самом простом представлении:</p>
+<pre><font color="#b2590f">type</font> <font color=Green>IxMap</font> a <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color=Black>(</font><font color=Green>Id</font><font color=Black>,</font> a<font color=Black>)</font><font color="#b2590f">]</font></pre>
+<h2 id="структура-проекта"><a href="#TOC">Структура проекта</a></h2>
+<p>Наметим структуру проекта. У нас уже есть модуль <code><font color=Green>Types</font><font color=Black>.</font>hs</code>. Основной цикл игры будет описан в модуле <code><font color=Green>Loop</font><font color=Black>.</font>hs</code>. Общие функции обновления состояния будут определены в <code><font color=Green>World</font><font color=Black>.</font>hs</code>, также у нас будет два модуля отвечающие за обновление чистых и грязных данных – <code><font color=Green>Pure</font><font color=Black>.</font>hs</code> и <code><font color=Green>Dirty</font><font color=Black>.</font>hs</code>. Мы выделим отдельный модуль для описания всех констант игры (<code><font color=Green>Inits</font><font color=Black>.</font>hs</code>). Так нам будет удобно настроить игру, когда мы закончим с кодом. Отдельный модуль <code><font color=Green>Utils</font></code> будет содержать все функции общего назначения, преобразования между типами <code><font color=Green>OpenGL</font></code> и <code><font color=Green>Hipmunk</font></code>.</p>
+<h2 id="детализируем-функции-обновления-состояния-игры"><a href="#TOC">Детализируем функции обновления состояния игры</a></h2>
+<p>Начнём с восприятия:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>World</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>Physics</font><font color=Black>.</font><font color=Green>Hipmunk</font> <font color="#b2590f">as</font> <font color=Green>H</font>
+
+<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Maybe</font>
+<font color="#b2590f">import</font> <font color=Green>Types</font>
+<font color="#b2590f">import</font> <font color=Green>Utils</font>
+
+<font color="#b2590f">import</font> <font color=Green>Pure</font>
+<font color="#b2590f">import</font> <font color=Green>Dirty</font>
+
+<font color=Black>percept</font> <font color="#b2590f">::</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Black>(</font><font color=Green>Sense</font><font color=Black>,</font> <font color="#b2590f">[</font><font color=Green>Event</font><font color="#b2590f">]</font><font color=Black>)</font>
+<font color=Black>percept</font> a <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    hero    <font color="#b2590f">&lt;-</font> obj2hero <font color=Black>$</font> dirtyHero a
+    balls   <font color="#b2590f">&lt;-</font> mapM <font color=Black>(</font>uncurry obj2ball<font color=Black>)</font> <font color=Black>$</font> setIds dirtyObjs a
+    evts1   <font color="#b2590f">&lt;-</font> fmap maybeToList <font color=Black>$</font> getTouch <font color=Black>(</font>dirtyTouchVar a<font color=Black>)</font> <font color=Black>$</font> dirtyObjs a
+    evts2   <font color="#b2590f">&lt;-</font> fmap maybeToList <font color=Black>$</font> getClick <font color=Black>$</font> dirtyMouse a
+    return <font color=Black>$</font> <font color=Black>(</font><font color=Green>Sense</font> hero balls<font color=Black>,</font> evts1 <font color=Black>++</font> evts2<font color=Black>)</font>
+    <font color="#b2590f">where</font> setIds <font color="#b2590f">=</font> zip <font color="#b2590f">[</font><font color="#0000ee">0</font><font color="#b2590f">..</font><font color="#b2590f">]</font>
+
+<font color="#2149c1">-- в Dirty.hs</font>
+<font color=Black>obj2hero</font>    <font color="#b2590f">::</font> <font color=Green>Obj</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>HeroBall</font>
+<font color=Black>obj2ball</font>    <font color="#b2590f">::</font> <font color=Green>Id</font> <font color="#b2590f">-&gt;</font> <font color=Green>Obj</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Ball</font>
+<font color=Black>getTouch</font>    <font color="#b2590f">::</font> <font color=Green>Sensor</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Shape</font> <font color="#b2590f">-&gt;</font> <font color=Green>IxMap</font> <font color=Green>Obj</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Black>(</font><font color=Green>Maybe</font> <font color=Green>Event</font><font color=Black>)</font>
+<font color=Black>getClick</font>    <font color="#b2590f">::</font> <font color=Green>Sensor</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Position</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Black>(</font><font color=Green>Maybe</font> <font color=Green>Event</font><font color=Black>)</font></pre>
+<p>Далее мы не будем каждый раз выписывать новые неопределённые функции, мы будем просто оставлять объявления типов без определений. Итак мы написали одну функцию, и получили ещё четыре новых.</p>
+<p>Мы сделаем предположение о том, что сначала мы реагируем на непрерывные события, а затем на дискретные. Причём к запросам на реакции могут привести только дискретные события:</p>
+<pre><font color=Black>updatePure</font> <font color="#b2590f">::</font> <font color=Green>Sense</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Event</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Pure</font><font color=Black>,</font> <font color="#b2590f">[</font><font color=Green>Query</font><font color="#b2590f">]</font><font color=Black>)</font>
+<font color=Black>updatePure</font> s evts <font color="#b2590f">=</font> updateEvents evts <font color=Black>.</font> updateSenses s 
+
+<font color="#2149c1">-- в Pure.hs</font>
+<font color=Black>updateSenses</font> <font color="#b2590f">::</font> <font color=Green>Sense</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font>
+<font color=Black>updateEvents</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Event</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Pure</font><font color=Black>,</font> <font color="#b2590f">[</font><font color=Green>Query</font><font color="#b2590f">]</font><font color=Black>)</font></pre>
+<p>В функции <code><font color=Black>react</font></code> мы предполагаем, что реакции мира на события независимы друг от друга. <code><font color=Black>foldQuery</font></code>~– функция свёртки для типа <code><font color=Green>Query</font></code>.</p>
+<pre><font color="#b2590f">import</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font>
+<font color=Black>...</font>
+
+<font color=Black>react</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Query</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color=Black>react</font> <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>&lt;=&lt;</font><font color=Black>)</font> return   
+    <font color=Black>.</font> fmap <font color=Black>(</font>foldQuery removeBall heroVelocity makeBall<font color=Black>)</font>
+
+<font color="#2149c1">-- в Dirty.hs</font>
+<font color=Black>removeBall</font>      <font color="#b2590f">::</font> <font color=Green>Ball</font>         <font color="#b2590f">-&gt;</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color=Black>heroVelocity</font>    <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Velocity</font>   <font color="#b2590f">-&gt;</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color=Black>makeBall</font>        <font color="#b2590f">::</font> <font color=Green>Freq</font>         <font color="#b2590f">-&gt;</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font></pre>
+<p>Обратите внимание на то, как мы воспользовались функциями <code><font color=Black>foldr</font></code>, <code><font color=Black>return</font></code> и <code><font color=Black>&lt;=&lt;</font></code> для того чтобы нанизать друг на друга функции типа <code><font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font></code>. Напомню, что функция <code><font color=Black>&lt;=&lt;</font></code>~– это аналог композиции для монадных функций.</p>
+<p>Обновление модели:</p>
+<pre><font color=Black>updateDirty</font> <font color="#b2590f">::</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color=Black>updateDirty</font> <font color="#b2590f">=</font> stepDirty dt
+
+<font color="#2149c1">-- в Dirty.hs</font>
+<font color=Black>stepDirty</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Time</font> <font color="#b2590f">-&gt;</font> <font color=Green>Dirty</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+
+<font color="#2149c1">-- в Inits.hs</font>
+<font color=Black>dt</font> <font color="#b2590f">::</font> <font color=Green>H</font><font color=Black>.</font><font color=Green>Time</font>
+<font color=Black>dt</font> <font color="#b2590f">=</font> <font color="#0000ee">0.5</font></pre>
+<p>Функции рисования поместим в отдельный модуль <code><font color=Green>Graphics</font><font color=Black>.</font>hs</code></p>
+<pre><font color="#2149c1">-- переместим из Loop.hs в World.hs </font>
+<font color=Black>drawWorld</font> <font color="#b2590f">::</font> <font color=Green>World</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>drawWorld</font> <font color="#b2590f">=</font> draw <font color=Black>.</font> picture <font color=Black>.</font> worldPure
+
+<font color="#2149c1">-- в Graphics.hs</font>
+<font color=Black>draw</font> <font color="#b2590f">::</font> <font color=Green>Picture</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+
+<font color="#2149c1">-- в Pure.hs</font>
+<font color=Black>picture</font>     <font color="#b2590f">::</font> <font color=Green>Pure</font> <font color="#b2590f">-&gt;</font> <font color=Green>Picture</font></pre>
+<p>Добавим функцию инициализации игры:</p>
+<pre><font color=Black>initWorld</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>World</font>
+<font color=Black>initWorld</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
+    dirty   <font color="#b2590f">&lt;-</font> initDirty
+    <font color=Black>(</font>sense<font color=Black>,</font> events<font color=Black>)</font> <font color="#b2590f">&lt;-</font> percept dirty
+    return <font color=Black>$</font> <font color=Green>World</font> <font color=Black>(</font>initPure sense events<font color=Black>)</font> dirty
+
+<font color="#2149c1">-- в Dirty.hs</font>
+<font color=Black>initDirty</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Dirty</font>
+<font color="#2149c1">-- в Pure.hs</font>
+<font color=Black>initPure</font> <font color="#b2590f">::</font> <font color=Green>Sense</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Event</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Pure</font></pre>
+<h2 id="детализируем-дальше"><a href="#TOC">Детализируем дальше</a></h2>
+<p>Вот так на самом интересном месте… Мы вынуждены прерваться. Я надеюсь, что вы уловили основную идею метода и сможете закончить эту игру самостоятельно. Вся логика игры будет описана в модуле <code><font color=Green>Pure</font><font color=Black>.</font>hs</code>. Причём в этом модуле будут только чистые функции. Осталось примерно 1000 строк кода. Я не буду выписывать своё решение, если вы где-то запнётесь или у вас что-то не будет получаться, вы можете свериться с ним (оно входит в код, что прилагается с книгой).</p>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>В этой главе мы посмотрели на две интересные библиотеки. Физический движок <code><font color=Green>Hipmunk</font></code> и графическую библиотеку <code><font color=Green>OpenGL</font></code> и узнали метод укрощения императивного кода. Мы разделили состояние игры на две части. В одну поместили все те параметры, для которых невозможно обойтись без <code><font color=Green>IO</font></code>-функций, а в другой те параметры, которые необходимы для реализации логики игры. Все функции, отвечающие за логику игры являются чистыми. Параметры императивной части не обновляются сразу, сначала мы делаем с них снимок, потом передаём этот снимок в чистую часть, и она разбирается с тем как их обновлять. Части общаются между собой на специальных маленьких языках, которые закодированы в типах. Это язык наблюдений (<code><font color=Green>Event</font></code>), язык реакций (<code><font color=Green>Query</font></code>) и язык отрисовки игрового мира (<code><font color=Green>Picture</font></code>).</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<p>Закончите код игры. Или, возможно, при знакомстве с <code><font color=Green>Hipmunk</font></code> у вас появилась идея новой игры с невероятной динамикой. Ещё лучше! Напишите её. При этом продумайте проект игры так, чтобы <code><font color=Green>IO</font></code>-типы не разбежались по всей программе.</p>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="19.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="21.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="19" style="list-style-type: decimal">
+<li>Ориентируемся по карте
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="21" style="list-style-type: decimal">
+<li>Музыкальный пример
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

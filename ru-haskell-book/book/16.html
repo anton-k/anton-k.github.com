@@ -1,0 +1,485 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+  <script src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#категориальные-типы">Категориальные типы</a><ul>
+<li><a href="#программирование-в-стиле-оригами">Программирование в стиле оригами</a></li>
+<li><a href="#индуктивные-и-коиндуктивные-типы">Индуктивные и коиндуктивные типы</a><ul>
+<li><a href="#существование-начальных-и-конечных-объектов">Существование начальных и конечных объектов</a><ul>
+<li><a href="#полные-частично-упорядоченные-множества">Полные частично упорядоченные множества</a></li>
+<li><a href="#полиномиальный-функтор">Полиномиальный функтор</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#гиломорфизм">Гиломорфизм</a></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="15.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="17.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<p></p>
+<h1 id="категориальные-типы"><a href="#TOC">Категориальные типы</a></h1>
+<p>В этой главе мы узнаем как в теории категорий определяются типы. В теории категорий типы определяются как начальные и конечные объекты в специальных категориях, которые называются алгебрами функторов. Для понимания этой главы хорошо освежить в памяти главу о структурной рекурсии, там где мы говорили о свёртках и развёртках.</p>
+<h2 id="программирование-в-стиле-оригами"><a href="#TOC">Программирование в стиле оригами</a></h2>
+<p>Оригами – состоит из двух слов “свёртка” и “бумага”. При программировании в стиле оригами все функции строятся через функции свёртки и развёртки. Есть даже такие языки программрования, в которых это единственный способ определения рекурсии. Этот стиль очень хорошо подходит для ленивых языков программирования, поскольку в связке:</p>
+<pre><font color=Black>fold</font> f <font color=Black>.</font> unfold g</pre>
+
+<p>функции свёртки и развёртки работают синхронно. Функция развёртки не производит новых элементов до тех пор пока они не понадобятся во внешней функции свёртки.</p>
+<p>Помните в одной из глав мы говорили о том, что рекурсивные функции можно определять через функцию <code><font color=Black>fix</font></code>.<br />Например так выглядит рекурсивная функция сложения всех чисел от одного до <code><font color=Black>n</font></code>:</p>
+<pre><font color=Black>sumInt</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>sumInt</font> <font color="#0000ee">0</font> <font color="#b2590f">=</font> <font color="#0000ee">0</font>
+<font color=Black>sumInt</font> n <font color="#b2590f">=</font> n <font color=Black>+</font> sumInt <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font></pre>
+<p>Эту функцию мы можем переписать с помощью функции <code><font color=Black>fix</font></code>. При вычислении <code><font color=Black>fix</font> f</code> будет составлено значение</p>
+<pre><font color=Black>f</font> <font color=Black>(</font>f <font color=Black>(</font>f <font color=Black>(</font>f <font color=Black>...</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
+<p>Теперь перепишем функцию <code><font color=Black>sumInt</font></code> через <code><font color=Black>fix</font></code>:</p>
+<pre><font color=Black>sumInt</font> <font color="#b2590f">=</font> fix <font color=Black>$</font> <font color="#b2590f">\</font>f n <font color="#b2590f">-&gt;</font>
+    <font color="#b2590f">case</font> n <font color="#b2590f">of</font> 
+        <font color="#0000ee">0</font>   <font color="#b2590f">-&gt;</font> <font color="#0000ee">0</font>
+        n   <font color="#b2590f">-&gt;</font> n <font color=Black>+</font> f <font color=Black>(</font>n <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font>    </pre>
+<p>Смотрите лямбда функция в аргументе <code><font color=Black>fix</font></code> принимает функцию и число, а возвращает число. Тип этой функции <code><font color=Black>(</font><font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font><font color=Black>)</font></code>. После применения функции <code><font color=Black>fix</font></code> мы как раз и получим функцию типа <code><font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font></code>. В лямбда функции рекурсивный вызов был заменён на вызов функции-параметра <code><font color=Black>f</font></code>.</p>
+<p>Оказывается, что этот приём может быть применён и для рекурсивных типов данных. Мы можем создать обобщённый тип, который обозначает рекурсивный тип:</p>
+<pre><font color="#b2590f">newtype</font> <font color=Green>Fix</font> f <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>{</font> unFix <font color="#b2590f">::</font> f <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font> <font color=Black>}</font></pre>
+<p>В этой записи мы получаем уравнение неподвижной точки <code><font color=Green>Fix</font> f <font color="#b2590f">=</font> f <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font></code>, где <code><font color=Black>f</font></code> это некоторый тип с параметром. Определим тип целых чисел:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>N</font> a <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> a
+
+<font color="#b2590f">type</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Green>N</font></pre>
+<p>Теперь создадим несколько конструкторов:</p>
+<pre><font color=Black>zero</font> <font color="#b2590f">::</font> <font color=Green>Nat</font>
+<font color=Black>zero</font> <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Green>Zero</font>
+
+<font color=Black>succ</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font>
+<font color=Black>succ</font> <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>.</font> <font color=Green>Succ</font></pre>
+<p>Сохраним эти определения в модуле <code><font color=Green>Fix</font><font color=Black>.</font>hs</code> и посмотрим в интерпретаторе на значения и их типы, ghc не сможет вывести экземпляр <code><font color=Green>Show</font></code> для типа <code><font color=Green>Fix</font></code>, потому что он зависит от типа с параметром, а не от конкретного типа. Для решения этой проблемы нам придётся определить экземпляры вручную и подключить несколько расширений языка. Помните в главе о ленивых вычислениях мы подключали расширение <code><font color=Green>BangPatterns</font></code>? Нам понадобятся:</p>
+<pre><font color="#2149c1">{-# Language FlexibleContexts, UndecidableInstances #-}</font></pre>
+<p>Теперь определим экземпляры для <code><font color=Green>Show</font></code> и <code><font color=Green>Eq</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Black>(</font>f <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Show</font> <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font> <font color="#b2590f">where</font>
+    show x <font color="#b2590f">=</font> <font color=Black>"("</font> <font color=Black>++</font> show <font color=Black>(</font>unFix x<font color=Black>)</font> <font color=Black>++</font> <font color=Black>")"</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Eq</font> <font color=Black>(</font>f <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Eq</font> <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font> <font color="#b2590f">where</font>
+    a <font color=Black>==</font> b <font color="#b2590f">=</font> unFix a <font color=Black>==</font> unFix b</pre>
+<p>Определим списки-оригами:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>L</font> a b <font color="#b2590f">=</font> <font color=Green>Nil</font> <font color="#b2590f">|</font> <font color=Green>Cons</font> a b
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>)</font>
+
+<font color="#b2590f">type</font> <font color=Green>List</font> a <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>(</font><font color=Green>L</font> a<font color=Black>)</font>
+
+<font color=Black>nil</font> <font color="#b2590f">::</font> <font color=Green>List</font> a
+<font color=Black>nil</font> <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Green>Nil</font>
+
+<font color="#b2590f">infixr</font> <font color="#0000ee">5</font> <font color=Black>`cons`</font>
+
+<font color=Black>cons</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a
+<font color=Black>cons</font> a <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>.</font> <font color=Green>Cons</font> a</pre>
+<p>В типе <code><font color=Green>L</font></code> мы заменили рекурсивный тип на параметр. Затем в записи <code><font color=Green>List</font> a <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>(</font><font color=Green>L</font> a<font color=Black>)</font></code> мы производим замыкание по параметру. Мы бесконечно вкладываем тип <code><font color=Green>L</font> a</code> во второй параметр. Так получается рекурсивный тип для списков. Составим какой-нибудь список:</p>
+<pre><font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>r
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Fix</font>              <font color=Black>(</font> <font color=Green>Fix</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Fix</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> <font color="#0000ee">1</font> <font color=Black>`cons`</font> <font color="#0000ee">2</font> <font color=Black>`cons`</font> <font color="#0000ee">3</font> <font color=Black>`cons`</font> nil
+<font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">1</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">2</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">3</font> <font color=Black>(</font><font color=Green>Nil</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
+<p>Спрашивается, зачем нам это нужно? Зачем нам записывать рекурсивные типы через тип <code><font color=Green>Fix</font></code>? Оказывается при такой записи мы можем построить универсальные функции <code><font color=Black>fold</font></code> и <code><font color=Black>unfold</font></code>, они будут работать для любого рекурсивного типа.</p>
+<p>Помните как мы составляли функции свёртки? Мы строили воображаемый класс, в котором сворачиваемый тип заменялся на параметр. Например для списка мы строили свёртку так:</p>
+<pre><font color="#b2590f">class</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> b <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b
+    <font color=Green>[]</font>  <font color="#b2590f">::</font> b</pre>
+<p>После этого мы легко получали тип для функции свёртки:</p>
+<pre><font color=Black>foldr</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> b<font color=Black>)</font></pre>
+<p>Она принимает методы воображаемого класса, в котором тип записан с параметром, а возвращает функцию из рекурсивного типа в тип параметра.</p>
+<p>Сейчас мы выполняем эту процедуру замены рекурсивного типа на параметр в обратном порядке. Сначала мы строим типы с параметром, а затем получаем из них рекурсивные типы с помощью конструкции <code><font color=Green>Fix</font></code>. Теперь методы класса с параметром это наши конструкторы исходных классов, а рекурсивный тип записан через <code><font color=Green>Fix</font></code>. Если мы сопоставим два способа, то мы сможем получить такой тип для функции свёртки:</p>
+<pre><font color=Black>fold</font> <font color="#b2590f">::</font> <font color=Black>(</font>f b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Fix</font> f <font color="#b2590f">-&gt;</font> b<font color=Black>)</font></pre>
+<p>Смотрите функция свёртки по-прежнему принимает методы воображаемого класса с параметром, но теперь класс перестал быть воображаемым, он стал типом с параметром. Результатом функции свёртки будет функция из рекурсивного типа <code><font color=Green>Fix</font> f</code> в тип параметр.</p>
+<p>Аналогично строится и функция <code><font color=Black>unfold</font></code>:</p>
+<pre><font color=Black>unfold</font> <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> f b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> <font color=Green>Fix</font> f<font color=Black>)</font></pre>
+<p>В первой функции мы указываем один шаг разворачивания рекурсивного типа, а функция развёртки рекурсивно распространяет этот один шаг на потенциально бесконечную последовательность применений этого одного шага.</p>
+<p>Теперь давайте определим эти функции. Но для этого нам понадобится от типа <code><font color=Black>f</font></code> одно свойство. Он должен быть функтором, опираясь на это свойство, мы будем рекурсивно обходить этот тип.</p>
+<pre><font color=Black>fold</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>f a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Fix</font> f <font color="#b2590f">-&gt;</font> a<font color=Black>)</font>
+<font color=Black>fold</font> f <font color="#b2590f">=</font> f <font color=Black>.</font> fmap <font color=Black>(</font>fold f<font color=Black>)</font> <font color=Black>.</font> unFix</pre>
+<p>Проверим эту функцию по типам. Для этого нарисуем схему композиции:</p>
+<div>
+<img src="../pic/16/fold.png" alt="Свёртка" />
+</div>
+
+<p>Сначала мы разворачиваем обёртку <code><font color=Green>Fix</font></code> и получаем значение типа <code><font color=Black>f</font> <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font></code>, затем с помощью <code><font color=Black>fmap</font></code> мы внутри типа <code><font color=Black>f</font></code> рекурсивно вызываем функцию свёртки и в итоге получаем значение <code><font color=Black>f</font> a</code>, на последнем шаге мы выполняем свёртку на текущем уровне вызовом функции <code><font color=Black>f</font></code>.</p>
+<p>Аналогично определяется и функция <code><font color=Black>unfold</font></code>. Только теперь мы сначала развернём первый уровень, затем рекурсивно вызовем развёртку внутри типа <code><font color=Black>f</font></code> и только в самом конце завернём всё в тип <code><font color=Green>Fix</font></code>:</p>
+<pre><font color=Black>unfold</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Fix</font> f<font color=Black>)</font>
+<font color=Black>unfold</font> f <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>.</font> fmap <font color=Black>(</font>unfold f<font color=Black>)</font> <font color=Black>.</font> f</pre>
+<p>Схема композиции:</p>
+<div>
+<img src="../pic/16/unfold.png" alt="Развёртка" />
+</div>
+
+<p>Возможно вы уже догадались о том, что функция <code><font color=Black>fold</font></code> дуальна по отношению к функции <code><font color=Black>unfold</font></code>, это особенно наглядно отражается на схеме композиции. При переходе от <code><font color=Black>fold</font></code> к <code><font color=Black>unfold</font></code> мы просто перевернули все стрелки заменили разворачивание типа <code><font color=Green>Fix</font></code> на заворачивание в <code><font color=Green>Fix</font></code>.</p>
+<p>Определим несколько функций для натуральных чисел и списков в стиле оригами. Для начала сделаем <code><font color=Green>L</font></code> и <code><font color=Green>N</font></code> экземпляром класса <code><font color=Green>Functor</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Functor</font> <font color=Green>N</font> <font color="#b2590f">where</font>
+    fmap f x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+        <font color=Green>Zero</font>    <font color="#b2590f">-&gt;</font> <font color=Green>Zero</font>
+        <font color=Green>Succ</font> a  <font color="#b2590f">-&gt;</font> <font color=Green>Succ</font> <font color=Black>(</font>f a<font color=Black>)</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Functor</font> <font color=Black>(</font><font color=Green>L</font> a<font color=Black>)</font> <font color="#b2590f">where</font>
+    fmap f x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+        <font color=Green>Nil</font>         <font color="#b2590f">-&gt;</font> <font color=Green>Nil</font>
+        <font color=Green>Cons</font> a b    <font color="#b2590f">-&gt;</font> <font color=Green>Cons</font> a <font color=Black>(</font>f b<font color=Black>)</font></pre>
+<p>Это всё что нам нужно для того чтобы начать пользоваться функциями свёртки и развёртки! Определим экземпляр <code><font color=Green>Num</font></code> для натуральных чисел:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Num</font> <font color=Green>Nat</font> <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a <font color="#b2590f">=</font> fold <font color=Black>$</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+            <font color=Green>Zero</font>    <font color="#b2590f">-&gt;</font> a
+            <font color=Green>Succ</font> x  <font color="#b2590f">-&gt;</font> succ x
+
+    <font color=Black>(</font><font color=Black>*</font><font color=Black>)</font> a <font color="#b2590f">=</font> fold <font color=Black>$</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+            <font color=Green>Zero</font>    <font color="#b2590f">-&gt;</font> zero
+            <font color=Green>Succ</font> x  <font color="#b2590f">-&gt;</font> a <font color=Black>+</font> x
+
+    fromInteger <font color="#b2590f">=</font> unfold <font color=Black>$</font> <font color="#b2590f">\</font>n <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> n <font color="#b2590f">of</font>
+            <font color="#0000ee">0</font>   <font color="#b2590f">-&gt;</font> <font color=Green>Zero</font>
+            n   <font color="#b2590f">-&gt;</font> <font color=Green>Succ</font> <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font>
+
+    abs <font color="#b2590f">=</font> undefined
+    signum <font color="#b2590f">=</font> undefined</pre>
+<p>Сложение и умножение определены через свёртку, а функция построения натурального числа из числа типа <code><font color=Green>Integer</font></code> определена через развёртку. Сравните с теми функциями, которые мы писали в главе про структурную рекурсию. Теперь мы не передаём отдельно две функции, на которые мы будем заменять конструкторы. Эти функции закодированы в типе с параметром. Для того чтобы этот код заработал нам придётся добавить ещё одно расширение <code><font color=Green>TypeSynonymInstances</font></code> наши рекурсивные типы являются синонимами, а не новыми типами. В рамках стандарта Haskell мы можем определять экземпляры только для новых типов, для того чтобы обойти это ограничение мы добавим ещё одно расширение.</p>
+<pre><font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> succ <font color=Black>$</font> <font color="#0000ee">1</font><font color=Black>+</font><font color="#0000ee">2</font>
+<font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>
+<font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> <font color=Black>(</font><font color=Black>(</font><font color="#0000ee">2</font> <font color=Black>*</font> <font color="#0000ee">3</font><font color=Black>)</font> <font color=Black>+</font> <font color="#0000ee">1</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Nat</font>
+<font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>
+<font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> <font color="#0000ee">2</font><font color=Black>+</font><font color="#0000ee">2</font> <font color=Black>==</font> <font color="#0000ee">2</font><font color=Black>*</font><font color=Black>(</font><font color="#0000ee">2</font><font color="#b2590f">::</font><font color=Green>Nat</font><font color=Black>)</font>
+<font color=Green>True</font></pre>
+<p>Определим функции на списках. Для начала определим две вспомогательные функции, которые извлекают голову и хвост списка:</p>
+<pre><font color=Black>headL</font> <font color="#b2590f">::</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>headL</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> unFix x <font color="#b2590f">of</font>
+    <font color=Green>Nil</font>         <font color="#b2590f">-&gt;</font> error <font color=Black>"empty list"</font>
+    <font color=Green>Cons</font> a <font color="#b2590f">_</font>    <font color="#b2590f">-&gt;</font> a
+
+<font color=Black>tailL</font> <font color="#b2590f">::</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a
+<font color=Black>tailL</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> unFix x <font color="#b2590f">of</font>
+    <font color=Green>Nil</font>         <font color="#b2590f">-&gt;</font> error <font color=Black>"empty list"</font>
+    <font color=Green>Cons</font> a b    <font color="#b2590f">-&gt;</font> b</pre>
+<p>Теперь определим несколько новых функций:</p>
+<pre><font color=Black>mapL</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> b
+<font color=Black>mapL</font> f <font color="#b2590f">=</font> fold <font color=Black>$</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Green>Nil</font>         <font color="#b2590f">-&gt;</font> nil
+    <font color=Green>Cons</font> a b    <font color="#b2590f">-&gt;</font> f a <font color=Black>`cons`</font> b
+
+<font color=Black>takeL</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a
+<font color=Black>takeL</font> <font color="#b2590f">=</font> curry <font color=Black>$</font> unfold <font color=Black>$</font> <font color="#b2590f">\</font><font color=Black>(</font>n<font color=Black>,</font> xs<font color=Black>)</font> <font color="#b2590f">-&gt;</font> 
+    <font color="#b2590f">if</font> n <font color=Black>==</font> <font color="#0000ee">0</font> <font color="#b2590f">then</font> <font color=Green>Nil</font>
+              <font color="#b2590f">else</font> <font color=Green>Cons</font> <font color=Black>(</font>headL xs<font color=Black>)</font> <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>,</font> tailL xs<font color=Black>)</font></pre>
+<p>Сравните эти функции с теми, что мы определяли в главе о структурной рекурсии. Проверим работают ли эти функции:</p>
+<pre><font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>r
+<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Fix</font>              <font color=Black>(</font> <font color=Green>Fix</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
+<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Fix</font><font color=Black>.</font>
+<font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> takeL <font color="#0000ee">3</font> <font color=Black>$</font> iterateL <font color=Black>(</font><font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font> zero
+<font color=Black>(</font><font color=Green>Cons</font> <font color=Black>(</font><font color=Green>Zero</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Cons</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Cons</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Nil</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>
+<font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> x <font color="#b2590f">=</font> <font color="#0000ee">1</font> <font color=Black>`cons`</font> <font color="#0000ee">2</font> <font color=Black>`cons`</font> <font color="#0000ee">3</font> <font color=Black>`cons`</font> nil
+<font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> mapL <font color=Black>(</font><font color=Black>+</font><font color="#0000ee">10</font><font color=Black>)</font> <font color=Black>$</font> x <font color=Black>`concatL`</font> x
+<font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">11</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">12</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">13</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">11</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">12</font> <font color=Black>(</font><font color=Green>Cons</font> <font color="#0000ee">13</font> <font color=Black>(</font><font color=Green>Nil</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
+<p>Обратите внимание, на то что с большими буквами мы пишем <code><font color=Green>Cons</font></code> и <code><font color=Green>Nil</font></code> когда хотим закодировать функции для свёртки-развёртки, а с маленькой буквы пишем значения рекурсивного типа. Надеюсь, что вы разобрались на примерах как устроены функции <code><font color=Black>fold</font></code> и <code><font color=Black>unfold</font></code>, потому что теперь мы перейдём к теории, которая за этим стоит.</p>
+<h2 id="индуктивные-и-коиндуктивные-типы"><a href="#TOC">Индуктивные и коиндуктивные типы</a></h2>
+<p>С точки зрения теории категорий функция свёртки является катаморфизмом, а функция развёртки – анаморфизмом. Напомню, что катаморфизм – это функция которая ставит в соответствие объектам категории с начальным объектом стрелки, которые начинаются из начального объекта, а заканчиваются в данном объекте. Анаморфизм – это перевёрнутый наизнанку катаморфизм.</p>
+<p>Начальным и конечным объектом будет рекурсивный тип. Вспомним тип свёртки:</p>
+<pre><font color=Black>fold</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>f a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Fix</font> f <font color="#b2590f">-&gt;</font> a<font color=Black>)</font></pre>
+<p>Функция свёртки строит функции, которые ведут из рекурсивного типа в произвольный тип, поэтому в данном случае рекурсивный тип будет начальным объектом. Функция развёртки строит из произвольного типа данный рекурсивный тип, на языке теории категорий она строит стрелку из произвольного объекта в рекурсивный, это означает что рекурсивный тип будет конечным объектом.</p>
+<pre><font color=Black>unfold</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Fix</font> f<font color=Black>)</font></pre>
+<p>Категории, которые определяют рекурсивные типы таким образом называются (ко)алгебрами функторов. Видите в типе и той и другой функции стоит требование о том, что <code><font color=Black>f</font></code> является функтором. Катаморфизм и анаморфизм отображают объекты в стрелки. По типу функций <code><font color=Black>fold</font></code> и <code><font color=Black>unfold</font></code> мы можем сделать вывод, что объектами в нашей категории будут стрелки вида</p>
+<pre><font color=Black>f</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>или для свёрток:</p>
+<pre><font color=Black>a</font> <font color="#b2590f">-&gt;</font> f a</pre>
+<p>А стрелками будут обычные функции одного аргумента. Теперь дадим более формальное определение.</p>
+<p>Эндофунктор \(F : \mathcal{A}\rightarrow \mathcal{A}\) определяет стрелки \(\alpha : FA \rightarrow A\), которые называется \(F\)-<em>алгебрами</em>. Стрелку \(h : A \rightarrow B\) называют \(F\)-<em>гомоморфизмом</em>, если следующая диаграмма коммутирует:</p>
+<div>
+<img src="../pic/16/alg1.png" alt="F-алгебра" />
+</div>
+
+<p>Или можно сказать по другому, для \(F\)-алгебр \(\alpha:FA \rightarrow A\) и \(\beta : FB \rightarrow B\) выполняется:</p>
+<p>\(Fh \:\mathbf{;}\:\beta = \alpha \:\mathbf{;}\:h\)</p>
+<p>Это свойство совпадает со свойством естественного преобразования только вместо одного из функторов мы подставили тождественный функтор \(I\). Определим категорию \(\textbf{Alg}(F)\), для категории \(\mathcal{A}\) и эндофунктора \(F : \mathcal{A}\rightarrow \mathcal{A}\)</p>
+<ul>
+<li><p>Объектами являются \(F\)-алгебры \(FA \rightarrow A\), где \(A\) – объект категории \(\mathcal{A}\)</p></li>
+<li><p>Два объекта \(\alpha : FA \rightarrow A\) и \(\beta : FB \rightarrow B\) соединяет \(F\)-гомоморфизм \(h : A \rightarrow B\). Это такая стрелка из \(\mathcal{A}\), для которой выполняется:</p></li>
+</ul>
+<p>\(Fh \:\mathbf{;}\:\beta = \alpha \:\mathbf{;}\:h\)</p>
+<ul>
+<li>Композиция и тождественная стрелка взяты из категории \(\mathcal{A}\).</li>
+</ul>
+<p>Если в этой категории есть начальный объект \(in_F : FT \rightarrow T\), то определён катаморфизм, который переводит объекты \(FA \rightarrow A\) в стрелки \(T \rightarrow A\). Причём следующая диаграмма коммутирует:</p>
+<div>
+<img src="../pic/16/alg2.png" alt="F-алгебра" />
+</div>
+
+<p>Этот катаморфизм и будет функцией свёртки для рекурсивного типа \(Т\). Понятие \(\textbf{Alg}(F)\) можно перевернуть и получить категорию \(\textbf{CoAlg}(F)\).</p>
+<ul>
+<li><p>Объектами являются \(F\)-коалгебры \(A \rightarrow FA\), где \(A\) – объект категории \(\mathcal{A}\)</p></li>
+<li><p>Два объекта \(\alpha : FA \rightarrow A\) и \(\beta : FB \rightarrow B\) соединяет \(F\)-когомоморфизм . Это такая стрелка из \(\mathcal{A}\), для которой выполняется:</p>
+<p>\(h \:\mathbf{;}\:\alpha = \beta \:\mathbf{;}\:Fh\)</p></li>
+<li><p>Композиция и тождественная стрелка взяты из категории \(\mathcal{A}\).</p></li>
+</ul>
+<p>Если в этой категории есть конечный объект, его называют \(out_F : T \rightarrow FT\), то определён анаморфизм, который переводит объекты \(A \rightarrow FA\) в стрелки \(A \rightarrow T\).<br />Причём следующая диаграмма коммутирует:</p>
+<div>
+<img src="../pic/16/alg3.png" alt="F-алгебра" />
+</div>
+
+<p>Если для категории \(\mathcal{A}\) и функтора \(F\) определены стрелки \(in_F\) и \(out_F\), то они являются взаимнообратными и определяют изоморфизм \(T \cong FT\). Часто объект \(T\) в случае \(\textbf{Alg}(F)\) обозначают \(\mu_F\), поскольку начальный объект определяется функтором \(F\), а в случае \(\textbf{CoAlg}(F)\) обозначают \(\nu_F\).</p>
+<p>Типы, которые являются начальными объектами, принято называть индуктивными, а типы, которые являются конечными объектами – коиндуктивными.</p>
+<h3 id="существование-начальных-и-конечных-объектов"><a href="#TOC">Существование начальных и конечных объектов</a></h3>
+<p>Мы говорили, что если начальный(конечный) объект существует, а когда он существует? Рассмотрим один важный случай. Если категория является категорией, в которой объектами являются полные частично упорядоченные множества, а стрелками являются монотонные функции, такие категории называют \(\textbf{CPO}\), и функтор – полиномиальный, то начальный и конечный объекты существуют.</p>
+<h4 id="полные-частично-упорядоченные-множества"><a href="#TOC">Полные частично упорядоченные множества</a></h4>
+<p>Оказывается на значениях можно ввести частичный порядок. Порядок называется частичным, если отношение \(\leq\) определено не для всех элементов, а лишь для некоторых из них. Частичный порядок на значениях отражает степень неопределённости значения. Самый маленький объект это полностью неопределённое значение \(\bot\). Любое значение типа содержит больше определённости чем \(\bot\).</p>
+<p>Для того чтобы не путать упорядочивание значений по степени определённости с обычным числовым порядком, пользуются специальным символом \(\sqsubseteq\). Запись</p>
+<p>\(a \sqsubseteq b\)</p>
+
+<p>означает, что \(b\) более определено (или информативнее) чем \(a\).</p>
+<p>Так для логических значений определены два нетривиальных сравнения:</p>
+<p>\(data\ Bool\ =\ True \ |\ False\)</p>
+<p>\(\bot \sqsubseteq True\) \(\bot \sqsubseteq False\)</p>
+<p>Мы будем называть нетривиальными сравнения в которых, компоненты слева и справа от \(\sqsubseteq\) не равны. Например ясно, что \(True \sqsubseteq True\) или \(\bot \sqsubseteq \bot\). Это тривиальные сравнения и мы их будем лишь подразумевать. Считается, что если два значения определены полностью, то мы не можем сказать какое из них информативнее. Так к примеру для логических значений мы не можем сказать какое значение более определено \(True\) или \(False\).</p>
+<p>Рассмотрим пример по-сложнее. Частично определённые значения:</p>
+<p>\(data\ Maybe\ a = Nothing \ |\ Just\ a\)</p>
+<table>
+<tbody>
+<tr class="odd">
+<td align="left">\(\bot\)</td>
+<td align="center">\(\sqsubseteq\)</td>
+<td align="left">\(Nothing\)</td>
+</tr>
+<tr class="even">
+<td align="left">\(\bot\)</td>
+<td align="center">\(\sqsubseteq\)</td>
+<td align="left">\(Just\ \bot\)</td>
+</tr>
+<tr class="odd">
+<td align="left">\(\bot\)</td>
+<td align="center">\(\sqsubseteq\)</td>
+<td align="left">\(Just\ a\)</td>
+</tr>
+<tr class="even">
+<td align="left">\(Just\ a\)</td>
+<td align="center">\(\sqsubseteq\)</td>
+<td align="left">\(Just\ b\), если \(a \sqsubseteq b\)</td>
+</tr>
+</tbody>
+</table>
+<p>Если вспомнить как происходит вычисление значения, то значение \(a\) менее определено чем \(b\), если взрывное значение \(\bot\) в \(a\) находится ближе к корню значения, чем в \(b\). Итак получается, что в категории \(\textbf{Hask}\) объекты это множества с частичным порядком. Что означает требование монотонности функции?<br />Монотонность в контексте операции \(\sqsubseteq\) говорит о том, что чем больше определён вход функции тем больше определён выход:</p>
+<p>\(a \sqsubseteq b \quad \Rightarrow \quad f\ a \sqsubseteq f\ b\)</p>
+<p>Это требование накладывает запрет на возможность проведения сопоставления с образцом по значению \(\bot\). Иначе мы можем определять немонотонные функции вроде:</p>
+<pre><font color=Black>isBot</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>isBot</font> undefined <font color="#b2590f">=</font> <font color=Green>True</font>
+<font color=Black>isBot</font> <font color="#b2590f">_</font>         <font color="#b2590f">=</font> undefined</pre>
+<p>Полнота частично упорядоченного множества означает, что у любой последовательности \(x_n\)</p>
+<p>\(x_0 \sqsubseteq x_1 \sqsubseteq x_2 \sqsubseteq ...\)</p>
+
+<p>есть значение \(x\), к которому она сходится. Это значение называют супремумом множества. Что такое полные частично упорядоченные множества мы разобрались. А что такое полиномиальный функтор?</p>
+<h4 id="полиномиальный-функтор"><a href="#TOC">Полиномиальный функтор</a></h4>
+<p>Полиномиальный функтор – это функтор который построен лишь с помощью операций суммы, произведения, постоянных функторов, тождественного фуктора и композиции функторов. Определим эти операции:</p>
+<ul>
+<li><p>Сумма функторов \(F\) и \(G\) определяется через операцию суммы объектов:</p>
+<p>\((F+G)X = FX + GX\)</p></li>
+<li><p>Произведение функторов \(F\) и \(G\) определяется через операцию произведения объектов:</p>
+<p>\((F\times G)X = FX \times GX\)</p></li>
+<li><p>Постоянный функтор отображает все объекты категории в один объект, а стрелки в тождественнубю стрелку этого объекта, мы будем обозначать постоянный функтор подчёркиванием:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td align="left">\(\underline{A}X\)</td>
+<td align="center">\(=\)</td>
+<td align="left">\(A\)</td>
+</tr>
+<tr class="even">
+<td align="left">\(\underline{A}f\)</td>
+<td align="center">\(=\)</td>
+<td align="left">\(id_A\)</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>Тождественный функтор оставляет объекты и стрелки неизменными:</p>
+<table>
+<tbody>
+<tr class="odd">
+<td align="left">\(IX\)</td>
+<td align="center">\(=\)</td>
+<td align="left">\(X\)</td>
+</tr>
+<tr class="even">
+<td align="left">\(If\)</td>
+<td align="center">\(=\)</td>
+<td align="left">\(f\)</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>Композиция функторов \(F\) и \(G\) это последовательное применение функторов</p>
+<p>\(FGX = F(GX)\)</p></li>
+</ul>
+<p>По определению функции построенные с помощью этих операций называют полиномиальными. Определим несколько типов данных с помощью полиномиальных функторов. Определим логические значения:</p>
+<p>\(Bool = \mu(\underline{1} + \underline{1})\)</p>
+<p>Объект \(1\) обозначает любую константу, это конечный объект исходной категории. Нам не важны имена конструкторов, но важна структура типа. \(\mu\) обозначает начальный объект в \(F\)-алгебре.</p>
+<p>Определим натуральные числа:</p>
+<p>\(Nat = \mu(\underline{1} + I)\)</p>
+<p>Эта запись обозначает начальный объект для \(F\)-алгебры с функтором \(F=\underline{1}+I\). Посмотрим на определение списка:</p>
+<p>\(List_A = \mu(\underline{1} + \underline{A} \times I)\)</p>
+<p>Список это начальный объект \(F\)-алгебры \(\underline{1}+\underline{A}\times I\). Также можно определить бинарные деревья:</p>
+<p>\(BTree_A = \mu(\underline{A} + I \times I )\)</p>
+<p>Определим потоки:</p>
+<p>\(Stream_A = \nu (\underline{A} \times I)\)</p>
+<p>Потоки являются конечным объектом \(F\)-коалгебры, где \(F= \underline{A} \times I\).</p>
+<h2 id="гиломорфизм"><a href="#TOC">Гиломорфизм</a></h2>
+<p>Оказывается, что с помощью катаморфизма и анаморфизма мы можем определить функцию <code><font color=Black>fix</font></code>, т.е.~мы можем выразить любую рекурсивную функцию с помощью структурной рекурсии.</p>
+<p>Функция <code><font color=Black>fix</font></code> строит бесконечную последовательность применений некоторой функции <code><font color=Black>f</font></code>.</p>
+<pre><font color=Black>f</font> <font color=Black>(</font>f <font color=Black>(</font>f <font color=Black>...</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
+<p>Сначала с помощью анаморфизма мы построим бесконечный список, который содержит функцию <code><font color=Black>f</font></code> во всех элементах:</p>
+<pre><font color=Black>repeat</font> f <font color="#b2590f">=</font> f <font color="#b2590f">:</font> f <font color="#b2590f">:</font> f <font color="#b2590f">:</font> <font color=Black>...</font></pre>
+<p>А затем заменим конструктор <code><font color="#b2590f">:</font></code> на применение. В итоге мы получим такую функцию:</p>
+<pre><font color=Black>fix</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a
+<font color=Black>fix</font> <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>$</font><font color=Black>)</font> undefined <font color=Black>.</font> repeat </pre>
+<p>Убедимся, что эта функция работает:</p>
+<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> fix <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>$</font><font color=Black>)</font> undefined <font color=Black>.</font> repeat
+<font color=Green>Prelude</font><font color=Black>&gt;</font> take <font color="#0000ee">3</font> <font color=Black>$</font> y <font color=Black>(</font><font color="#0000ee">1</font><font color="#b2590f">:</font><font color=Black>)</font>
+<font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">1</font><font color="#b2590f">]</font>
+<font color=Green>Prelude</font><font color=Black>&gt;</font> fix <font color=Black>(</font><font color="#b2590f">\</font>f n <font color="#b2590f">-&gt;</font> <font color="#b2590f">if</font> n<font color=Black>==</font><font color="#0000ee">0</font> <font color="#b2590f">then</font> <font color="#0000ee">0</font> <font color="#b2590f">else</font> n <font color=Black>+</font> f <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font><font color=Black>)</font> <font color="#0000ee">10</font>
+<font color="#0000ee">55</font></pre>
+<p>Теперь давайте определим функцию <code><font color=Black>fix</font></code> через функции <code><font color=Black>cata</font></code> и <code><font color=Black>ana</font></code>:</p>
+<pre><font color=Black>fix</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a
+<font color=Black>fix</font> <font color="#b2590f">=</font> cata <font color=Black>(</font><font color="#b2590f">\</font><font color=Black>(</font><font color=Green>Cons</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color=Black>.</font> ana <font color=Black>(</font><font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Cons</font> a a<font color=Black>)</font></pre>
+<p>Эта связка анаморфизм с последующим катаморфизмом встречается так часто, что ей дали специальное имя. <em>Гиломорфизмом</em> называют функцию:</p>
+<pre><font color=Black>hylo</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>f b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> 
+<font color=Black>hylo</font> phi psi <font color="#b2590f">=</font> cata phi <font color=Black>.</font> ana psi</pre>
+<p>Отметим, что эту функцию можно выразить и по-другому:</p>
+<pre><font color=Black>hylo</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>f b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> 
+<font color=Black>hylo</font> phi psi <font color="#b2590f">=</font> phi <font color=Black>.</font> <font color=Black>(</font>fmap <font color=Black>$</font> hylo phi psi<font color=Black>)</font> <font color=Black>.</font> psi</pre>
+<p>Этот вариант более эффективен по расходу памяти, мы не строим промежуточное значение <code><font color=Green>Fix</font> f</code>, а сразу обрабатываем значения в функции <code><font color=Black>phi</font></code> по ходу их построения в функции <code><font color=Black>psi</font></code>. Давайте введём инфиксную операцию гиломорфизм для этого определения:</p>
+<pre><font color=Black>(</font><font color=Black>&gt;&gt;</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>f b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> 
+<font color=Black>psi</font> <font color=Black>&gt;&gt;</font> phi <font color="#b2590f">=</font> phi <font color=Black>.</font> <font color=Black>(</font>fmap <font color=Black>$</font> hylo phi psi<font color=Black>)</font> <font color=Black>.</font> psi</pre>
+<p>Теперь давайте скроем одноимённую функцию из <code><font color=Green>Prelude</font></code> и определим несколько рекурсивных функций с помощью гиломорфизма. Начнём с функции вычисления суммы чисел от нуля до данного числа:</p>
+<pre><font color=Black>sumInt</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>sumInt</font> <font color="#b2590f">=</font> range <font color=Black>&gt;&gt;</font> sum
+    
+<font color=Black>sum</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Green>Nil</font>      <font color="#b2590f">-&gt;</font> <font color="#0000ee">0</font> 
+    <font color=Green>Cons</font> a b <font color="#b2590f">-&gt;</font> a <font color=Black>+</font> b
+
+<font color=Black>range</font> n 
+    <font color="#b2590f">|</font> n <font color=Black>==</font> <font color="#0000ee">0</font>    <font color="#b2590f">=</font> <font color=Green>Nil</font> 
+    <font color="#b2590f">|</font> otherwise <font color="#b2590f">=</font> <font color=Green>Cons</font> n <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font></pre>
+<p>Сначала мы создаём в функции <code><font color=Black>range</font></code> список всех чисел от данного числа до нуля. А затем в функции <code><font color=Black>sum</font></code> складываем значения. Теперь мы можем легко определить функцию вычисления факториала:</p>
+<pre><font color=Black>fact</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>fact</font> <font color="#b2590f">=</font> range <font color=Black>&gt;&gt;</font> prod
+    
+<font color=Black>prod</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> x <font color="#b2590f">of</font>
+    <font color=Green>Nil</font>      <font color="#b2590f">-&gt;</font> <font color="#0000ee">1</font> 
+    <font color=Green>Cons</font> a b <font color="#b2590f">-&gt;</font> a <font color=Black>*</font> b</pre>
+<p>Напишем функцию, которая извлекает из потока n-тый элемент. Сначала определим тип для потока:</p>
+<pre><font color="#b2590f">type</font> <font color=Green>Stream</font> a <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>(</font><font color=Green>S</font> a<font color=Black>)</font>
+
+<font color="#b2590f">data</font> <font color=Green>S</font> a b <font color="#b2590f">=</font> a <font color="#b2590f">:&amp;</font> b
+    <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font>
+
+<font color="#b2590f">instance</font> <font color=Green>Functor</font> <font color=Black>(</font><font color=Green>S</font> a<font color=Black>)</font> <font color="#b2590f">where</font>
+    fmap f <font color=Black>(</font>a <font color="#b2590f">:&amp;</font> b<font color=Black>)</font> <font color="#b2590f">=</font> a <font color="#b2590f">:&amp;</font> f b  
+
+
+<font color=Black>headS</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>headS</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> unFix x <font color="#b2590f">of</font>
+    <font color=Black>(</font>a <font color="#b2590f">:&amp;</font> <font color="#b2590f">_</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> a
+
+
+<font color=Black>tailS</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a
+<font color=Black>tailS</font> x <font color="#b2590f">=</font> <font color="#b2590f">case</font> unFix x <font color="#b2590f">of</font>
+    <font color=Black>(</font><font color="#b2590f">_</font> <font color="#b2590f">:&amp;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> b</pre>
+<p>Теперь функцию извлечения элемента:</p>
+<pre><font color=Black>getElem</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>getElem</font> <font color="#b2590f">=</font> curry <font color=Black>(</font>enum <font color=Black>&gt;&gt;</font> elem<font color=Black>)</font> 
+    <font color="#b2590f">where</font> elem <font color=Black>(</font><font color=Black>(</font>n<font color=Black>,</font> a<font color=Black>)</font> <font color="#b2590f">:&amp;</font> next<font color=Black>)</font> 
+                <font color="#b2590f">|</font> n <font color=Black>==</font> <font color="#0000ee">0</font>    <font color="#b2590f">=</font> a
+                <font color="#b2590f">|</font> otherwise <font color="#b2590f">=</font> next
+          enum <font color=Black>(</font>a<font color=Black>,</font> st<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>a<font color=Black>,</font> headS st<font color=Black>)</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font>a<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>,</font> tailS st<font color=Black>)</font></pre>
+<p>В функции <code><font color=Black>enum</font></code> мы добавляем к элементам потока убывающую последовательность чисел, она стартует из данного числа. Элемент, который нам нужен, будет содержать в этой последовательности число ноль. В функции <code><font color=Black>elem</font></code> мы как раз и извлекаем тот элемент рядом с которым хранится число ноль. Обратите внимание на то, что рекурсия встроена в этот алгоритм, если данное число не равно нулю, мы просто извлекаем следующий элемент.</p>
+<p>С помощью этой функции мы можем вычислить n-тое число из ряда чисел Фибоначчи. Сначала создадим поток чисел Фибоначчи:</p>
+<pre><font color=Black>fibs</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> <font color=Green>Int</font>
+<font color=Black>fibs</font> <font color="#b2590f">=</font> ana <font color=Black>(</font><font color="#b2590f">\</font><font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">:&amp;</font> <font color=Black>(</font>b<font color=Black>,</font> a<font color=Black>+</font>b<font color=Black>)</font><font color=Black>)</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">1</font><font color=Black>)</font></pre>
+<p>Теперь просто извлечём n-тый элемент из потока чисел Фибоначчи:</p>
+<pre><font color=Black>fib</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
+<font color=Black>fib</font> <font color="#b2590f">=</font> flip getElem fibs</pre>
+<p>Вычислим поток всех простых чисел. Мы будем вычислять его по алгоритму “решето Эратосфена”. В начале алгоритма у нас есть поток целых чисел и известно, что первое число является простым.</p>
+<p>2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 …</p>
+<p>В процессе этого алгоритма мы вычёркиваем все не простые числа. Сначала мы ищем первое не зачёркнутое число и помещаем его в результирующий поток, а на следующий шаг алгоритма мы передаём исходный, поток в котором зачёркнуты все числа кратные тому, что мы положили последним:</p>
+<p>2</p>
+<p>3, <del>4</del>, 5, <del>6</del>, 7, <del>8</del>, 9, <del>10</del>, 11, <del>12</del>, 13, <del>14</del>, 15, …</p>
+<p>Теперь мы ищем первое незачёркнутое число и помещаем его в результат. А на следующий шаг рекусии передаём поток, в котором зачёркнуты все числа кратные новому простому числу:</p>
+<p>2, 3</p>
+<p><del>4</del>, 5, <del>6</del>, 7, <del>8</del>, <del>9</del>, <del>10</del>, <del>12</del>, 13, <del>14</del>, <del>15</del>, …</p>
+<p>И так далее, на каждом шаге мы будем получать одно простое число. Зачёркивание мы будем имитировать с помощью типа <code><font color=Green>Maybe</font></code>. Всё начинается с потока целых чисел, в котором не зачёркнуто ни одно число:</p>
+<pre><font color=Black>nums</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> <font color=Black>(</font><font color=Green>Maybe</font> <font color=Green>Int</font><font color=Black>)</font>
+<font color=Black>nums</font> <font color="#b2590f">=</font> mapS <font color=Green>Just</font> <font color=Black>$</font> iterateS <font color=Black>(</font><font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font> <font color="#0000ee">2</font> 
+
+<font color=Black>mapS</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> b
+<font color=Black>mapS</font> f <font color="#b2590f">=</font> ana <font color=Black>$</font> <font color="#b2590f">\</font>xs <font color="#b2590f">-&gt;</font> <font color=Black>(</font>f <font color=Black>$</font> headS xs<font color=Black>)</font> <font color="#b2590f">:&amp;</font> tailS xs
+
+<font color=Black>iterateS</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a
+<font color=Black>iterateS</font> f <font color="#b2590f">=</font> ana <font color=Black>$</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x <font color="#b2590f">:&amp;</font> f x</pre>
+<p>В силу ограничений системы типов Haskell мы не можем определить экземпляр <code><font color=Green>Functor</font></code> для типа <code><font color=Green>Stream</font></code>, поскольку <code><font color=Green>Stream</font></code> является не самостоятельным типом а типом-синонимом. Поэтому нам приходится определить функцию <code><font color=Black>mapS</font></code>. Определим шаг рекурсии:</p>
+<pre><font color=Black>primes</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> <font color=Green>Int</font>
+<font color=Black>primes</font> <font color="#b2590f">=</font> ana erato nums
+
+<font color=Black>erato</font> xs <font color="#b2590f">=</font> n <font color="#b2590f">:&amp;</font> erase n ys
+    <font color="#b2590f">where</font> n  <font color="#b2590f">=</font> fromJust <font color=Black>$</font> headS xs  
+          ys <font color="#b2590f">=</font> dropWhileS isNothing xs</pre>
+<p>Переменная <code><font color=Black>n</font></code> содержит первое не зачёркнутое число на данном шаге. Переменная <code><font color=Black>ys</font></code> указывает на список чисел, из начала которого удалены все зачёркнутые числа. Функции <code><font color=Black>isNothing</font></code> и <code><font color=Black>fromJust</font></code> взяты из стандартного модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Maybe</font></code>. Нам осталось определить лишь две функции. Это аналог функции <code><font color=Black>dropWhile</font></code> на списках. Эта функция удаляет из начала списка все элементы, которые удовлетворяют некоторому предикату. Вторая функция <code><font color=Black>erase</font></code> вычёркивает все числа в потоке кратные данному.</p>
+<pre><font color=Black>dropWhileS</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a
+<font color=Black>dropWhileS</font> p <font color="#b2590f">=</font> psi <font color=Black>&gt;&gt;</font> phi 
+    <font color="#b2590f">where</font> phi <font color=Black>(</font><font color=Black>(</font>b<font color=Black>,</font> xs<font color=Black>)</font> <font color="#b2590f">:&amp;</font> next<font color=Black>)</font> <font color="#b2590f">=</font> <font color="#b2590f">if</font> b <font color="#b2590f">then</font> next <font color="#b2590f">else</font> xs
+          psi xs <font color="#b2590f">=</font> <font color=Black>(</font>p <font color=Black>$</font> headS xs<font color=Black>,</font> xs<font color=Black>)</font> <font color="#b2590f">:&amp;</font> tailS xs</pre>
+<p>В этой функции мы сначала генерируем список пар, который содержит значения предиката и остатки списка, а затем находим в этом списке первый такой элемент, значение которого равно <code><font color=Green>False</font></code>.</p>
+<pre><font color=Black>erase</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> <font color=Black>(</font><font color=Green>Maybe</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> <font color=Black>(</font><font color=Green>Maybe</font> a<font color=Black>)</font>
+<font color=Black>erase</font> n xs <font color="#b2590f">=</font> ana phi <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> xs<font color=Black>)</font>
+    <font color="#b2590f">where</font> phi <font color=Black>(</font>a<font color=Black>,</font> xs<font color=Black>)</font> 
+            <font color="#b2590f">|</font> a <font color=Black>==</font> <font color="#0000ee">0</font>    <font color="#b2590f">=</font> <font color=Green>Nothing</font>  <font color="#b2590f">:&amp;</font> <font color=Black>(</font>a'<font color=Black>,</font> tailS xs<font color=Black>)</font>
+            <font color="#b2590f">|</font> otherwise <font color="#b2590f">=</font> headS xs <font color="#b2590f">:&amp;</font> <font color=Black>(</font>a'<font color=Black>,</font> tailS xs<font color=Black>)</font>
+            <font color="#b2590f">where</font> a' <font color="#b2590f">=</font> <font color="#b2590f">if</font> a <font color=Black>==</font> n<font color="#2149c1">-</font><font color="#0000ee">1</font> <font color="#b2590f">then</font> <font color="#0000ee">0</font> <font color="#b2590f">else</font> <font color=Black>(</font>a<font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font></pre>
+<p>В функции <code><font color=Black>erase</font></code> мы заменяем на <code><font color=Green>Nothing</font></code> каждый элемент, порядок следования которого кратен аргументу <code><font color=Black>n</font></code>. Проверим, что у нас получилось:</p>
+<pre><font color=Black>*</font><font color=Green>Fix</font><font color=Black>&gt;</font> primes 
+<font color=Black>(</font><font color="#0000ee">2</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">3</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">5</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">7</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">11</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">13</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">17</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">19</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">23</font> <font color="#b2590f">:&amp;</font> 
+<font color=Black>(</font><font color="#0000ee">29</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">31</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">37</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">41</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">43</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">47</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">53</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">59</font> <font color="#b2590f">:&amp;</font> 
+<font color=Black>(</font><font color="#0000ee">61</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">67</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">71</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">73</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">79</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">83</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">89</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">97</font> <font color="#b2590f">:&amp;</font> 
+<font color=Black>(</font><font color="#0000ee">101</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">103</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">107</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">109</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">113</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">127</font> <font color="#b2590f">:&amp;</font> <font color=Black>(</font><font color="#0000ee">131</font> <font color="#b2590f">:&amp;</font>
+<font color=Black>...</font></pre>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>В этой главе мы узнали, что любая рекурсивная функция может быть выражена через структурную рекурсию. Мы узнали как в теории категорий определяются типы. Типы являются начальными и конечными объектами в специальных категориях, которые называются алгебрами функторов. Слоган теории категорий гласит:</p>
+<blockquote>
+<p>Управляющие структуры определяются структурой типов.</p>
+</blockquote>
+<p>Определив тип, мы получаем вместе с ним две функции структурной рекурсии, это катаморфизм (для начальных объектов) и анаморфизм (для конечных объектов). С помощью катаморфизма мы можем сворачивать значение данного типа в значения любого другого типа, а с помощью анаморфизма мы можем разворачивать значения данного типа из значений любого другого типа. Также мы узнали, что категория \(\textbf{Hask}\) является категорией \(\textbf{CPO}\), категорией полных частично упорядоченных множеств.</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<p>Потренируйтесь в определении рекурсивных функций через гиломорфизм. Попробуйте переписать как можно больше определений из главы о структурной рекурсии в терминах типа <code><font color=Green>Fix</font></code> и функций <code><font color=Black>cata</font></code>, <code><font color=Black>ana</font></code> и <code><font color=Black>hylo</font></code>. Также потренируйтесь на стандартных функциях из модуля <code><font color=Green>Prelude</font></code>. Определите новые типы через <code><font color=Green>Fix</font></code> например деревья из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Tree</font></code>. Попробуйте свои силы на функциях по-сложнее например алгоритме эвристического поиска.</p>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="15.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="17.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+<ol start="15" style="list-style-type: decimal">
+<li>Теория категорий
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="17" style="list-style-type: decimal">
+<li>Дополнительные возможности
+</div></div></div>  
+ </div> 
+</li>
+</ol></li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+</body>
+</html>

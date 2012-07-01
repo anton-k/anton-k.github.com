@@ -1,0 +1,437 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#основы">Основы</a><ul>
+<li><a href="#общая-картина">Общая картина</a></li>
+<li><a href="#типы">Типы</a></li>
+<li><a href="#значения">Значения</a></li>
+<li><a href="#классы-типов">Классы типов</a><ul>
+<li><a href="#контекст-классов-типов.-суперклассы">Контекст классов типов. Суперклассы</a></li>
+</ul></li>
+<li><a href="#экземпляры-классов-типов">Экземпляры классов типов</a></li>
+<li><a href="#ядро-haskell">Ядро Haskell</a><ul>
+<li><a href="#модули">Модули</a></li>
+<li><a href="#типы-1">Типы</a></li>
+<li><a href="#значения-1">Значения</a></li>
+<li><a href="#классы-типов-1">Классы типов</a></li>
+<li><a href="#экземпляры-классов-типов-1">Экземпляры классов типов</a></li>
+<li><a href="#типы-значения-и-классы-типов">Типы, значения и классы типов</a></li>
+<li><a href="#суперклассы">Суперклассы</a></li>
+</ul></li>
+<li><a href="#двумерный-синтаксис">Двумерный синтаксис</a></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
+<li><a href="#упражнения">Упражнения</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="header">  
+<div id="nav">
+<a id="prev" class="button" href="preface.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="2.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>  
+ </div> 
+
+<h1 id="основы"><a href="#TOC">Основы</a></h1>
+<p>Есть мнение, что Haskell очень большой язык. Это и правда так. В Haskell много разных конструкций, синтаксического сахара, которые делают код более наглядным. Также в Haskell много библиотек на разные случаи жизни. Однако, обману ли я ваши ожидания, сказав, что всё это имеет достаточно компактную основу? Это и правда так, вам осталось лишь убедиться в наглядности и простоте Haskell. В этой главе мы пробежимся по нему, охватив одним взглядом целиком весь язык. Несколько наглядных конструкций, немного моих пояснений, и вы поймёте, что к чему. Если что-то сразу не станет ясно, или где-то я опущу какие-то пояснения, будьте уверены – в следующих главах мы обязательно обратимся к этим моментам и обсудим их подробнее.</p>
+<h2 id="общая-картина"><a href="#TOC">Общая картина</a></h2>
+<p>Программы на Haskell бывают двух видов: это <em>приложения</em> (executable) и <em>библиотеки</em> (library). Приложения представляют собой исполняемые файлы, которые решают некоторую задачу, к примеру – это может быть компилятор языка, сортировщик данных в директориях, календарь, или цитатник на каждый день, любая полезная утилита. Библиотеки тоже решают задачи, но решают их внутри самого языка. Они содержат отдельные значения, функции, которые можно подключать к другой программе Haskell, и которыми можно пользоваться.</p>
+<p>Программа состоит из <em>модулей</em> (module). И здесь работает правило: один модуль – один файл. Имя модуля совпадает с именем файла. Имя модуля начинается с большой буквы, тогда как файлы имеют расширение <code><font color=Black>.</font>hs</code>. Например <code><font color=Green>FirstModule</font><font color=Black>.</font>hs</code>. Посмотрим на типичный модуль в Haskell:</p>
+<pre><font color="#2149c1">--------------------------------------</font>
+<font color="#2149c1">-- шапка</font>
+
+<font color="#b2590f">module</font> <font color=Green>Имя</font><font color=Black>(</font>определение1<font color=Black>,</font> определение2<font color=Black>,</font><font color=Black>...</font><font color=Black>,</font> определениеN<font color=Black>)</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Модуль1</font><font color=Black>(</font><font color=Black>...</font><font color=Black>)</font>
+<font color="#b2590f">import</font> <font color=Green>Модуль2</font><font color=Black>(</font><font color=Black>...</font><font color=Black>)</font>
+<font color=Black>...</font>
+
+<font color="#2149c1">---------------------------------------</font>
+<font color="#2149c1">-- определения</font>
+
+<font color=Black>определение1</font>
+<font color=Black>определение2</font>
+<font color=Black>...</font></pre>
+<p>Каждый модуль содержит набор определений. Относительно модуля определения делятся на <em>экспортируемые</em> и <em>внутренние</em>. Экспортируемые определения могут быть использованы за пределами модуля, а внутренние – только внутри модуля, и обычно они служат для выражения экспортируемых определений.</p>
+<p>Модуль состоит из двух частей – шапки и определений.</p>
+<dl>
+<dt><em>Шапка</em></dt>
+<dd><p>В шапке после слова <code><font color="#b2590f">module</font></code> объявляется имя модуля, за которым в скобках следует список экспортируемых определений; после скобок стоит слово <code><font color="#b2590f">where</font></code>. Затем идут импортируемые модули. С помощью импорта модулей вы имеете возможность в данном модуле пользоваться определениями из другого модуля.</p>
+<p>Как после имени модуля, так и в директиве <code><font color="#b2590f">import</font></code> скобки с определениями можно не писать,так как в этом случае считается, что экспортируются/импортируются все определения.</p>
+</dd>
+<dt><em>Определения</em></dt>
+<dd><p>Эта часть содержит все определения модуля, при этом порядок следования определений не имеет значения. То есть, не обязательно пользоваться в данной функции лишь теми значениями, что были определены выше.</p>
+</dd>
+</dl>
+<p>Модули взаимодействуют друг с другом с помощью экспортируемых определений. Один модуль может сказать, что он хочет воспользоваться экспортируемыми определениями другого модуля, для этого он пишет <code><font color="#b2590f">import</font> <font color=Green>Модуль</font><font color=Black>(</font>определения<font color=Black>)</font></code>. Модуль – это айсберг, на вершине которого – те функции, ради которых он создавался (экспортируемые), а под водой – все служебные детали реализации (внутренние).</p>
+<p>Итак, программа состоит из модулей, модули состоят из определений. Но что такое определения?</p>
+<p>В Haskell определения могут описывать четыре вида сущностей:</p>
+<ul>
+<li><p>Типы.</p></li>
+<li><p>Значения.</p></li>
+<li><p>Классы типов.</p></li>
+<li><p>Экземпляры классов типов.</p></li>
+</ul>
+<p>Теперь давайте рассмотрим их подробнее.</p>
+<h2 id="типы"><a href="#TOC">Типы</a></h2>
+<p>Типы представляют собой каркас программы. Они кратко описывают все возможные значения. Это очень удобно. Опытный программист на Haskell может понять смысл функции по её названию и типу. Это не очень сложно. Например, мы видим:</p>
+<pre><font color=Black>not</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></pre>
+<p>Выражение <code><font color=Black>v</font> <font color="#b2590f">::</font> <font color=Green>T</font></code> означает, что значение <code><font color=Black>v</font></code> имеет тип <code><font color=Green>T</font></code>. Стрелка <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code> означает функцию, то есть из <code><font color=Black>a</font></code> мы можем получить <code><font color=Black>b</font></code>. Итак, перед нами функция из <code><font color=Green>Bool</font></code> в <code><font color=Green>Bool</font></code>, под названием <code><font color=Black>not</font></code>. Мы можем предположить, что это логическая операция “не”. Или, перед нами такое определение типа:</p>
+<pre><font color=Black>reverse</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></pre>
+<p>Мы видим функцию с именем <code><font color=Black>reverse</font></code>, которая принимает список <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code> и возвращает список <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code>, и мы можем догадаться, что эта функция переворачивает список, то есть мы получаем список, у которого элементы идут в обратном порядке. Маленькая буква <code><font color=Black>a</font></code> в <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code> является параметром типа, на место параметра может быть поставлен любой тип. Она говорит о том, что список содержит элементы типа <code><font color=Black>a</font></code>. Например, такая функция соглашается переворачивать только списки логических значений:</p>
+<pre><font color=Black>reverseBool</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Bool</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Bool</font><font color="#b2590f">]</font></pre>
+<p>Программа представляет собой описание некоторого явления или процесса. Типы определяют основные слова или термины и способы их комбинирования. А значения представляют собой комбинации базовых слов. Но значения комбинируются не произвольным образом, а на основе определённых правил, которые задаются типами.</p>
+<p>Например, такое выражение определяет тип, в котором два базовых термина <code><font color=Green>True</font></code> или <code><font color=Green>False</font></code></p>
+<pre><font color="#b2590f">data</font> <font color=Green>Bool</font> <font color="#b2590f">=</font> <font color=Green>True</font> <font color="#b2590f">|</font> <font color=Green>False</font></pre>
+<p>Слово <code><font color="#b2590f">data</font></code> ключевое, с него начинается любое определение нового типа. Символ <code><font color="#b2590f">|</font></code> означает или. Наш новый тип <code><font color=Green>Bool</font></code> является либо словом <code><font color=Green>True</font></code>, либо словом <code><font color=Green>False</font></code>. В этом типе есть только понятия, но нет способов комбинирования, посмотрим на тип, в котором есть и то, и другое:</p>
+<pre><font color="#b2590f">data</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">=</font> <font color=Green>[]</font> <font color="#b2590f">|</font> a <font color="#b2590f">:</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></pre>
+<p>Это определение списка. Как мы уже поняли, <code><font color=Black>a</font></code> – это параметр. Список <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code> может быть либо пустым списком <code><font color=Green>[]</font></code>, либо комбинацией <code><font color=Black>a</font> <font color="#b2590f">:</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></code>. В этой комбинации знак <code><font color="#b2590f">:</font></code> объединяет элемент типа <code><font color=Black>a</font></code> и ещё один список <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code>. Это рекурсивное определение, они встречаются в Haskell очень часто. Если это пока кажется непонятным, не пугайтесь, в следующих главах будет представлено много примеров с пояснениями.</p>
+<p>Приведём ещё несколько примеров определений; ниже типы определяют базовые понятия для мира календаря: то что стоит за <code><font color="#2149c1">--</font></code> является комментарием и игнорируется при выполнении программы:</p>
+<pre><font color="#2149c1">-- Дата</font>
+<font color="#b2590f">data</font> <font color=Green>Date</font> <font color="#b2590f">=</font> <font color=Green>Date</font> <font color=Green>Year</font> <font color=Green>Month</font> <font color=Green>Day</font>
+
+<font color="#2149c1">-- Год</font>
+<font color="#b2590f">data</font> <font color=Green>Year</font>  <font color="#b2590f">=</font> <font color=Green>Year</font> <font color=Green>Int</font>       <font color="#2149c1">-- Int это целые числа</font>
+
+<font color="#2149c1">-- Месяц</font>
+<font color="#b2590f">data</font> <font color=Green>Month</font>  <font color="#b2590f">=</font> <font color=Green>January</font>    <font color="#b2590f">|</font> <font color=Green>February</font>   <font color="#b2590f">|</font> <font color=Green>March</font>    <font color="#b2590f">|</font> <font color=Green>April</font>          
+            <font color="#b2590f">|</font> <font color=Green>May</font>        <font color="#b2590f">|</font> <font color=Green>June</font>       <font color="#b2590f">|</font> <font color=Green>July</font>     <font color="#b2590f">|</font> <font color=Green>August</font>   
+            <font color="#b2590f">|</font> <font color=Green>September</font>  <font color="#b2590f">|</font> <font color=Green>October</font>    <font color="#b2590f">|</font> <font color=Green>November</font> <font color="#b2590f">|</font> <font color=Green>December</font> 
+
+<font color="#b2590f">data</font> <font color=Green>Day</font> <font color="#b2590f">=</font> <font color=Green>Day</font> <font color=Green>Int</font>
+
+<font color="#2149c1">-- Неделя</font>
+<font color="#b2590f">data</font> <font color=Green>Week</font>  <font color="#b2590f">=</font> <font color=Green>Monday</font>     <font color="#b2590f">|</font> <font color=Green>Tuesday</font>   <font color="#b2590f">|</font> <font color=Green>Wednesday</font> 
+           <font color="#b2590f">|</font> <font color=Green>Thursday</font>   <font color="#b2590f">|</font> <font color=Green>Friday</font>    <font color="#b2590f">|</font> <font color=Green>Saturday</font>     
+           <font color="#b2590f">|</font> <font color=Green>Sunday</font>     
+
+<font color="#2149c1">-- Время</font>
+<font color="#b2590f">data</font> <font color=Green>Time</font> <font color="#b2590f">=</font> <font color=Green>Time</font> <font color=Green>Hour</font> <font color=Green>Minute</font> <font color=Green>Second</font>
+
+<font color="#b2590f">data</font> <font color=Green>Hour</font>   <font color="#b2590f">=</font> <font color=Green>Hour</font>   <font color=Green>Int</font>    <font color="#2149c1">-- Час</font>
+<font color="#b2590f">data</font> <font color=Green>Minute</font> <font color="#b2590f">=</font> <font color=Green>Minute</font> <font color=Green>Int</font>    <font color="#2149c1">-- Минута</font>
+<font color="#b2590f">data</font> <font color=Green>Second</font> <font color="#b2590f">=</font> <font color=Green>Second</font> <font color=Green>Int</font>    <font color="#2149c1">-- Секунда</font></pre>
+<p>Одной из основных целей разработчиков Haskell была ясность. Они стремились создать язык, предложения которого будут простыми и понятными, близкий к языку спецификаций.</p>
+<p>С символом <code><font color="#b2590f">|</font></code> мы уже познакомились, он указывает на альтернативы, объединение пишется через пробел. Так, фраза</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Time</font> <font color="#b2590f">=</font> <font color=Green>Time</font> <font color=Green>Hour</font> <font color=Green>Minute</font> <font color=Green>Second</font></pre>
+<p>означает, что тип <code><font color=Green>Time</font></code> – это значение с меткой <code><font color=Green>Time</font></code>, которое состоит из значений типов “час”, “время” и “секунда”, и больше ничего. Метку принято называть <em>конструктором</em>.</p>
+<p>Фраза</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Year</font> <font color="#b2590f">=</font> <font color=Green>Year</font> <font color=Green>Int</font></pre>
+<p>означает, что тип <code><font color=Green>Year</font></code> – это значение с конструктором <code><font color=Green>Year</font></code>, которое состоит из одного значения типа <code><font color=Green>Int</font></code>. Конструктор обычно идёт первым, а за ним через пробел следуют другие типы. Конструктор может быть и самостоятельным значением, как в случае <code><font color=Green>True</font></code> или <code><font color=Green>January</font></code>.</p>
+<p>Типы делят выполнение программы на две стадии: <em>компиляцию</em> (compile-time) и <em>вычисление</em> (run-time). На этапе компиляции происходит проверка типов. Программа, которая не прошла проверку типов, считается бессмысленной и не вычисляется. Приложение, которое выполняет компиляцию, называют <em>компилятором</em> (compiler), а то приложение, которое проводит вычисление, называют <em>вычислителем</em> (run-time system).</p>
+<p>Типами мы определяем основные понятия в том явлении, которое мы хотим описать, а также осмысленные способы их комбинирования. Мы говорим, как из простейших терминов получаются составные. Если мы попытаемся построить бессмысленное предложение, компилятор языка автоматически найдёт такое предложение и сообщит нам об этом. Этот процесс заключается в проверке типов, к примеру если у нас есть функция сложения чисел, и мы попытаемся передать в неё строку или список, компилятор заметит это и скажет нам об этом <em>перед</em> тем как программа начнёт выполнятся. И важно то, что это произойдёт очень быстро. Если мы случайно ошиблись в выражении, которое будет вычислено через час, нам не нужно ждать пока вычислитель дойдёт до ошибки, мы узнаем об этом, не успев моргнуть, после запуска программы.</p>
+<p>Итак, если мы попробуем составить время из месяцев и логических значений:</p>
+<pre><font color=Green>Time</font> <font color=Green>January</font> <font color=Green>True</font> <font color="#0000ee">23</font></pre>
+<p>компилятор предупредит нас об ошибке. Наверное, вы думаете, что приведенный пример надуман, ведь кому захочется составлять время из логических значений? Но когда вы пишете программу, часто процесс работы складывается так: вы думаете над одним, пишете другое, а также планируете вернуться к третьему. И знание того, что есть надежный компилятор, который не пропустит глупых ошибок, освобождает руки, вы можете не заботиться о таких пустяках, как правильное построение предложения.</p>
+<p>Отметим, что такой подход с разделением вычисления на две стадии и проверкой типов называется <em>статической типизацией</em>. Есть и другие языки, в них типы лишь подразумеваются и программа сразу начинает вычисляться, если есть какие-то несоответствия, об ошибке программисту сообщит вычислитель, причём только тогда, когда вычисление дойдёт до ошибки. Такой подход называют <em>динамической типизацией</em>.</p>
+<p>Типы требуют серьёзных размышлений на начальном этапе, этапе определения базовых терминов и способов их комбинирования. Не упускаем ли мы что-то важное из виду, или, может быть, типы имеют слишком общий характер и допускают ненужные нам предложения? Приходится задумываться. Но если типы подобраны удачно, они сами начинают подсказывать, как строить программу.</p>
+<h2 id="значения"><a href="#TOC">Значения</a></h2>
+<p>Итак, мы определили типами базовые понятия и способы комбинирования. Обычно это небольшой набор слов. Например в логических выражениях всего лишь два слова. Можем ли мы на что либо рассчитывать с таким словарным запасом? Оказывается, что да. Здесь на помощь приходят синонимы. Сейчас у нас в активе лишь два слова:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Bool</font> <font color="#b2590f">=</font> <font color=Green>True</font> <font color="#b2590f">|</font> <font color=Green>False</font></pre>
+<p>И мы можем определить два синонима:</p>
+<pre><font color=Black>true</font> <font color="#b2590f">::</font> <font color=Green>Bool</font>
+<font color=Black>true</font> <font color="#b2590f">=</font> <font color=Green>True</font>
+
+<font color=Black>false</font> <font color="#b2590f">::</font> <font color=Green>Bool</font>
+<font color=Black>false</font> <font color="#b2590f">=</font> <font color=Green>False</font></pre>
+<p>В Haskell синонимы пишутся с маленькой буквы. Синоним определяется через знак . Обратите внимание на то, что это не процесс вычисления значения. Мы всего лишь объявляем новое имя для комбинации слов.</p>
+<p>Теперь мы имеем целых четыре слова! Тем не менее, ушли мы не далеко, и два новых слова, в сущности, не делают язык выразительнее. Такие синонимы называют . Это значит, что одним словом мы будем обозначать некоторую комбинацию других слов. В данном случае комбинации очень простые.</p>
+<p>Но наши синонимы могут определять одни слова через другие. Синонимы могут принимать параметры. Параметры пишутся через пробел между новым именем и знаком равно:</p>
+<pre><font color=Black>not</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>not</font> <font color=Green>True</font>  <font color="#b2590f">=</font> <font color=Green>False</font>
+<font color=Black>not</font> <font color=Green>False</font> <font color="#b2590f">=</font> <font color=Green>True</font></pre>
+<p>Мы определили новое имя <code><font color=Black>not</font></code> с типом <code><font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>. Оно определяется двумя <em>уравнениями</em> (clause). Слева от знака равно левая часть уравнения, а справа – правая. В первом уравнении мы говорим, что сочетание <code><font color=Black>(</font>not <font color=Green>True</font><font color=Black>)</font></code> означает <code><font color=Green>False</font></code>, а сочетание <code><font color=Black>(</font>not <font color=Green>False</font><font color=Black>)</font></code> означает <code><font color=Green>True</font></code>. Опять же, мы ничего не вычисляем, мы даём новые имена нашим константам <code><font color=Green>True</font></code> и <code><font color=Green>False</font></code>. Только в этом случае имена составные.</p>
+<p>Если вычислителю нужно узнать, что кроется за составным именем <code><font color=Black>not</font> <font color=Green>False</font></code> он <em>последовательно</em> проанализирует уравнения сверху вниз, до тех пор, пока левая часть уравнения не совпадёт со значением <em>not False</em>. Сначала мы сверим с первым:</p>
+<pre><font color=Black>not</font> <font color=Green>True</font>   <font color=Black>==</font> not <font color=Green>False</font>     <font color="#2149c1">-- нет, пошли дальше</font>
+<font color=Black>not</font> <font color=Green>False</font>  <font color=Black>==</font> not <font color=Green>False</font>     <font color="#2149c1">-- эврика, вернём правую часть</font>
+<font color="#b2590f">=&gt;</font> <font color=Green>True</font></pre>
+<p>Определим ещё два составных имени</p>
+<pre><font color=Black>and</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>and</font> <font color=Green>False</font>  <font color="#b2590f">_</font>  <font color="#b2590f">=</font> <font color=Green>False</font>
+<font color=Black>and</font> <font color=Green>True</font>   x  <font color="#b2590f">=</font> x
+
+<font color=Black>or</font>  <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>or</font> <font color=Green>True</font>   <font color="#b2590f">_</font> <font color="#b2590f">=</font> <font color=Green>True</font>
+<font color=Black>or</font> <font color=Green>False</font>  x <font color="#b2590f">=</font> x</pre>
+<p>Эти синонимы определяют логические операции “и” и “или”. Здесь несколько новых конструкций, но вы не пугайтесь, они не так трудны для понимания. Начнём с <code><font color="#b2590f">_</font></code>:</p>
+<pre><font color=Black>and</font> <font color=Green>False</font>  <font color="#b2590f">_</font>  <font color="#b2590f">=</font> <font color=Green>False</font></pre>
+<p>Здесь cимвол <code><font color="#b2590f">_</font></code> означает, что в этом уравнении, если первый параметр равен <code><font color=Green>False</font></code>, то второй нам уже не важен, мы знаем ответ. Так, если в логическом “и” один из аргументов равен <code><font color=Green>False</font></code>, то всё выражение равно <code><font color=Green>False</font></code>. Так же и в случае с <code><font color=Black>or</font></code>.</p>
+<p>Теперь другая новая конструкция:</p>
+<pre><font color=Black>and</font> <font color=Green>True</font>   x  <font color="#b2590f">=</font> x</pre>
+<p>В этом случае параметр <code><font color=Black>x</font></code> служит для того, чтобы перетащить значение из аргумента в результат. Конкретное значение нам также не важно, но в этом случае мы полагаем, что слева и справа от <code><font color="#b2590f">=</font></code>, <code><font color=Black>x</font></code> имеет одно и то же значение.</p>
+<p>Итак у нас уже целых семь имён: <code><font color=Green>True</font></code>, <code><font color=Green>False</font></code>, <code><font color=Black>true</font></code>, <code><font color=Black>false</font></code>, <code><font color=Black>not</font></code>, <code><font color=Black>and</font></code>, <code><font color=Black>or</font></code>. Или не семь? На самом деле, их уже бесконечное множество. Поскольку три из них составные, мы можем создавать самые разнообразные комбинации:</p>
+<pre><font color=Black>not</font> <font color=Black>(</font>and true <font color=Green>False</font><font color=Black>)</font>
+<font color=Black>or</font> <font color=Black>(</font>and true true<font color=Black>)</font> <font color=Black>(</font>or <font color=Green>False</font> <font color=Green>False</font><font color=Black>)</font>
+<font color=Black>not</font> <font color=Black>(</font>not true<font color=Black>)</font>
+<font color=Black>not</font> <font color=Black>(</font>or <font color=Black>(</font>or <font color=Green>True</font> <font color=Green>True</font><font color=Black>)</font> <font color=Black>(</font>or <font color=Green>False</font> <font color=Black>(</font>not <font color=Green>True</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>
+<font color=Black>...</font></pre>
+<p>Обратите внимание на использование скобок, они группируют значения. Так, если бы мы написали <code><font color=Black>not</font> not true</code> вместо <code><font color=Black>not</font> <font color=Black>(</font>not true<font color=Black>)</font></code>, мы бы получили ошибку компиляции, потому что <code><font color=Black>not</font></code> ожидает один параметр, а в выражении <code><font color=Black>not</font> not true</code> их два. Параметры дописываются к имени через пробел.</p>
+<p>Посмотрим, как происходят вычисления. В сущности, процесса вычислений нет, есть процесс замены синонимов на основные понятия согласно уравнениям. Базовые понятия мы определили в типах. Так давайте “вычислим” выражение <code><font color=Black>not</font> <font color=Black>(</font>and true <font color=Green>False</font><font color=Black>)</font></code>:</p>
+<pre><font color="#2149c1">-- выражение            --  уравнение</font>
+
+<font color=Black>not</font> <font color=Black>(</font>and true <font color=Green>False</font><font color=Black>)</font>    <font color="#2149c1">--  true        = True</font>
+<font color=Black>not</font> <font color=Black>(</font>and <font color=Green>True</font> <font color=Green>False</font><font color=Black>)</font>    <font color="#2149c1">--  and True  x = x     =&gt; and True False = False</font>
+<font color=Black>not</font> <font color=Green>False</font>               <font color="#2149c1">--  not False   = True</font>
+<font color=Green>True</font></pre>
+<p>Слева в столбик написаны шаги “вычисления”, а справа уравнения, по которым синонимы заменяются на комбинации слов. Процесс замены синонима (левой части уравнения) на комбинацию слов (правую часть уравнения) называется <em>редукцией</em> (reduction).</p>
+<p>Сначала мы заменили синоним <code><font color=Black>true</font></code> на правую часть его уравнения, т.е.~на конструктор <code><font color=Green>True</font></code>. Затем мы заменили выражение <code><font color=Black>(</font>and <font color=Green>True</font> <font color=Green>False</font><font color=Black>)</font></code> на правую часть из уравнения для синонима <code><font color=Black>and</font></code>. Обратите внимание на то, что переменная <code><font color=Black>x</font></code> была заменена на значение <code><font color=Green>False</font></code>. Последним шагом была замена синонима . В конце концов мы пришли к базовому понятию, а именно – к одному из двух конструкторов. В данном случае <code><font color=Green>True</font></code>.</p>
+<p>Интересно, что новые синонимы могут быть использованы в правых частях уравнений. Так мы можем определить операцию “исключающее или”:</p>
+<pre><font color=Black>xor</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>xor</font> a b <font color="#b2590f">=</font> or <font color=Black>(</font>and <font color=Black>(</font>not a<font color=Black>)</font> b<font color=Black>)</font> <font color=Black>(</font>and a <font color=Black>(</font>not b<font color=Black>)</font><font color=Black>)</font></pre>
+<p>Этим выражением мы говорим, что <code><font color=Black>xor</font> a b</code> это или отрицание <code><font color=Black>a</font></code> и <code><font color=Black>b</font></code>, или <code><font color=Black>a</font></code> и отрицание <code><font color=Black>b</font></code>. Это и есть определение “исключающего или”.</p>
+<p>Может показаться, что с типом <code><font color=Green>Bool</font></code> мы зациклены на двух конструкторах, и единственное, что нам остаётся – это давать всё новые и новые имена словам <code><font color=Green>True</font></code> и <code><font color=Green>False</font></code>. Но на самом деле это не так. С помощью типов-параметров мы можем выйти за эти рамки. Определим функцию ветвления <code><font color=Black>ifThenElse</font></code>:</p>
+<pre><font color=Black>ifThenElse</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>ifThenElse</font> <font color=Green>True</font>   t  <font color="#b2590f">_</font> <font color="#b2590f">=</font> t
+<font color=Black>ifThenElse</font> <font color=Green>False</font>  <font color="#b2590f">_</font>  e <font color="#b2590f">=</font> e</pre>
+<p>Эта функция первым аргументом принимает значение типа <code><font color=Green>Bool</font></code>, а вторым и третьим – альтернативы некоторого типа <code><font color=Black>a</font></code>. Если первый аргумент – <code><font color=Green>True</font></code>, возвращается второй аргумент, а если – <code><font color=Green>False</font></code>, то третий.</p>
+<p>Интересно, что в Haskell ничего не происходит, мир Haskell-значений стоит на месте. Мы просто даём имена разным комбинациям слов. Определяем новые термины. Потом на этих терминах определяем новые термины, и так далее. Кажется, если ничего не меняется, то зачем язык? И что мы собираемся программировать без вычислений?</p>
+<p>Разгадка кроется в функциях <code><font color=Black>not</font></code>, <code><font color=Black>and</font></code> и <code><font color=Black>or</font></code>. До того как мы их определили, у нас было четыре имени, но после их определения имён стало бесконечное множество. Три синонима пополнили наш язык бесконечным набором комбинаций. В этом суть. Мы определяем базовые элементы и способы составления новых, потом мы просим &quot;вычислить’ комбинацию из них. Мы не определяли явно, чему равна комбинация <code><font color=Black>not</font> <font color=Black>(</font>and true <font color=Green>False</font><font color=Black>)</font></code>, это сделал за нас вычислитель Haskell<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>.</p>
+<p>Вычислить стоит в кавычках, потому что на самом деле вычислений нет, есть замена синонимов на комбинации простейших элементов.</p>
+<p>Ещё один пример, положим у нас есть тип:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Status</font> <font color="#b2590f">=</font> <font color=Green>Work</font> <font color="#b2590f">|</font> <font color=Green>Rest</font></pre>
+<p>Он определяет, что делать в данный день: работать (<code><font color=Green>Work</font></code>) или отдыхать (<code><font color=Green>Rest</font></code>). У разных рабочих разный график. Например, есть функции:</p>
+<pre><font color=Black>jonny</font> <font color="#b2590f">::</font> <font color=Green>Week</font> <font color="#b2590f">-&gt;</font> <font color=Green>Status</font>
+<font color=Black>jonny</font> x <font color="#b2590f">=</font> <font color=Black>...</font>
+
+<font color=Black>colin</font> <font color="#b2590f">::</font> <font color=Green>Week</font> <font color="#b2590f">-&gt;</font> <font color=Green>Status</font>
+<font color=Black>colin</font> x <font color="#b2590f">=</font> <font color=Black>...</font></pre>
+<p>Конкретное определение сейчас не важно, важно, что они определяют зависимость статуса (<code><font color=Green>Status</font></code>) от дня недели (<code><font color=Green>Week</font></code>) для работников Джонни (<code><font color=Black>jonny</font></code>) и Колина (<code><font color=Black>colin</font></code>).</p>
+<p>Также у нас есть полезная функция:</p>
+<pre><font color=Black>calendar</font> <font color="#b2590f">::</font> <font color=Green>Date</font> <font color="#b2590f">-&gt;</font> <font color=Green>Week</font>
+<font color=Black>calendar</font> x <font color="#b2590f">=</font> <font color=Black>...</font></pre>
+<p>Она определяет по дате день недели. И теперь, зная лишь эти функции, мы можем спросить у вычислителя будет ли у Джонни выходной 8 августа 3043 года:</p>
+<pre><font color=Black>jonny</font> <font color=Black>(</font>calendar <font color=Black>(</font><font color=Green>Date</font> <font color=Black>(</font><font color=Green>Year</font> <font color="#0000ee">3043</font><font color=Black>)</font> <font color=Green>August</font> <font color=Black>(</font><font color=Green>Day</font> <font color="#0000ee">8</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>
+<font color="#b2590f">=&gt;</font> jonny <font color=Green>Saturday</font>
+<font color="#b2590f">=&gt;</font> <font color=Green>Rest</font></pre>
+<p>Интересно, у нас опять всего лишь два значения, но, дав такое большое имя одному из значений, мы смогли получить полезную нам информацию, ничего не вычисляя.</p>
+<h2 id="классы-типов"><a href="#TOC">Классы типов</a></h2>
+<p>Если типы и значения – привычные понятия, которые можно найти в том или ином виде в любом языке программирования, то термин класс типов встречается не часто. У него нет аналогов и в обычном языке, поэтому я сначала постараюсь объяснить его смысл на примере.</p>
+<p>В типизированном языке у каждой функции есть тип, но бывают функции, которые могут быть определены на аргументах разных типов; по сути, они описывают схожие понятия, но определены для значений разных типов. Например, функция сравнения на равенство, говорящая о том, что два значения одного типа <code><font color=Black>a</font></code> равны, имеет тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>, или функция печати выражения имеет тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font></code>, но что такое <code><font color=Black>a</font></code> в этих типах? Тип <code><font color=Black>a</font></code> является любым типом, для которого сравнение на равенство или печать (преобразование в строку) имеют смысл. Это понятие как раз и кодируется в классах типов. <code><font color=Green>Классы</font> типов</code> (type class) позволяют определять функции с одинаковым именем для разных типов.</p>
+<p>У классов типов есть имена. Также как и имена классов, они начинаются с большой буквы. Например, класс сравнений на равенство называется <code><font color=Green>Eq</font></code> (от англ. <em>equals</em> – равняется), а класс печати выражений имеет имя <code><font color=Green>Show</font></code> (от англ. <em>show</em> – показывать). Посмотрим на их определения:</p>
+<p>Класс <code><font color=Green>Eq</font></code>:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Eq</font> a <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+    <font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></pre>
+<p>Класс <code><font color=Green>Show</font></code>:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Show</font> a <font color="#b2590f">where</font>
+    show <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Green>String</font></pre>
+<p>За ключевым словом <code><font color="#b2590f">class</font></code> следует имя класса, тип-параметр и ещё одно ключевое слово <code><font color="#b2590f">where</font></code>. Далее с отступами пишутся имена определённых в классе значений. Значения класса называются <em>методами</em>.</p>
+<p>Мы определяем лишь типы методов, конкретная реализация будет зависеть от типа <code><font color=Black>a</font></code>. Методы определяются в экземплярах классов типов, мы скоро к ним перейдём.</p>
+<p>Программистская аналогия класса типов это интерфейс. В интерфейсе определён набор значений (как констант, так и функций), которые могут быть применены ко всем типам, которые поддерживают данный интерфейс. К примеру, в интерфейсе “сравнение на равенство” для некоторого типа <code><font color=Black>a</font></code> определены две функции: равно <code><font color=Black>(</font><font color=Black>==</font><font color=Black>)</font></code> и не равно <code><font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font></code> с одинаковым типом <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>, или в интерфейсе “печати” для любого типа <code><font color=Black>a</font></code> определена одна функция <code><font color=Black>show</font></code> типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font></code>.</p>
+<p>Математическая аналогия класса типов это алгебраическая система. Алгебра изучает свойства объекта в терминах операций, определённых на нём, и взаимных ограничениях этих операций. Алгебраическая система представляет собой набор операций и свойств этих операций. Этот подход позволяет абстрагироваться от конкретного представления объектов. Например группа – это все объекты данного типа <code><font color=Black>a</font></code>, для которых определены значения: константа – единица типа <code><font color=Black>a</font></code>, бинарная операция типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</code> и операция взятия обратного элемента, типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> a</code>. При этом на операции накладываются ограничения, называемые свойствами операций. Например, ассоциативность бинарной операции, или тот факт, что единица с любым другим элементом, применённые к бинарной операции, дают на выходе исходный элемент.</p>
+<p>Давайте определим класс для группы:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Group</font> a <font color="#b2590f">where</font>
+    e   <font color="#b2590f">::</font> a
+    <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
+    inv <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>Класс с именем <code><font color=Green>Group</font></code> имеет для некоторого типа <code><font color=Black>a</font></code> три метода: константу <code><font color=Black>e</font> <font color="#b2590f">::</font> a</code>, операцию <code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</code> и операцию взятия обратного элемента <code><font color=Black>inv</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a</code>.</p>
+<p>Как и в алгебре, в Haskell классы типов позволяют описывать сущности в терминах определённых на них операций или значений. В примерах мы указываем лишь наличие операций и их типы, так же и в классах типов. Класс типов содержит набор имён его значений с информацией о типах значений.</p>
+<p>Определив класс <code><font color=Green>Group</font></code>, мы можем начать строить различные выражения, которые будут потом интерпретироваться специфическим для типа образом:</p>
+<pre><font color=Black>twice</font> <font color="#b2590f">::</font> <font color=Green>Group</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>twice</font> a <font color="#b2590f">=</font> a <font color=Black>+</font> a
+
+<font color=Black>isE</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Group</font> a<font color=Black>,</font> <font color=Green>Eq</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+<font color=Black>isE</font> x <font color="#b2590f">=</font> <font color=Black>(</font>x <font color=Black>==</font> e<font color=Black>)</font></pre>
+<p>Обратите внимание на запись <code><font color=Green>Group</font> a <font color="#b2590f">=&gt;</font></code> и <code><font color=Black>(</font><font color=Green>Group</font> a<font color=Black>,</font> <font color=Green>Eq</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font></code>. Это называется контекстом объявления типа. В контексте мы говорим, что данный тип должен быть из класса <code><font color=Green>Group</font></code> или из классов <code><font color=Green>Group</font></code> и <code><font color=Green>Eq</font></code>. Это значит, что для этого типа мы можем пользоваться методами из этих классов.</p>
+<p>В первой функции <code><font color=Black>twice</font></code> мы воспользовались методом <code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font></code> из класса <code><font color=Green>Group</font></code>, поэтому функция имеет контекст <code><font color=Green>Group</font> a <font color="#b2590f">=&gt;</font></code>. А во второй функции <code><font color=Black>isE</font></code> мы воспользовались методом <code><font color=Black>e</font></code> из класса <code><font color=Green>Group</font></code> и методом <code><font color=Black>(</font><font color=Black>==</font><font color=Black>)</font></code> из класса <code><font color=Green>Eq</font></code>, поэтому функция имеет контекст <code><font color=Black>(</font><font color=Green>Group</font> a<font color=Black>,</font> <font color=Green>Eq</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font></code>.</p>
+<h3 id="контекст-классов-типов.-суперклассы"><a href="#TOC">Контекст классов типов. Суперклассы</a></h3>
+<p>Класс типов также может содержать контекст. Он указывается между словом <code><font color="#b2590f">class</font></code> и именем класса. Например</p>
+<pre><font color="#b2590f">class</font> <font color=Green>IsPerson</font> a
+
+<font color="#b2590f">class</font> <font color=Green>IsPerson</font> a <font color="#b2590f">=&gt;</font> <font color=Green>HasName</font> a <font color="#b2590f">where</font>
+    name <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Green>String</font></pre>
+<p>Это определение говорит о том, что мы можем сделать экземпляр класса <code><font color=Green>HasName</font></code> только для тех типов, которые содержатся в <code><font color=Green>IsPerson</font></code>. Мы говорим, что класс <code><font color=Green>HasName</font></code> содержится в <code><font color=Green>IsPerson</font></code>. В этом случае класс из контекста <code><font color=Green>IsPerson</font></code> называют <em>суперклассом</em> для данного класса <code><font color=Green>HasName</font></code>.</p>
+<p>Это сказывается на контексте объявления типа. Теперь, если мы пишем</p>
+<pre><font color=Black>fun</font> <font color="#b2590f">::</font> <font color=Green>HasName</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>Это означает, что мы можем пользоваться для значений типа <code><font color=Black>a</font></code> как методами из класса <code><font color=Green>HasName</font></code>, так и методами из класса <code><font color=Green>IsPerson</font></code>. Поскольку если тип принадлежит классу <code><font color=Green>HasName</font></code>, то он также принадлежит и <code><font color=Green>IsPerson</font></code>.</p>
+<p>Запись <code><font color=Black>(</font><font color=Green>IsPerson</font> a <font color="#b2590f">=&gt;</font> <font color=Green>HasName</font> a<font color=Black>)</font></code> немного обманывает, было бы точнее писать <code><font color=Green>IsPerson</font> a <font color=Black>&lt;=</font> <font color=Green>HasName</font> a</code>, если тип <code><font color=Black>a</font></code> в классе <code><font color=Green>HasName</font></code>, то он точно в классе <code><font color=Green>IsPerson</font></code>, но в Haskell закрепилась другая запись.</p>
+<h2 id="экземпляры-классов-типов"><a href="#TOC">Экземпляры классов типов</a></h2>
+<p>В <em>экземплярах</em> (instance) классов типов мы даём конкретное наполнение для методов класса типов. Определение экземпляра пишется так же, как и определение класса типа, но вместо <code><font color="#b2590f">class</font></code> мы пишем <code><font color="#b2590f">instance</font></code>, вместо некоторого типа наш конкретный тип, а вместо типов методов – уравнения для них.</p>
+<p>Определим экземпляры для <code><font color=Green>Bool</font></code></p>
+<p>Класс <code><font color=Green>Eq</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Eq</font> <font color=Green>Bool</font> <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color=Green>True</font>  <font color=Green>True</font>  <font color="#b2590f">=</font> <font color=Green>True</font>
+    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color=Green>False</font> <font color=Green>False</font> <font color="#b2590f">=</font> <font color=Green>True</font>
+    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">_</font>     <font color="#b2590f">_</font>     <font color="#b2590f">=</font> <font color=Green>False</font>
+
+    <font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font> a b         <font color="#b2590f">=</font> not <font color=Black>(</font>a <font color=Black>==</font> b<font color=Black>)</font></pre>
+<p>Класс <code><font color=Green>Show</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Green>Bool</font> <font color="#b2590f">where</font>
+    show <font color=Green>True</font>  <font color="#b2590f">=</font> <font color=Black>"True"</font>
+    show <font color=Green>False</font> <font color="#b2590f">=</font> <font color=Black>"False"</font></pre>
+<p>Класс <code><font color=Green>Group</font></code>:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Group</font> <font color=Green>Bool</font> <font color="#b2590f">where</font>
+    e       <font color="#b2590f">=</font> <font color=Green>True</font>
+    <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a b <font color="#b2590f">=</font> and a b
+    inv a   <font color="#b2590f">=</font> not a</pre>
+<p>Отметим важность наличия свойств (ограничений) у значений, определённых в классе типов. Так, например, в классе типов “сравнение на равенство” для любых двух значений данного типа одна из операций должна вернуть “истину”, а другая “ложь”, т.е.~два элемента данного типа либо равны, либо не равны. Недостаточно определить равенство для конкретного типа, необходимо убедиться в том, что для всех элементов данного типа свойства понятия равенства не нарушаются.</p>
+<p>На самом деле приведённое выше определение экземпляра для <code><font color=Green>Group</font></code> не верно, хотя по типам оно подходит. Оно не верно как раз из-за нарушения свойств. Для группы необходимо, чтобы для любого <code><font color=Black>a</font></code> выполнялось:</p>
+<pre> inv a <font color=Black>+</font> a <font color=Black>==</font> e</pre>
+<p>У нас лишь два значения, и это свойство не выполняется ни для одного из них. Проверим:</p>
+<pre>    inv <font color=Green>True</font>   <font color=Black>+</font> <font color=Green>True</font>
+ <font color="#b2590f">=&gt;</font> <font color=Black>(</font>not <font color=Green>True</font><font color=Black>)</font> <font color=Black>+</font> <font color=Green>True</font>
+ <font color="#b2590f">=&gt;</font> <font color=Green>False</font>      <font color=Black>+</font> <font color=Green>True</font>
+ <font color="#b2590f">=&gt;</font> and <font color=Green>False</font>    <font color=Green>True</font>
+ <font color="#b2590f">=&gt;</font> <font color=Green>False</font>
+
+    inv <font color=Green>False</font>   <font color=Black>+</font> <font color=Green>False</font>
+ <font color="#b2590f">=&gt;</font> <font color=Black>(</font>not <font color=Green>False</font><font color=Black>)</font> <font color=Black>+</font> <font color=Green>False</font>
+ <font color="#b2590f">=&gt;</font> <font color=Green>True</font>        <font color=Black>+</font> <font color=Green>False</font>
+ <font color="#b2590f">=&gt;</font> and <font color=Green>True</font>      <font color=Green>False</font>
+ <font color="#b2590f">=&gt;</font> <font color=Green>False</font></pre>
+<p>Проверять свойства очень важно, потому что другие люди, читая ваш код и используя ваши функции, будут на них рассчитывать.</p>
+<h2 id="ядро-haskell"><a href="#TOC">Ядро Haskell</a></h2>
+<p>Фуууухх. Мы закончили наш пробег. Теперь можно остановиться, отдышаться и подвести итоги. Давайте вспомним синтаксические конструкции, которые нам встретились.</p>
+<h4 id="модули"><a href="#TOC">Модули</a></h4>
+<pre><font color="#b2590f">module</font> <font color=Green>New</font><font color=Black>(</font>edef1<font color=Black>,</font> edef2<font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> edefN<font color=Black>)</font> <font color="#b2590f">where</font>
+
+<font color="#b2590f">import</font> <font color=Green>Old1</font><font color=Black>(</font>idef11<font color=Black>,</font> idef12<font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> idef1N<font color=Black>)</font>
+<font color="#b2590f">import</font> <font color=Green>Old2</font><font color=Black>(</font>idef21<font color=Black>,</font> idef22<font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> idef2M<font color=Black>)</font>
+<font color=Black>...</font>
+<font color="#b2590f">import</font> <font color=Green>OldK</font><font color=Black>(</font>idefK1<font color=Black>,</font> idefK2<font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> idefKP<font color=Black>)</font>
+
+<font color="#2149c1">-- определения :</font>
+<font color=Black>...</font></pre>
+<p>Ключевые слова: <code><font color="#b2590f">module</font></code>, <code><font color="#b2590f">where</font></code>, <code><font color="#b2590f">import</font></code>. Мы определили модуль с именем <code><font color=Green>New</font></code>, который экспортирует определения <code><font color=Black>edef1</font></code>, <code><font color=Black>edef2</font></code>, … , <code><font color=Black>edefN</font></code>. И импортирует определения из модулей <code><font color=Green>Old1</font></code>, <code><font color=Green>Old2</font></code>, и т.д., определения написаны в скобках за ключевыми словами <code><font color="#b2590f">import</font></code> и именами модулей.</p>
+<h4 id="типы-1"><a href="#TOC">Типы</a></h4>
+<p>Тип определяется с помощью:</p>
+<ul>
+<li><p>Перечисления альтернатив через <code><font color="#b2590f">|</font></code></p>
+<pre><font color="#b2590f">data</font> <font color=Green>Type</font> <font color="#b2590f">=</font> <font color=Green>Alt1</font> <font color="#b2590f">|</font> <font color=Green>Alt2</font> <font color="#b2590f">|</font> <font color=Black>...</font> <font color="#b2590f">|</font> <font color=Green>AltN</font></pre>
+<p>Эту операцию называют <em>суммой</em> типов.</p></li>
+<li><p>Составления сложного типа из подтипов, пишем конструктор первым, затем через пробел подтипы:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Type</font> <font color="#b2590f">=</font> <font color=Green>Name</font>  <font color=Green>Sub1</font>  <font color=Green>Sub2</font>  <font color=Black>...</font>  <font color=Green>SubN</font></pre>
+<p>Эту операцию называют <em>произведением</em> типов.</p>
+<p>Есть одно исключение: если тип состоит из двух подтипов, мы можем дать конструктору символьное (а не буквенное) имя, но оно должно начинаться с двоеточия <code><font color="#b2590f">:</font></code>, как в случае списка, например, можно делать такие определения типов:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Type</font> <font color="#b2590f">=</font> <font color=Green>Sub1</font> <font color="#b2590f">:+</font> <font color=Green>Sub2</font> 
+<font color="#b2590f">data</font> <font color=Green>Type</font> <font color="#b2590f">=</font> <font color=Green>Sub1</font> <font color="#b2590f">:|</font> <font color=Green>Sub2</font> </pre></li>
+<li><p>Комбинации суммы и произведения типов:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Type</font> <font color="#b2590f">=</font> <font color=Green>Name1</font>  <font color=Green>Sub11</font>  <font color=Green>Sub12</font>  <font color=Black>...</font>  <font color=Green>Sub1N</font>
+          <font color="#b2590f">|</font> <font color=Green>Name2</font>  <font color=Green>Sub21</font>  <font color=Green>Sub22</font>  <font color=Black>...</font>  <font color=Green>Sub2M</font>
+          <font color=Black>...</font>
+          <font color="#b2590f">|</font> <font color=Green>NameK</font>  <font color=Green>SubK1</font>  <font color=Green>SubK2</font>  <font color=Black>...</font>  <font color=Green>SubKP</font></pre></li>
+</ul>
+<p>Такие типы называют <em>алгебраическими типами данных</em>. С помощью типов мы определяем основные понятия и способы их комбинирования.</p>
+<h4 id="значения-1"><a href="#TOC">Значения</a></h4>
+<p>Как это ни странно, нам встретилась лишь одна операция создания значений: <em>определение синонима</em>. Она пишется так</p>
+<pre><font color=Black>name</font> x1  x2 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Green>Expr1</font>
+<font color=Black>name</font> x1  x2 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Green>Expr2</font>
+<font color=Black>name</font> x1  x2 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Green>Expr3</font></pre>
+<p>Слева от знака равно стоит составное имя, а справа от знака равно некоторое выражение, построенное согласно типам. Разные комбинации имени <code><font color=Black>name</font></code> с параметрами определяют разные уравнения для синонима <code><font color=Black>name</font></code>.</p>
+<p>Также мы видели символ <code><font color="#b2590f">_</font></code>, который означает “всё, что угодно” на месте аргумента. А также мы увидели, как с помощью переменных можно перетаскивать значения из аргументов в результат.</p>
+<h4 id="классы-типов-1"><a href="#TOC">Классы типов</a></h4>
+<p>Нам встретилась одна конструкция определения классов типов:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Name</font> a <font color="#b2590f">where</font>
+    method1 <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>...</font>
+    method2 <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>...</font>
+    <font color=Black>...</font>
+    methodN <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>...</font></pre>
+<h4 id="экземпляры-классов-типов-1"><a href="#TOC">Экземпляры классов типов</a></h4>
+<p>Нам встретилась одна конструкция определения экземпляров классов типов:</p>
+<pre><font color="#b2590f">instance</font> <font color=Green>Name</font> <font color=Green>Type</font> <font color="#b2590f">where</font>
+    method1 x1 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Black>...</font>
+    method2 x1 <font color=Black>...</font> xM <font color="#b2590f">=</font> <font color=Black>...</font>
+    <font color=Black>...</font>
+    methodN x1 <font color=Black>...</font> xP <font color="#b2590f">=</font> <font color=Black>...</font></pre>
+<h4 id="типы-значения-и-классы-типов"><a href="#TOC">Типы, значения и классы типов</a></h4>
+<p>Каждое значение имеет тип. Значение <code><font color=Black>v</font></code> имеет тип <code><font color=Green>T</font></code> на Haskell:</p>
+<pre><font color=Black>v</font> <font color="#b2590f">::</font> <font color=Green>T</font></pre>
+<p>Функциональный тип обозначается стрелкой: <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code></p>
+<pre><font color=Black>fun</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b</pre>
+<p>Тип значения может иметь контекст, он говорит о том, что параметр должен принадлежать классу типов:</p>
+<pre><font color=Black>fun1</font> <font color="#b2590f">::</font> <font color=Green>С</font> a                 <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>fun2</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>C1</font> a<font color=Black>,</font> <font color=Green>C2</font><font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> <font color=Green>CN</font><font color=Black>)</font> <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<h4 id="суперклассы"><a href="#TOC">Суперклассы</a></h4>
+<p>Также контекст может быть и у классов, запись</p>
+<pre><font color="#b2590f">class</font> <font color=Green>A</font> a <font color="#b2590f">=&gt;</font> <font color=Green>B</font> a <font color="#b2590f">where</font>
+    <font color=Black>...</font></pre>
+<p>Означает, что класс <code><font color=Green>B</font></code> целиком содержится в <code><font color=Green>A</font></code>, и перед тем как объявлять экземпляр для класса <code><font color=Green>B</font></code>, необходимо определить экземпляр для класса <code><font color=Green>A</font></code>. При этом класс <code><font color=Green>A</font></code> называют суперклассом для <code><font color=Green>B</font></code>.</p>
+<h2 id="двумерный-синтаксис"><a href="#TOC">Двумерный синтаксис</a></h2>
+<p>Наверное вы обратили внимание на то, что в Haskell нет разделителей строк и дополнительных скобок, которые бы указывали границы определения классов или функций. Компилятор Haskell ориентируется по переносам строки и знакам табуляции.</p>
+<p>Так если мы пишем в классе:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Eq</font> a <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
+    <font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>По отступам за первой строкой определения компилятор понимает, что класс содержит два метода. Если бы мы написали:</p>
+<pre><font color="#b2590f">class</font> <font color=Green>Eq</font> a <font color="#b2590f">where</font>
+    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
+<font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
+<p>То смысл был бы совсем другим. Теперь мы определяем класс <code><font color=Green>Eq</font></code> с одним методом <code><font color=Black>==</font></code> и указываем тип некоторого значения <code><font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font></code>. Основное правило такое: конструкции, расположенные на одном уровне, выравниваются с помощью табуляции. Чем правее находится определение, тем глубже оно вложено в какую-нибудь специальную конструкцию. Пока нам встретилось лишь несколько специальных конструкций, но дальше появятся и другие.</p>
+<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>Итак подведём итоги: у нас есть две операции для определения типов (сумма и произведение) и по одной для значений (синонимы), классов типов и экземпляров. А также бесконечное множество их комбинаций, из которых и состоит увлекательный мир Haskell. Конечно не только из них, есть нюансы, синтаксический сахар, расширения языка. Об этом и многом другом мы узнаем из этой книги.</p>
+<p>Интересно, что в Haskell, несмотря на обилие конструкций и библиотек, ты чувствуешь, что за ними стоит нечто из мира науки, мира чистого знания. Ты не просто учишься пользоваться определёнными функциями или классами, а узнаёшь что-то новое и красивое.</p>
+<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<p>Потренируйтесь в описаниях в рамках системы типов. Вы определяете базовые понятия и способы их комбинирования. У вас есть три операции:</p>
+<ul>
+<li><p>Сумма типов <code><font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A1</font> <font color="#b2590f">|</font> <font color=Green>A2</font></code>. Перечисление альтернатив</p></li>
+<li><p>Произведение типов <code><font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>S</font> <font color=Green>S1</font> <font color=Green>S2</font></code>. Этим мы говорим, что понятие состоит из нескольких.</p></li>
+<li><p>Взятие в список <code><font color="#b2590f">[</font><font color=Green>T</font><font color="#b2590f">]</font></code>. Обозначает множественное число, элементов типа <code><font color=Green>T</font></code> их может быть несколько.</p></li>
+</ul>
+<p>Опишите что-либо: комнату, дорогу, город, человека, главу из книги, математическую теорию, всё что угодно.</p>
+<p>Ниже приведён пример для понятий из этой главы:</p>
+<pre><font color="#b2590f">data</font> <font color=Green>Program</font> <font color="#b2590f">=</font> <font color=Green>Programm</font> <font color=Green>ProgramType</font> <font color="#b2590f">[</font><font color=Green>Module</font><font color="#b2590f">]</font>
+<font color="#b2590f">data</font> <font color=Green>ProgramType</font> <font color="#b2590f">=</font> <font color=Green>Executable</font> <font color="#b2590f">|</font> <font color=Green>Library</font>
+
+<font color="#b2590f">data</font> <font color=Green>Module</font> <font color="#b2590f">=</font> <font color=Green>Module</font> <font color="#b2590f">[</font><font color=Green>Definition</font><font color="#b2590f">]</font>
+
+<font color="#b2590f">data</font> <font color=Green>Definition</font> <font color="#b2590f">=</font> <font color=Green>Definition</font> <font color=Green>DefinitionType</font> <font color=Green>Element</font>
+<font color="#b2590f">data</font> <font color=Green>DefinitionType</font> <font color="#b2590f">=</font> <font color=Green>Export</font> <font color="#b2590f">|</font> <font color=Green>Inner</font>
+
+<font color="#b2590f">data</font> <font color=Green>Element</font> <font color="#b2590f">=</font> <font color=Green>ET</font> <font color=Green>Type</font> <font color="#b2590f">|</font> <font color=Green>EV</font> <font color=Green>Value</font> <font color="#b2590f">|</font> <font color=Green>EC</font> <font color=Green>Class</font> <font color="#b2590f">|</font> <font color=Green>EI</font> <font color=Green>Instance</font>
+
+<font color="#b2590f">data</font> <font color=Green>Type</font>     <font color="#b2590f">=</font> <font color=Green>Type</font> <font color=Green>String</font>
+<font color="#b2590f">data</font> <font color=Green>Value</font>    <font color="#b2590f">=</font> <font color=Green>Value</font> <font color=Green>String</font>
+<font color="#b2590f">data</font> <font color=Green>Class</font>    <font color="#b2590f">=</font> <font color=Green>Class</font> <font color=Green>String</font>
+<font color="#b2590f">data</font> <font color=Green>Instance</font> <font color="#b2590f">=</font> <font color=Green>Instance</font> <font color=Green>String</font></pre>
+<p>После того как вы закончите с описанием, подумайте, какие производные связи могли бы вас заинтересовать. Какие функции вам бы хотелось определить в этом описании. Выпишите их типы без определений, например так:</p>
+<pre><font color="#2149c1">-- Все объявления типов в модуле</font>
+<font color=Black>getTypes</font> <font color="#b2590f">::</font> <font color=Green>Module</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Type</font><font color="#b2590f">]</font>
+
+<font color="#2149c1">-- Провести редукцию значения:</font>
+<font color=Black>reduce</font> <font color="#b2590f">::</font> <font color=Green>Value</font> <font color="#b2590f">-&gt;</font> <font color=Green>Program</font> <font color="#b2590f">-&gt;</font> <font color=Green>Value</font>
+
+<font color="#2149c1">-- Проверить типы:</font>
+<font color=Black>checkTypes</font> <font color="#b2590f">::</font> <font color=Green>Program</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
+
+<font color="#2149c1">-- Заменить все определения в модуле на новые</font>
+<font color=Black>setDefinitions</font>    <font color="#b2590f">::</font> <font color=Green>Module</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Definition</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Module</font>
+
+<font color="#2149c1">-- Упорядочить определения по какому-лбо принципу</font>
+<font color=Black>orderDefinitions</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Definition</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Definition</font><font color="#b2590f">]</font></pre>
+<p>Подумайте: если у вас есть все эти функции, какие производные значения могли бы вам сказать что-нибудь интересное.</p>
+<div id="footer">  
+<div id="nav">
+<a id="prev" class="button" href="preface.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="2.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
+<div id="home">
+<a href="toc.html"><code><font color="#b2590f">::</font></code> Содержание <code><font color="#b2590f">::</font></code></a>
+</div></div>
+<div id="nav"> <div id="prev-name">
+Предисловие
+</div> <div id="wrap-next-name"><div id="next-name">
+<ol start="2" style="list-style-type: decimal">
+<li>Первая программа
+</div></div></div>  
+ </div> 
+</li>
+</ol>
+<div id="license">
+Зарегистрировано под лицензией <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative commons Attribution-NonCommercial-NoDerivs</a> 3.0 Generic (CC BY-NC-ND 3.0)
+</div>
+
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Было бы точнее называть вычислитель редуктором, поскольку мы проводим редукции, т.е.~замену эквивалентных значений, но закрепилось это название. К тому же, редуктор также обозначает прибор.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+</body>
+</html>
