@@ -1,0 +1,1 @@
+[Учебник по Haskell](ru-haskell-book/book/home.html)
