@@ -14,15 +14,23 @@
 <li>Программы
 <ul>
 <li><a href="1.html#общая-картина">Модули <code><font color="#b2590f">module</font></code></a></li>
+<li>Включение определений
+<ul>
+<li><a href="1.html#общая-картина">из других модулей: <code><font color="#b2590f">import</font></code></a></li>
+<li><a href="4.html#упражнения">с полным именем: <code><font color="#b2590f">import</font></code> … <code><font color="#b2590f">qualified</font></code> … <code><font color="#b2590f">as</font></code></a></li>
+<li><a href="6.html#обобщённая-формулировка-категории-клейсли">отбрасывая не нужные определения: <code><font color="#b2590f">import</font></code> … <code><font color=Black>hiding</font></code></a></li>
+</ul></li>
 <li><a href="8.html#как-пишутся-программы">Компиляция программ</a></li>
 <li><a href="18.html#пакеты">Программы и библиотеки</a></li>
 </ul></li>
 <li><a href="1.html#типы">Типы</a>
 <ul>
-<li><a href="1.html#типы">Определение типов <code><font color="#b2590f">data</font></code> или <code><font color="#b2590f">type</font></code></a></li>
+<li><a href="1.html#типы">Определение типов: <code><font color="#b2590f">data</font></code></a></li>
+<li><a href="2.html#строки-и-символы">Синонимы типов: <code><font color="#b2590f">type</font></code></a></li>
 <li><a href="2.html#типы">Кортежи</a></li>
 <li><a href="7.html#записи">Записи, структуры с полями</a></li>
 <li><a href="7.html#тип-обёртка-newtype">Тип-обёртка <code><font color="#b2590f">newtype</font></code></a></li>
+<li><a href="17.html#семейства-типов">Типы типов: kinds</a></li>
 </ul></li>
 <li><a href="1.html#значения">Значения</a>
 <ul>
@@ -41,16 +49,24 @@
 <li><a href="4.html#сопоставление-с-образцом"><code><font color="#b2590f">@</font></code>-образцы</a></li>
 </ul></li>
 <li><a href="4.html#безымянные-функции">Лямбда-функции или безымянные функции</a></li>
+<li><a href="5.html#приоритет-инфиксных-операций">Приоритет инфиксных операций: <code><font color="#b2590f">infix</font></code>, <code><font color="#b2590f">infixl</font></code>, <code><font color="#b2590f">infixr</font></code></a></li>
 </ul></li>
 <li><a href="1.html#классы-типов">Классы</a>
 <ul>
 <li><a href="1.html#классы-типов">Определение классов <code><font color="#b2590f">class</font></code></a></li>
 <li><a href="1.html#экземпляры-классов-типов">Экземпляры классов <code><font color="#b2590f">instance</font></code></a></li>
 <li><a href="1.html#суперклассы">Суперклассы</a></li>
+<li><a href="3.html#проверка-типов-с-контекстом">Автоматическое разрешение многозначности: <code><font color="#b2590f">default</font></code></a></li>
+<li><a href="3.html#ограничение-мономорфизма">Ограничение мономорфизма</a></li>
+<li><a href="2.html#автоматический-вывод-экземпляров-классов-типов">Автоматический вывод экземпляров классов типов: <code><font color="#b2590f">deriving</font></code></a></li>
 </ul></li>
 <li><a href="17.html#сахар-для-монад-do-нотация"><code><font color="#b2590f">do</font></code>-нотация</a></li>
 <li><a href="17.html#генераторы-списков">Генераторы списков</a></li>
-<li><a href="17.html#расширения">Расширения</a></li>
+<li><a href="17.html#расширения">Расширения</a>
+<ul>
+<li><a href="17.html#полиморфизм-высших-порядков">Полиморфизм высших порядков: forall</a></li>
+<li><a href="17.html#семейства-типов">Семейства типов: <code><font color="#b2590f">type</font> family</code>, <code><font color="#b2590f">type</font> <font color="#b2590f">instance</font></code>, <code><font color="#b2590f">data</font> family</code></a></li>
+</ul></li>
 </ul>
 <h2 id="типы">Типы</h2>
 <ul>
@@ -100,6 +116,7 @@
 <li><a href="6.html#аппликативные-функторы"><code><font color=Green>Applicative</font></code></a></li>
 <li><a href="6.html#монады"><code><font color=Green>Monad</font></code></a></li>
 <li><a href="8.html#композиция-монад">Монадные трансформеры</a></li>
+<li><a href="17.html#сахар-для-монад-do-нотация"><code><font color="#b2590f">do</font></code>-нотация</a></li>
 </ul></li>
 <li><a href="6.html#класс-monoid"><code><font color=Green>Monoid</font></code></a></li>
 </ul>
@@ -147,6 +164,7 @@
 <li><a href="19.html#оценка-быстродействия-с-помощью-criterion">Оценка быстродействия в criterion</a></li>
 <li><a href="19.html#тестирование-с-помощью-quickcheck">Проверка свойств программы в QuickCheck</a></li>
 <li><a href="appendix.html#стандартные-библиотеки">Стандартные структуры данных и алгоритмы</a></li>
+<li><a href="appendix.html#и-все-все-все">Если что-то непонятно или не получается: haskell-cafe</a></li>
 </ul>
 </body>
 </html>
