@@ -18,6 +18,7 @@
 <li><a href="#вывод-на-экран">Вывод на экран</a></li>
 <li><a href="#ввод-пользователя">Ввод пользователя</a></li>
 <li><a href="#чтение-и-запись-файлов">Чтение и запись файлов</a></li>
+<li><a href="#ленивое-и-энергичное-чтение-файлов">Ленивое и энергичное чтение файлов</a></li>
 <li><a href="#аргументы-программы">Аргументы программы</a></li>
 <li><a href="#вызов-других-программ">Вызов других программ</a></li>
 <li><a href="#случайные-значения">Случайные значения</a><ul>
@@ -168,6 +169,7 @@ $ ./rev3str
 123
 321$</pre>
 <p>Видно, что после вывода не произошёл перенос каретки, терминал приглашает нас к вводу команды сразу за ответом, если перенос нужен, можно воспользоваться функцией <code><font color=Black>putStrLn</font></code>. Обратите внимание на то, что кроме бинарного файла появились ещё два файла с расширениями <code><font color=Black>.</font>hi</code> и <code><font color=Black>.</font>o</code>. Первый файл называется интерфейсным он описывает какие в модуле определения, а второй файл называется объектным. Он содержит скомпилированный код модуля.</p>
+<p>Стоит отметить команду <code><font color=Black>runhaskell</font></code>. Она запускает программу без создания дополнительных файлов. Но в этом случае выполнение программы будет происходить медленнее.</p>
 <h2 id="типичные-задачи-io"><a href="#TOC">Типичные задачи IO</a></h2>
 <h3 id="вывод-на-экран"><a href="#TOC">Вывод на экран</a></h3>
 <p>Нам уже встретилось несколько функций вывода на экран. Это функции: <code><font color=Black>print</font></code> (вывод значения из экземпляра класса <code><font color=Green>Show</font></code>), <code><font color=Black>putStr</font></code> (вывод строки) и <code><font color=Black>putStrLn</font></code> (вывод строки с переносом). Каждый раз когда мы набираем какое-нибудь выражение в строке интерпретатора и нажимаем <code><font color=Green>Enter</font></code>, интерпретатор применяет к выражению функцию <code><font color=Black>print</font></code> и мы видим его на экране.</p>
@@ -218,6 +220,24 @@ $ ./rev3str
 <font color=Black>input</font> file<font color="#b2590f">:</font> test
 <font color=Green>Hello</font><font color=Black>!</font><font color=Green>Hi</font><font color=Black>)</font></pre>
 <p>В самом начале наш файл пуст, поэтому сначала мы видим пустую строчку вместо содержания, но потом мы начинаем добавлять в него новые записи.</p>
+<h3 id="ленивое-и-энергичное-чтение-файлов"><a href="#TOC">Ленивое и энергичное чтение файлов</a></h3>
+<p>С чтением файлов связана одна тонкость. Функция <code><font color=Black>readFile</font></code> читает содержимое файла в ленивом стиле. Подробнее о ленивой стратегии вычислений мы поговорим в следующей главе. По ка отметим, что <code><font color=Black>readFile</font></code> не читает следующую порцию файла до тех пор пока она не понадобится в программе. Иногда это очень удобно. Например мы можем читать содержание очень большого файла и составлять какую-нибудь статистику на основе прочитанного текста. При этом в памяти будет храниться лишь малая часть файла. Но иногда это свойство мешает. Рассмотрим такую задачу: перевернуть текст в файле под именем <code><font color=Black>"test"</font></code>. Мы должны сначала считать текст из файла, затем перевернуть его и в конце записать в <em>тот же</em> файл. Мы могли бы написать эту программу так:</p>
+<pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
+
+<font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>main</font> <font color="#b2590f">=</font> inFile reverse <font color=Black>"test"</font>
+
+<font color=Black>inFile</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>inFile</font> fun file <font color="#b2590f">=</font> writeFile file <font color=Black>.</font> fun <font color=Black>=&lt;&lt;</font> readFile file</pre>
+<p>Функция <code><font color=Black>inFile</font></code> обновляет текст файла с помощью некоторого преобразование. Но если мы запустим эту программу:</p>
+<pre><font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> main
+<font color=Black>***</font> <font color=Green>Exception</font><font color="#b2590f">:</font> test<font color="#b2590f">:</font> openFile<font color="#b2590f">:</font> resource busy <font color=Black>(</font>file is locked<font color=Black>)</font></pre>
+<p>Мы получили ошибку. Мы пытаемся писать в файл, который уже занят для чтения. Дело в том, что функция <code><font color=Black>readFile</font></code> заняла файл, за счёт чтения по кусочкам. Для решения этой проблемы необходимо воспользоваться энергичной версией функции <code><font color=Black>readFile</font></code>, она будет читать файл целиком. Эта функция живёт в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Strict</font></code>:</p>
+<pre><font color="#b2590f">import</font> <font color="#b2590f">qualified</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Strict</font> <font color="#b2590f">as</font> <font color=Green>StrictIO</font>
+
+<font color=Black>inFile</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
+<font color=Black>inFile</font> fun file <font color="#b2590f">=</font> writeFile file <font color=Black>.</font> fun <font color=Black>=&lt;&lt;</font> <font color=Green>StrictIO</font><font color=Black>.</font>readFile file</pre>
+<p>Функция <code><font color=Black>main</font></code> осталась прежней. Теперь наша программа спокойно переворачивает текст файла.</p>
 <h3 id="аргументы-программы"><a href="#TOC">Аргументы программы</a></h3>
 <p>Пока программы, которые мы создавали просили пользователя ввести данные вручную при выполнении программы, они работали в интерактивном режиме, но чаще всего программы принимают какие-нибудь начальные данные, установки или флаги. Читать начальные данные можно с помощью функций из модуля <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font></code>.</p>
 <p>Узнать, что передаётся в программу можно функцией <code><font color=Black>getArgs</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font></code>. Она возвращает список строк. Это те строки, что мы написали за именем программы через пробел при вызове в терминале. Напишем простую программу, которая распечатывает свои аргументы по порядку, в виде пронумерованного списка.</p>
