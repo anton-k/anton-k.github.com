@@ -27,6 +27,7 @@
 <li><a href="#теория-категорий">Теория категорий</a></li>
 <li><a href="#практика">Практика</a></li>
 <li><a href="#как-работает-ghc">Как работает GHC</a></li>
+<li><a href="#встроенные-проблемно-ориентированные-языки-edsl">Встроенные проблемно-ориентированные языки (EDSL)</a></li>
 </ul></li>
 <li><a href="#и-все-все-все">И все-все-все</a></li>
 </ul></li>
@@ -232,6 +233,21 @@
 <p>Статья о тонкостях реализации прагмы <code><font color=Green>INLINE</font></code>.</p></li>
 <li><p>Simon Peyton Jones, Andrew Tolmach, Tony Hoare. Playing by the Rules, ICFP 2001</p>
 <p>Статья о прагме <code><font color=Green>RULES</font></code>.</p></li>
+</ul>
+<h4 id="встроенные-проблемно-ориентированные-языки-edsl"><a href="#TOC">Встроенные проблемно-ориентированные языки (EDSL)</a></h4>
+<ul>
+<li><p>Oleg Kiselyov. Implementing Explicit and Finding Implicit Sharing in EDSLs.</p>
+<p>Чистое решение проблемы поиска дублирующих подвыражений.</p></li>
+<li><p>Andy Gill. Type-Safe Observable Sharing in Haskell.</p>
+<p>Решение проблемы поиска дублирующих подвыражений с помощью расширения GHC, позволяющего проводить сравнение термов по указателям.</p></li>
+<li><p>Conal Elliott, Sigbjorn Finne, Oege de Moor. Compiling Embedded Languages.</p>
+<p>Отчёт о построении EDSL для анимации.</p></li>
+<li><p>Bruno C.d.S. Oliveira, Andres Loh. Abstract Syntax Graphs for Domain Specific Languages.</p>
+<p>Применение графов для кодирования дублирующих подвыражений в EDSL.</p></li>
+<li><p>Jacques Carette, Oleg Kiselyov and Chung-chieh Shan. Finally Tagless, Partially Evaluated. Tagless Staged Interpreters for Simpler Typed Languages.</p>
+<p>Построение расширяемого синтаксиса с помощью классов типов.</p></li>
+<li><p>Wouter Sweistra. Data types a la carte.</p>
+<p>Построение расширяемых типов. В этой статье и выше под словом “расширяемый” понимается возможность добавления к типу новых конструкторов без перекомпиляции старых.</p></li>
 </ul>
 <p></p>
 <div>
