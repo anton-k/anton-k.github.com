@@ -489,7 +489,7 @@
 <p>Рассмотрим такую задачу. Дана прямоугольная “карта местности”, в каждой клетке целым числом указана высота точки. Необходимо разметить местность по следующим правилам:</p>
 <ul>
 <li><p>Из каждой клетки карты вода стекает не более чем в одном из четырёх возможных направлений (“север”, “юг”, “запад”, “восток”).</p></li>
-<li><p>Если у клетки нет соседе с высотой меньше её собственной высоты, то эта клетка – водосток, и вода из неё никуда дальше не течёт.</p></li>
+<li><p>Если у клетки нет ни одного соседа с высотой меньше её собственной высоты, то эта клетка – водосток, и вода из неё никуда дальше не течёт.</p></li>
 <li><p>Иначе вода из текущей клетки стекает на соседнюю клетку с минимальной высотой.</p></li>
 <li><p>Если таких соседей несколько, то вода стекает по первому из возможных направлений из списка “на север”, “на запад”, “на восток”, “на юг”.</p></li>
 </ul>
@@ -501,7 +501,7 @@
 <font color="#0000ee">6</font> <font color="#0000ee">4</font> <font color="#0000ee">5</font> <font color="#0000ee">5</font> <font color="#0000ee">3</font> <font color="#0000ee">1</font>       f g d b e e
 <font color="#0000ee">2</font> <font color="#0000ee">2</font> <font color="#0000ee">4</font> <font color="#0000ee">5</font> <font color="#0000ee">3</font> <font color="#0000ee">7</font>       f g g h h e</pre>
 <p>Для представления двумерного массива мы воспользуемся типом <code><font color=Green>Array</font></code> из стандартного модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Array</font></code>. Тип <code><font color=Green>Array</font></code> имеет два параметра:</p>
-<pre><font color=Black>darta</font> <font color=Green>Array</font> i a</pre>
+<pre><font color="#b2590f">data</font> <font color=Green>Array</font> i a</pre>
 <p>Первый указывает на индекс, а второй на содержание. Массивы уже встречались нам в главе о типе <code><font color=Green>ST</font></code>. Напомню, что подразумевается, что этот тип является экземпляром класса <code><font color=Green>Ix</font></code>, который описывает целочисленные индексы, вспомним его определение:</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Ord</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Ix</font> a <font color="#b2590f">where</font>
     range       <font color="#b2590f">::</font> <font color=Black>(</font>a<font color=Black>,</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>

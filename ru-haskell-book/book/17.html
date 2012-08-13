@@ -78,7 +78,7 @@
 <h4 id="генераторы-списков"><a href="#TOC">Генераторы списков</a></h4>
 <p> <em>Генераторы списков</em> (list comprehensions) объединяют в себе функции преобразования и фильтрации списков. Они записываются так:</p>
 <pre><font color="#b2590f">[</font> f x <font color="#b2590f">|</font> x <font color="#b2590f">&lt;-</font> list<font color=Black>,</font> p x<font color="#b2590f">]</font></pre>
-<p>В этой записи мы фильтруем список <code><font color=Black>list</font></code> предикатом <code><font color=Black>p</font></code> и преобразуем результат функцией <code><font color=Black>x</font></code>. Например возведём в квадрат все чётные элементы списка:</p>
+<p>В этой записи мы фильтруем список <code><font color=Black>list</font></code> предикатом <code><font color=Black>p</font></code> и преобразуем результат функцией <code><font color=Black>f</font></code>. Например возведём в квадрат все чётные элементы списка:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">[</font>x<font color=Black>*</font>x <font color="#b2590f">|</font> x <font color="#b2590f">&lt;-</font> <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">10</font><font color="#b2590f">]</font><font color=Black>,</font> even x<font color="#b2590f">]</font>
 <font color="#b2590f">[</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">16</font><font color=Black>,</font><font color="#0000ee">36</font><font color=Black>,</font><font color="#0000ee">64</font><font color=Black>,</font><font color="#0000ee">100</font><font color="#b2590f">]</font></pre>
 <p>Предикатов может быть несколько, так например мы можем оставить лишь положительные чётные числа:</p>
