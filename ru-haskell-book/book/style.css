@@ -1,15 +1,11 @@
-h1 {
-    padding-bottom: 10px;
+em {
+    color: #2149B1;    
 }
 
 hr {
     display: block;
+    margin-top: 25px;
     margin-bottom: 50px;
-    margin-top: 20px;
-}
-
-em {
-    color: #2149B1;    
 }
 
 .figure img {
