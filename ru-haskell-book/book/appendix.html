@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
 <div id="TOC">
@@ -52,16 +52,8 @@
 </div></div>  
  </div> 
 
-<p></p>
-<div>
 <h1 id="приложения"><a href="#TOC">Приложения</a></h1>
-</div>
-
-<p></p>
-<div>
 <h2 id="начало-работы-с-haskell"><a href="#TOC">Начало работы с Haskell</a></h2>
-</div>
-
 <h4 id="компилятор"><a href="#TOC">Компилятор</a></h4>
 <p>Для программирования в Haskell нам понадобится компилятор. Мы будем пользоваться наиболее развитым компилятором~– GHC. Лучше всего устанавливать его вместе с Haskell Platform:</p>
 <blockquote>
@@ -71,23 +63,14 @@
 <blockquote>
 <p><a href="http://www.haskell.org/ghc/"><code class="url">http://www.haskell.org/ghc/</code></a></p>
 </blockquote>
-<p>И далее установить все необходимые библиотеки с Hackage с помощью <code><font color=Black>cabal</font></code>.</p>
+<p>И далее установить все необходимые библиотеки с Hackage с помощью <code><font color=Black>cabal</font></code> (устанавливается отдельно с <a href="http://www.haskell.org/cabal/"><code class="url">http://www.haskell.org/cabal/</code></a>).</p>
 <h4 id="среда-разработки"><a href="#TOC">Среда разработки</a></h4>
-<p>Для Haskell существует очень мало сред разработки. Обычно на Haskell программируют в каких-нибудь продвинутых текстовых редакторах (vim, Emacs, scite, kate, notepad++). Отметим всё же среду разработки Leksah (<a href="http://leksah.org/"><code class="url">http://leksah.org/</code></a>), она написана на Haskell и её можно установить с Hackage. Также отметим редактор yi. Он написан на Haskell и его также можно установить с Hackage.</p>
+<p>Для Haskell существует очень мало сред разработки. Обычно на Haskell программируют в каких-нибудь продвинутых текстовых редакторах (vim, Emacs, scite, kate, notepad++). Отметим всё же среду разработки Leksah (<a href="http://leksah.org/"><code class="url">http://leksah.org/</code></a>), она написана на Haskell и её можно установить с Hackage.</p>
 <p>Если вы не хотите разбираться с новым текстовым редактором или средой разработки, и вам нужна лишь подсветка синтаксиса можно воспользоваться gedit. Пишем код в gedit, сохраняем, переключаемся на ghci, пробуем, обновляем, пробуем, при случае компилируем или собираем в пакет. Всё это можно делать и в gedit.</p>
-<p></p>
-<p></p>
-<div>
 <h2 id="литература"><a href="#TOC">Литература</a></h2>
-</div>
-
 <p>О Haskell написано много интересных книг и статей, но все они на английском. На русском языке выходит электронный журнал “Практика функционального программирования” (<fprog.ru>). Пока в нём доминируют два языка – это Erlang и Haskell.</p>
 <p>Я бы хотел рассказать о тех книгах и статьях, которые мне помогли. Все они приняли активное участие в создании этой книги.</p>
-<p></p>
-<div>
 <h3 id="книги"><a href="#TOC">Книги</a></h3>
-</div>
-
 <ul>
 <li><p>Miran Lipovaa. Learn You A Haskell For A Great Good.</p>
 <p>Очень хорошая книга для начинающих, Haskell в картинках. Весёлая и познавательная книга<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup></p>
@@ -114,11 +97,7 @@
 </blockquote></li>
 <li><p>Готовится к выходу к книга Саймона Марлоу о параллельных вычислениях в Haskell. Обещает быть очень интересной, уже известно, что книга будет доступна в интернете.</p></li>
 </ul>
-<p></p>
-<div>
 <h3 id="тематический-сборник"><a href="#TOC">Тематический сборник</a></h3>
-</div>
-
 <h4 id="основы"><a href="#TOC">Основы</a></h4>
 <ul>
 <li><p>John Hughes. Why Functional Programming Matters.</p></li>
@@ -249,11 +228,7 @@
 <li><p>Wouter Sweistra. Data types a la carte.</p>
 <p>Построение расширяемых типов. В этой статье и выше под словом “расширяемый” понимается возможность добавления к типу новых конструкторов без перекомпиляции старых.</p></li>
 </ul>
-<p></p>
-<div>
 <h3 id="и-все-все-все"><a href="#TOC">И все-все-все</a></h3>
-</div>
-
 <p>Если вдруг у вас возникли вопросы по Haskell, и рядом с вами не оказалось того, кто мог бы на них ответить, и в книгах нет ответа, вы можете спросить у сообщества Haskell, в haskell-cafe, там вам быстро и с радостью ответят:</p>
 <blockquote>
 <p><a href="http://www.haskell.org/mailman/listinfo/haskell-cafe"><code class="url">http://www.haskell.org/mailman/listinfo/haskell-cafe</code></a></p>
@@ -263,18 +238,9 @@
 <blockquote>
 <p><a href="http://themonadreader.wordpress.com/"><code class="url">http://themonadreader.wordpress.com/</code></a></p>
 </blockquote>
-<p></p>
-<p></p>
-<div>
 <h2 id="обзор-hackage"><a href="#TOC">Обзор Hackage</a></h2>
-</div>
-
 <p>Число пакетов, загруженных на Hackage, уже перевалило за 2000. В Hackage легко заблудиться. Очень часто не разберёшься какой из пакетов выбрать. К тому же многие из них заброшены или просто не подходят для использования в серьёзных приложениях. Но среди них есть и очень хорошие пакеты. Некоторые из них включены в <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code>. Ниже приведён тематический обзор наиболее популярных пакетов.</p>
-<p></p>
-<div>
 <h3 id="стандартные-библиотеки"><a href="#TOC">Стандартные библиотеки</a></h3>
-</div>
-
 <p>Все приведённые в этом подразделе библиотеки включены в <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code>.</p>
 <p>Полный список библиотек для <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code> можно посмотреть на сайте <a href="http://lambda.haskell.org/hp-tmp/docs"><code class="url">http://lambda.haskell.org/hp-tmp/docs</code></a>.</p>
 <ul>
@@ -302,12 +268,7 @@
 <li><p><strong>Монадные трансформеры</strong>: <code><font color=Black>transformers</font></code></p>
 <p>Мы не коснулись этой темы, но вот краткое пояснение: монадные трансформеры позволяют комбинировать несколько монад. Например, если нам нужно использовать чтение-запись в файл совместно с изменяемым состоянием.</p></li>
 </ul>
-<p></p>
-<div>
 <h3 id="эффективные-типы-данных"><a href="#TOC">Эффективные типы данных</a></h3>
-</div>
-
-
 <ul>
 <li><p><strong>Списки</strong>: <code><font color=Black>dlist</font></code> – эффективное объединение списков.</p>
 <p>Если вы часто пользуетесь операцией <code><font color=Black>++</font></code>, то необходимо заботиться о том, чтобы скобки всегда группировались вправо. Как в <code><font color=Black>a</font><font color=Black>++</font><font color=Black>(</font>b<font color=Black>++</font><font color=Black>(</font>c<font color=Black>++</font>d<font color=Black>)</font><font color=Black>)</font></code>. Иначе время объединения из линейного превратится в квадратичное. Библиотека <code><font color=Black>dlist</font></code> предоставляет специальный тип списков, для которых не важно как группируются скобки при объединении. Время объединения всегда будет линейным.</p></li>
@@ -329,11 +290,7 @@
 <li><p>Самые эффективные изменяемые <strong>хэш-таблицы</strong>: <code><font color=Black>hashtables</font></code></p></li>
 <li><p><strong>Матрицы</strong>: <code><font color=Black>hmatrix</font></code>, <code><font color=Black>repa</font></code></p></li>
 </ul>
-<p></p>
-<div>
 <h3 id="разработка-программ"><a href="#TOC">Разработка программ</a></h3>
-</div>
-
 <ul>
 <li><p>Тестирование, проверка инвариантов: <code><font color=Green>QuickCheck</font></code></p></li>
 <li><p>Оценка быстродействия: <code><font color=Black>criterion</font></code></p></li>
@@ -341,11 +298,7 @@
 <li><p>Настройка сборки мусора: <code><font color=Black>ghc</font><font color="#2149c1">-</font>gc<font color="#2149c1">-</font>tune</code></p></li>
 <li><p>Трассировка программ: <code><font color=Black>hat</font></code></p></li>
 </ul>
-<p></p>
-<div>
 <h3 id="и-все-все-все-1"><a href="#TOC">И все-все-все</a></h3>
-</div>
-
 <ul>
 <li><p><strong>Парсинг</strong>: <code><font color=Black>parsec</font></code> или <code><font color=Black>attoparsec</font></code></p></li>
 <li><p><strong>Языки разметки</strong>: <code><font color=Black>pandoc</font></code>, <code><font color=Black>xhtml</font></code>, <code><font color=Black>tagsoup</font></code>, <code><font color=Black>blaze</font><font color="#2149c1">-</font>html</code>, <code><font color=Black>html</font></code></p></li>
@@ -364,18 +317,9 @@
 <li><p><strong>FRP</strong>: <code><font color=Black>reactive</font></code>, <code><font color=Black>reactive</font><font color="#2149c1">-</font>banana</code>, <code><font color=Black>yampa</font></code></p></li>
 <li><p><strong>Линейная алгебра</strong>: <code><font color=Black>vector</font><font color="#2149c1">-</font>space</code>, <code><font color=Black>hmatrix</font></code></p></li>
 </ul>
-<p></p>
-<p></p>
-<div>
 <h2 id="места"><a href="#TOC">Места</a></h2>
-</div>
-
 <p>Где культивируется Haskell?</p>
-<p></p>
-<div>
 <h3 id="университеты"><a href="#TOC">Университеты</a></h3>
-</div>
-
 <p>Посмотрим на университеты, в которых Haskell преподают, развивают и применяют:</p>
 <ul>
 <li><p>Британия: Эдинбург, Ноттингем, Оксфорд (лаборатория информатики), Глазго.</p></li>
@@ -385,12 +329,7 @@
 <li><p>Австралия: Новый Южный Уэльс, Западной Австралии</p></li>
 <li><p>и другие, полный список на <a href="http://www.haskell.org/haskellwiki/Haskell_in_education"><code class="url">http://www.haskell.org/haskellwiki/Haskell_in_education</code></a>.</p></li>
 </ul>
-<p></p>
-<div>
 <h3 id="компании"><a href="#TOC">Компании</a></h3>
-</div>
-
-
 <ul>
 <li><p>Microsoft Research – разрабатывают GHC.</p></li>
 <li><p>Galios – ведут исследования и решают практические задачи на ФП-языках, особенно на Haskell.</p></li>

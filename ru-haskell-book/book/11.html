@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
   LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
@@ -241,7 +241,6 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="ленивые-чудеса"><a href="#TOC">Ленивые чудеса</a></h1>
 <p>В прошлой главе мы узнали, что такое ленивые вычисления. В этой главе мы посмотрим чем они хороши. С ними можно делать невозможные вещи. Обращаться к ещё не вычисленным значениям, работать с бесконечными данными.</p>
 <p>Мы пишем программу, чтобы решить какую-нибудь сложную задачу. Часто так бывает, что сложная задача оказывается сложной до тех пор пока её не удаётся разбить на отдельные независимые подзадачи. Мы решаем задачи по-меньше, потом собираем из них решения, из этих решений собираем другие решения и вот уже готова программа. Но мы решаем задачу не на листочке, нам необходимо объяснить её компьютеру. И тот язык, на котором мы пишем программу, оказывает сильное влияние на то как мы будем решать задачу. Мы не можем разбить программу на независимые подзадачи, если в том языке на котором мы собираемся объяснять задачу компьютеру нет средств для того, чтобы собрать эти решения вместе.</p>
@@ -253,7 +252,7 @@
 <p>Поскольку у нас ленивый язык мы сначала построим все возможные решения, а затем выберем итоговое. Так же как мы делали это в прошлой главе, когда искали корни уравнения методом неподвижной точки. Эти примеры взяты из статьи “Why functional programming matters” Джона Хьюза.</p>
 <h3 id="дифференцирование"><a href="#TOC">Дифференцирование</a></h3>
 <p>Найдём производную функции в точке. Посмотрим на математическое определение производной:</p>
-<p><span class="LaTeX">$f^\prime(x)\ =\lim_{h\to0}\frac{f(x+h)-f(x)}{h}$</span></p>
+<p><span class="LaTeX">$$f^\prime(x)\ =\lim_{h\to0}\frac{f(x+h)-f(x)}{h}$$</span></p>
 <p>Производная это предел последовательности таких отношений, при <span class="LaTeX">$h$</span> стремящемся к нулю. Если предел сходится, то производная определена. Для того чтобы решить эту задачу мы начнём с небольшого значения <span class="LaTeX">$h$</span> и будем постепенно уменьшать его, вычисляя промежуточные значения производной. Как только они перестанут сильно изменяться мы будем считать, что мы нашли предел последовательности</p>
 <p>Этот процесс напоминает то, что мы делали при поиске корня уравнения методом неподвижной точки. Мы можем взять из того решения функцию определения сходимости последовательности:</p>
 <pre><font color=Black>converge</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> a<font color=Black>,</font> <font color=Green>Num</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> a
@@ -300,7 +299,7 @@
 <pre><font color=Black>int</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Ord</font> a<font color=Black>,</font> <font color=Green>Fractional</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>int</font> eps f a b <font color="#b2590f">=</font> converge eps <font color=Black>$</font> integrate f a b</pre>
 <p>Мы опять воспользовались функцией <code><font color=Black>converge</font></code>, нам не нужно было её переписывать. Проверим решение. Для проверки также воспользуемся экспонентой. В прошлой главе мы узнали, что</p>
-<p><span class="LaTeX">$e^x = 1 + \int_0^x e^t dt$</span></p>
+<p><span class="LaTeX">$$e^x = 1 + \int_0^x e^t dt$$</span></p>
 <p>Посмотрим, так ли это для нашего алгоритма:</p>
 <pre><font color=Black>*</font><font color=Green>Numeric</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> exp' <font color="#b2590f">=</font> int <font color="#0000ee">1e-5</font> exp <font color="#0000ee">0</font>
 <font color=Black>*</font><font color=Green>Numeric</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> test x <font color="#b2590f">=</font> abs <font color=Black>$</font> exp x <font color="#2149c1">-</font> <font color="#0000ee">1</font> <font color="#2149c1">-</font>  exp' x 
@@ -313,7 +312,7 @@
 <p>Алгоритм работает. В статье ещё рассмотрены методы повышения точности этих алгоритмов. Что интересно для улучшения точности не надо менять существующий код. Функция принимает последовательность промежуточных решений и преобразует её.</p>
 <h2 id="степенные-ряды"><a href="#TOC">Степенные ряды</a></h2>
 <p>Напишем модуль для вычисления степенных рядов. Этот пример взят из статьи Дугласа МакИлроя (Douglas McIlroy) “Power Series, Power Serious”. Степенной ряд представляет собой функцию, которая определяется списком коэффициентов:</p>
-<p><span class="LaTeX">$F(x) = f_0 + f_1 x + f_2 x^2 + f_3 x^3 + f_4 x^4 + ...$</span></p>
+<p><span class="LaTeX">$$F(x) = f_0 + f_1 x + f_2 x^2 + f_3 x^3 + f_4 x^4 + ...$$</span></p>
 <p>Степенной ряд содержит бесконечное число слагаемых. Для вычисления нам потребуются функции сложения и умножения. Ряд <span class="LaTeX">$F(x)$</span> можно записать и по-другому:</p>
 <table>
 <tbody>
@@ -354,12 +353,12 @@
 <p>В результате сложения и умножения рядов также получается ряд. Также мы можем создать ряд из числа. Эти операции говорят о том, что мы можем сделать степенной ряд экземпляром класса <code><font color=Green>Num</font></code>.</p>
 <h4 id="сложение"><a href="#TOC">Сложение</a></h4>
 <p>Рекурсивное представление ряда <span class="LaTeX">$f + x F$</span> позволяет нам очень кратко выражать операции, которые мы хотим определить. Теперь у нас нет бесконечного набора коэффициентов, у нас всего лишь одно число и ещё один ряд. Операции существенно упрощаются. Так сложение двух бесконечных рядов имеет вид:</p>
-<p><span class="LaTeX">$F + G = (f + x F_1) + (g + x G_1) = (f+g) + x (F_1 + G_1)$</span></p>
+<p><span class="LaTeX">$$F + G = (f + x F_1) + (g + x G_1) = (f+g) + x (F_1 + G_1)$$</span></p>
 <p>Переведём на Haskell:</p>
 <pre><font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color=Black>+</font> <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>f <font color=Black>+</font> g<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>fs <font color=Black>+</font> gs<font color=Black>)</font></pre>
 <h4 id="умножение"><a href="#TOC">Умножение</a></h4>
 <p>Умножим два ряда:</p>
-<p><span class="LaTeX">$F*G = (f + x F_1) * (g + x G_1) = f g + x (f G_1 + F_1 * G)$</span></p>
+<p><span class="LaTeX">$$F*G = (f + x F_1) * (g + x G_1) = f g + x (f G_1 + F_1 * G)$$</span></p>
 <p>Переведём:</p>
 <pre><font color=Black>(</font><font color=Black>.*</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Ps</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Ps</font> a
 <font color=Black>k</font> <font color=Black>.*</font> <font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>k <font color=Black>*</font> f<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>k <font color=Black>.*</font> fs<font color=Black>)</font>  
@@ -380,7 +379,7 @@
 <p>Методы <code><font color=Black>abs</font></code> и <code><font color=Black>signum</font></code> не определены для рядов. Обратите внимание на то, как рекурсивное определение рядов приводит к рекурсивным определениям функций для рядов. Этот приём очень характерен для Haskell. Поскольку наш ряд это число и ещё один ряд за счёт рекурсии мы можем воспользоваться операцией, которую мы определяем, на “хвостовом” ряде.</p>
 <h4 id="деление"><a href="#TOC">Деление</a></h4>
 <p>Результат деления <span class="LaTeX">$Q$</span> удовлетворяет соотношению:</p>
-<p><span class="LaTeX">$F = Q * G$</span></p>
+<p><span class="LaTeX">$$F = Q * G$$</span></p>
 <p>Переписав <span class="LaTeX">$F$</span>, <span class="LaTeX">$G$</span> и <span class="LaTeX">$Q$</span> в нашем представлении, получим</p>
 <table>
 <col width="20%" />
@@ -423,12 +422,12 @@
     fromRational x <font color="#b2590f">=</font> p0 <font color=Black>(</font>fromRational x<font color=Black>)</font></pre>
 <h3 id="производная-и-интеграл"><a href="#TOC">Производная и интеграл</a></h3>
 <p>Производная одного члена ряда вычисляется так:</p>
-<p><span class="LaTeX">$\frac{d}{dx} x^n = n x^{n-1}$</span></p>
+<p><span class="LaTeX">$$\frac{d}{dx} x^n = n x^{n-1}$$</span></p>
 <p>Из этого выражения по свойствам производной</p>
-<p><span class="LaTeX">$\frac{d}{dx}(f(x) + g(x)) = \frac{d}{dx}f(x) + \frac{d}{dx}g(x)$</span></p>
-<p><span class="LaTeX">$\frac{d}{dx} (k * f(x)) = k * \frac{d}{dx} f(x)$</span></p>
+<p><span class="LaTeX">$$\frac{d}{dx}(f(x) + g(x)) =  \frac{d}{dx}f(x) +  \frac{d}{dx}g(x)$$</span></p>
+<p><span class="LaTeX">$$\frac{d}{dx} (k * f(x)) = k *  \frac{d}{dx} f(x)$$</span></p>
 <p>мы можем получить формулу для всего ряда:</p>
-<p><span class="LaTeX">$\frac{d}{dx} F(x) = f_1 + 2 f_2 x + 3 f_3 x^2 + 4 f_4 x^3 + ...$</span></p>
+<p><span class="LaTeX">$$\frac{d}{dx} F(x) = f_1 + 2 f_2 x + 3 f_3 x^2 + 4 f_4 x^3 + ...$$</span></p>
 <p>Для реализации нам понадобится вспомогательная функция, которая будет обновлять значение дополнительного множителя <span class="LaTeX">$n$</span> в выражении <span class="LaTeX">$n x^{n-1}$</span>:</p>
 <pre><font color=Black>diff</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Ps</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Ps</font> a
 <font color=Black>diff</font> <font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color="#b2590f">=</font> diff' <font color="#0000ee">1</font> fs
@@ -439,9 +438,9 @@
     <font color="#b2590f">where</font> int' n <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>g <font color=Black>/</font> n<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>int' <font color=Black>(</font>n<font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font> gs<font color=Black>)</font></pre>
 <h3 id="элементарные-функции"><a href="#TOC">Элементарные функции</a></h3>
 <p>Мы можем выразить элементарные функции через операции взятия производной и интегрирования. К примеру уравнение для <span class="LaTeX">$e^x$</span> выглядит так:</p>
-<p><span class="LaTeX">$\frac{dy}{dx} = y$</span></p>
+<p><span class="LaTeX">$$\frac{dy}{dx} = y$$</span></p>
 <p>Проинтегрируем с начальным условием <span class="LaTeX">$y(0) = 1$</span>:</p>
-<p><span class="LaTeX">$y(x) = 1 + \int_0^x y(t) dt$</span></p>
+<p><span class="LaTeX">$$y(x) = 1 + \int_0^x y(t) dt$$</span></p>
 <p>Теперь переведём на Haskell:</p>
 <pre><font color=Black>expx</font> <font color="#b2590f">=</font> <font color="#0000ee">1</font> <font color=Black>+</font> int expx</pre>
 <p>Кажется невероятным, но это и есть определение экспоненты. Так же мы можем определить и функции для синуса и косинуса:</p>
@@ -578,14 +577,14 @@
     <font color="#b2590f">let</font> <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> a
     <font color="#b2590f">in</font>  x</pre>
 <p>Посмотрим как используются ленивые образцы при построении потоков, или бесконечных списков. Мы будем представлять функции одного аргумента потоками значений с одинаковым шагом. Так мы будем представлять непрерывные функции дискретными сигналами. Считаем, что шаг дискретизации (или шаг между соседними точками) нам известен.</p>
-<p><span class="LaTeX">$f : R \rightarrow R \ \Rightarrow \ f_n = f(n \tau),\quad n = 0,1,2, ...$</span></p>
+<p><span class="LaTeX">$$f : R \rightarrow R \ \Rightarrow \ f_n = f(n \tau),\quad n = 0,1,2, ...$$</span></p>
 <p>Где <span class="LaTeX">$\tau$</span> – шаг дискретизации, а <span class="LaTeX">$n$</span> пробегает все натуральные числа. Определим функцию решения дифференциальных уравнений вида:</p>
-<p><span class="LaTeX">$\frac{dx}{dt} = f(t)$</span></p>
-<p><span class="LaTeX">$x(0) = \hat{x}$</span></p>
+<p><span class="LaTeX">$$\frac{dx}{dt} = f(t)$$</span></p>
+<p><span class="LaTeX">$$x(0) = \hat{x}$$</span></p>
 <p>Символ <span class="LaTeX">$\hat{x}$</span> означает начальное значение функции <span class="LaTeX">$x$</span>. Перейдём к дискретным сигналам:</p>
 <p><span class="LaTeX">$\frac{x_n - x_{n-1}}{\tau} = f_n, \quad x_0 = \hat{x}$</span></p>
 <p>Где <span class="LaTeX">$\tau$</span> – шаг дискретизации, а <span class="LaTeX">$x$</span> и <span class="LaTeX">$f$</span> – это потоки чисел, индекс <code><font color=Black>n</font></code> пробегает от нуля до бесконечности по всем точкам функции, превращённой в дискретный сигнал. Такой метод приближения дифференциальных уравнений называют методом Эйлера. Теперь мы можем выразить следующий элемент сигнала через предыдущий.</p>
-<p><span class="LaTeX">$x_n = x_{n-1} + \tau f_n, \quad x_0 = \hat{x}$</span></p>
+<p><span class="LaTeX">$$x_n = x_{n-1} + \tau f_n, \quad x_0 = \hat{x}$$</span></p>
 <p>Закодируем это уравнение:</p>
 <pre><font color="#2149c1">-- шаг дискретизации</font>
 <font color=Black>dt</font> <font color="#b2590f">::</font> <font color=Green>Fractional</font> a <font color="#b2590f">=&gt;</font> a
@@ -615,7 +614,8 @@
 <font color="#0000ee">2.497500000001403e-4</font></pre>
 <p>Решение этого уравнения равно функции <span class="LaTeX">$\frac{t^2}{2}$</span>. Здесь мы видим, что результаты уже не такие хорошие.</p>
 <p>Есть функции, которые определяются рекурсивно в терминах дифференциальных уравнений, например экспонента будет решением такого уравнения:</p>
-<p><span class="LaTeX">$\frac{dx}{dt} = x$</span> <span class="LaTeX">$x(t) = x(0) + \int_{0}^{t} x(\tau) d \tau$</span></p>
+<p><span class="LaTeX">$$\frac{dx}{dt} = x$$</span></p>
+<p><span class="LaTeX">$$x(t) = x(0) + \int_{0}^{t} x(\tau) d \tau$$</span></p>
 <p>Опишем это уравнение в Haskell:</p>
 <pre><font color=Black>e</font> <font color="#b2590f">=</font> int <font color="#0000ee">1</font> e</pre>
 <p>Наше описание копирует исходное математическое определение. Добавим это уравнение в модуль <code><font color=Green>Stream</font></code> и проверим результаты:</p>

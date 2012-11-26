@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
   LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
@@ -269,7 +269,6 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="функторы-и-монады-теория"><a href="#TOC">Функторы и монады: теория</a></h1>
 <p>Мы научились комбинировать функции наиболее общего типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code>. В этой главе мы посмотрим на специальные функции и способы их комбинирования. Cпециальными функциями мы будем называть такие функции, результат которых имеет некоторую известную нам структуру. Среди них функции, которые могут вычислить значение или упасть, или функции, которые возвращают сразу несколько вариантов значений. Для составления таких функций из простейших в Haskell предусмотрено несколько классов типов. Это функторы и монады. Их мы и рассмотрим в этой главе.</p>
 <h2 id="композиция-функций"><a href="#TOC">Композиция функций</a></h2>
@@ -279,12 +278,10 @@
 <p>Композиция двух функций <code><font color=Black>f</font></code> и <code><font color=Black>g</font></code> это такая функция, в которой мы сначала применяем <code><font color=Black>g</font></code>, а затем <code><font color=Black>f</font></code>. Для того чтобы тип функции стал более наглядным, мы определим эту функцию немного по-другому. Мы поменяем аргументы местами.</p>
 <pre><font color=Black>(</font><font color=Black>&gt;&gt;</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> c<font color=Black>)</font>
 <font color=Black>f</font> <font color=Black>&gt;&gt;</font> g <font color="#b2590f">=</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> g <font color=Black>(</font>f x<font color=Black>)</font></pre>
-<p> Мы будем изображать функции кружками, а значения – стрелками. Значения словно текут от узла к узлу по стрелкам. Поскольку тип стрелки выходящей из <code><font color=Black>f</font></code> совпадает с типом стрелки входящей в <code><font color=Black>g</font></code> мы можем соединить их и получить составную функцию <code><font color=Black>(</font>f<font color=Black>&gt;&gt;</font>g<font color=Black>)</font></code>.</p>
-<div>
-<img src="../pic/6/fun1.png" alt="Композиция функций" />
+<p>Мы будем изображать функции кружками, а значения – стрелками. Значения словно текут от узла к узлу по стрелкам. Поскольку тип стрелки выходящей из <code><font color=Black>f</font></code> совпадает с типом стрелки входящей в <code><font color=Black>g</font></code> мы можем соединить их и получить составную функцию <code><font color=Black>(</font>f<font color=Black>&gt;&gt;</font>g<font color=Black>)</font></code>.</p>
+<div class="figure">
+<img src="../pic/6/fun1.png" alt="Композиция функций" /><p class="caption">Композиция функций</p>
 </div>
-
-<p></p>
 <h3 id="класс-category"><a href="#TOC">Класс Category</a></h3>
 <p>С помощью операции композиции можно обобщить понятие функции. Для этого существует класс  <code><font color=Green>Category</font></code>:</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Category</font> cat <font color="#b2590f">where</font>
@@ -364,16 +361,14 @@
 <p>Частично определённые функции – это такие функции, которые определены не для всех значений аргументов. Примером такой функции может быть функция поиска предыдущего числа для натуральных чисел. Поскольку числа натуральные, то для нуля такого числа нет. Для описания этого поведения мы можем воспользоваться специальным типом  <code><font color=Green>Maybe</font></code>. Посмотрим на его определение:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Maybe</font> a <font color="#b2590f">=</font> <font color=Green>Nothing</font> <font color="#b2590f">|</font> <font color=Green>Just</font> a
     <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>,</font> <font color=Green>Ord</font><font color=Black>)</font></pre>
-<div>
-<img src="../pic/6/maybe0.png" alt="Частично определённая функция" />
-<div/>
-
-<p></p>
-<p>Частично определённая функция имеет тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> b</code>, если всё в порядке и значение было вычислено, она вернёт <code><font color=Black>(</font><font color=Green>Just</font> a<font color=Black>)</font></code>, а в случае ошибки будет возвращено значение <code><font color=Green>Nothing</font></code>.  Теперь мы можем определить нашу функцию так:</p>
+<div class="figure">
+<img src="../pic/6/maybe0.png" alt="Частично определённая функция" /><p class="caption">Частично определённая функция</p>
+</div>
+<p>Частично определённая функция имеет тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> b</code>, если всё в порядке и значение было вычислено, она вернёт <code><font color=Black>(</font><font color=Green>Just</font> a<font color=Black>)</font></code>, а в случае ошибки будет возвращено значение <code><font color=Green>Nothing</font></code>. Теперь мы можем определить нашу функцию так:</p>
 <pre><font color=Black>pred</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Nat</font>
 <font color=Black>pred</font> <font color=Green>Zero</font>       <font color="#b2590f">=</font> <font color=Green>Nothing</font>
 <font color=Black>pred</font> <font color=Black>(</font><font color=Green>Succ</font> a<font color=Black>)</font>   <font color="#b2590f">=</font> <font color=Green>Just</font> a</pre>
-<p>Предыдущий элемент не определён для <code><font color=Green>Zero</font></code>.</p>
+<p>Для <code><font color=Green>Zero</font></code> предыдущий элемент не определён .</p>
 <h4 id="составляем-функции-вручную"><a href="#TOC">Составляем функции вручную</a></h4>
 <p>Значение функции <code><font color=Black>pred</font></code> завёрнуто в упаковку <code><font color=Green>Maybe</font></code>, и для того чтобы воспользоваться им нам придётся разворачивать его каждый раз. Как будет выглядеть функция извлечения дважды предыдущего натурального числа:</p>
 <pre><font color=Black>pred2</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Nat</font>
@@ -390,18 +385,16 @@
 <p>Но компилятор этого не допустит.</p>
 <h4 id="композиция"><a href="#TOC">Композиция</a></h4>
 <p>Для того чтобы понять как устроена композиция частично определённых функций изобразим её вычисление графически. Сверху изображены две частично определённых функции. Если функция <code><font color=Black>f</font></code> вернула значение, то оно подставляется в следующую частично определённую функцию. Если же первая функция не смогла вычислить результат и вернула <code><font color=Green>Nothing</font></code>, то считается что вся функция <code><font color=Black>(</font>f<font color=Black>*&gt;</font>g<font color=Black>)</font></code> вернула <code><font color=Green>Nothing</font></code>.</p>
-<div>
-<img src="../pic/6/maybe1.png" alt="Композиция частично определённых функций" />
+<div class="figure">
+<img src="../pic/6/maybe1.png" alt="Композиция частично определённых функций" /><p class="caption">Композиция частично определённых функций</p>
 </div>
-
-<p></p>
 <p>Теперь давайте закодируем это определение в Haskell. При этом мы воспользуемся нашим классом <code><font color=Green>Kleisli</font></code>. Аналогом функции <code><font color=Black>id</font></code> для частично определённых функций будет функция, которая просто заворачивает значение в конструктор <code><font color=Green>Just</font></code>.</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Kleisli</font> <font color=Green>Maybe</font> <font color="#b2590f">where</font>
     idK    <font color="#b2590f">=</font> <font color=Green>Just</font>
     f <font color=Black>*&gt;</font> g <font color="#b2590f">=</font> <font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> f a <font color="#b2590f">of</font>
                         <font color=Green>Nothing</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nothing</font>
                         <font color=Green>Just</font> b  <font color="#b2590f">-&gt;</font> g b</pre>
-<p>Смотрите, в <code><font color="#b2590f">case</font></code>-выражении мы возвращаем <code><font color=Green>Nothing</font></code>, если функция <code><font color=Black>f</font></code> вернула <code><font color=Green>Nothing</font></code>, а если ей удалось вычислить значение и она вернула <code><font color=Black>(</font><font color=Green>Just</font> b<font color=Black>)</font></code> мы передаём это значение в следующую функцию, т.е.~составляем выражение <code><font color=Black>(</font>g b<font color=Black>)</font></code>.</p>
+<p>Смотрите, в <code><font color="#b2590f">case</font></code>-выражении мы возвращаем <code><font color=Green>Nothing</font></code>, если функция <code><font color=Black>f</font></code> вернула <code><font color=Green>Nothing</font></code>, а если ей удалось вычислить значение и она вернула <code><font color=Black>(</font><font color=Green>Just</font> b<font color=Black>)</font></code> мы передаём это значение в следующую функцию, то есть составляем выражение <code><font color=Black>(</font>g b<font color=Black>)</font></code>.</p>
 <p>Сохраним это определение в модуле <code><font color=Green>Kleisli</font></code>, а также определение для функции <code><font color=Black>pred</font></code> и загрузим модуль в интерпретатор. Перед этим нам придётся добавить в список функций, которые мы не хотим импортировать из <code><font color=Green>Prelude</font></code> функцию <code><font color=Black>pred</font></code>, она также уже определена в <code><font color=Green>Prelude</font></code>. Для определения нашей функции нам потребуется модуль <code><font color=Green>Nat</font></code>, который мы уже определили. Скопируем файл <code><font color=Green>Nat</font><font color=Black>.</font>hs</code> в ту же директорию, в которой содержится файл <code><font color=Green>Kleisli</font><font color=Black>.</font>hs</code> и подключим этот модуль. Шапка модуля примет вид:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Kleisli</font> <font color="#b2590f">where</font>
     
@@ -442,12 +435,10 @@
     idM     <font color="#b2590f">=</font> <font color=Green>Just</font>
     f <font color=Black>*&gt;</font> g  <font color="#b2590f">=</font> f <font color=Black>&gt;&gt;</font> maybe <font color=Green>Nothing</font> g</pre>
 <h3 id="многозначные-функции"><a href="#TOC">Многозначные функции</a></h3>
-<p> Многозначные функции ветрены и непостоянны. Для некоторых значений аргументов они возвращают одно значение, для иных десять, а для третьих и вовсе ничего. В Haskell такие функции имеют тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>b<font color="#b2590f">]</font></code>. Функция возвращает список ответов. На <span>рисунке</span>  изображена схема многозначной функции.</p>
-<div>
-<img src="../pic/6/list0.png" alt="Многозначная функция" />
+<p> Многозначные функции ветрены и непостоянны. Для некоторых значений аргументов они возвращают одно значение, для иных десять, а для третьих и вовсе ничего. В Haskell такие функции имеют тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>b<font color="#b2590f">]</font></code>. Функция возвращает список ответов. На рисунке изображена схема многозначной функции.</p>
+<div class="figure">
+<img src="../pic/6/list0.png" alt="Многозначная функция" /><p class="caption">Многозначная функция</p>
 </div>
-
-<p></p>
 <p>Приведём пример. Системы Линденмайера (или L-системы) моделируют развитие живого организма. Считается, что организм состоит из последовательности букв (или клеток). В каждый момент времени одна буква заменяется на новую последовательность букв, согласно определённым правилам. Так организм живёт и развивается. Приведём пример:</p>
 <dl>
 <dt>Аксиомы</dt>
@@ -491,12 +482,10 @@
 <font color=Black>next</font> <font color=Black>'b'</font> <font color="#b2590f">=</font> <font color=Black>"a"</font></pre>
 <p>Напомню, что строки в Haskell являются списками символов. Теперь нам нужно применить многозначную функцию к выходу многозначной функции. Для этого мы воспользуемся классом <code><font color=Green>Kleisli</font></code>.</p>
 <h4 id="композиция-1"><a href="#TOC">Композиция</a></h4>
-<div>
-<img src="../pic/6/list1.png" alt="Композиция многозначных функций" />
+<div class="figure">
+<img src="../pic/6/list1.png" alt="Композиция многозначных функций" /><p class="caption">Композиция многозначных функций</p>
 </div>
-
-<p></p>
-<p>Определим экземпляр класса <code><font color=Green>Kleisli</font></code> для списков. На <span>рисунке</span>  изображена схема композиции в случае многозначных функций. После применения первой функции <code><font color=Black>f</font></code> мы применяем функцию к каждому элементу списка, который был получен из <code><font color=Black>f</font></code>. Так у нас получится список списков. Но нам нужен список, для этого мы после применения <code><font color=Black>g</font></code> объединяем все значения в один большой список. Отметим, что функции <code><font color=Black>f</font></code> и <code><font color=Black>g</font></code> в зависимости от значений могут возвращать разное число значений, поэтому на выходе у функций <code><font color=Black>g</font></code> разное число стрелок.</p>
+<p>Определим экземпляр класса <code><font color=Green>Kleisli</font></code> для списков. На рисунке изображена схема композиции в случае многозначных функций. После применения первой функции <code><font color=Black>f</font></code> мы применяем функцию к каждому элементу списка, который был получен из <code><font color=Black>f</font></code>. Так у нас получится список списков. Но нам нужен список, для этого мы после применения <code><font color=Black>g</font></code> объединяем все значения в один большой список. Отметим, что функции <code><font color=Black>f</font></code> и <code><font color=Black>g</font></code> в зависимости от значений могут возвращать разное число значений, поэтому на выходе у функций <code><font color=Black>g</font></code> разное число стрелок.</p>
 <p>Закодируем эту схему в Haskell:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Kleisli</font> <font color=Green>[]</font> <font color="#b2590f">where</font>
     idK     <font color="#b2590f">=</font> <font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
@@ -573,7 +562,7 @@
 <pre><font color=Black>??</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Just</font> <font color="#0000ee">2</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Just</font> <font color="#0000ee">2</font><font color=Black>)</font></pre>
 <p>На месте <code><font color=Black>??</font></code> должна стоять функция типа:</p>
 <pre><font color=Black>??</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> m a <font color="#b2590f">-&gt;</font> m b <font color="#b2590f">-&gt;</font> m c</pre>
-<p>Оказывается с помощью методов класса <code><font color=Green>Kleisli</font></code> мы можем определить такую функцию для любой обычной функции, а не только для функции двух аргументов. Мы будем называть такие функции словом <code><font color=Black>liftN</font></code>, где <code><font color=Green>N</font></code> – число, указывающее на арность функции. Функция <code><font color=Black>(</font>liftN f<font color=Black>)</font></code> “поднимает” (от англ.~lift) обычную функцию <code><font color=Black>f</font></code> в мир специальных функций.</p>
+<p>Оказывается с помощью методов класса <code><font color=Green>Kleisli</font></code> мы можем определить такую функцию для любой обычной функции, а не только для функции двух аргументов. Мы будем называть такие функции словом <code><font color=Black>liftN</font></code>, где <code><font color=Green>N</font></code> – число, указывающее на арность функции. Функция <code><font color=Black>(</font>liftN f<font color=Black>)</font></code> “поднимает” (от англ. lift) обычную функцию <code><font color=Black>f</font></code> в мир специальных функций.</p>
 <p>Функция <code><font color=Black>lift1</font></code> у нас уже есть, это просто функция <code><font color=Black>+$</font></code>. Теперь давайте определим функцию <code><font color=Black>lift2</font></code>:</p>
 <pre><font color=Black>lift2</font> <font color="#b2590f">::</font> <font color=Green>Kleisli</font> m <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> m a <font color="#b2590f">-&gt;</font> m b <font color="#b2590f">-&gt;</font> m c
 <font color=Black>lift2</font> f a b <font color="#b2590f">=</font> <font color=Black>...</font></pre>
@@ -811,11 +800,9 @@
 <h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
 <p>В первых упражнениях вам предлагается по картинке специальной функции написать экземпляр классов <code><font color=Green>Kleisli</font></code> и <code><font color=Green>Monad</font></code>.</p>
 <h4 id="функции-с-состоянием"><a href="#TOC">Функции с состоянием</a></h4>
-<div>
-<img src="../pic/6/state0.png" alt="Функция с состоянием" />
+<div class="figure">
+<img src="../pic/6/state0.png" alt="Функция с состоянием" /><p class="caption">Функция с состоянием</p>
 </div>
-
-<p></p>
 <p> В Haskell нельзя изменять значения. Новые сложные значения описываются в терминах базовых значений. Но как же тогда мы сможем описать функцию с состоянием? Функцию, которая принимает на вход значение, составляет результат на основе внутреннего состояния и значения аргумента и обновляет состояние. Поскольку мы не можем изменять состояние единственное, что нам остаётся – это принимать значение состояния на вход вместе с аргументом и возвращать обновлённое состояние на выходе. У нас получится такой тип:</p>
 <pre><font color=Black>a</font> <font color="#b2590f">-&gt;</font> s <font color="#b2590f">-&gt;</font> <font color=Black>(</font>b<font color=Black>,</font> s<font color=Black>)</font></pre>
 <p>Функция принимает одно значение типа <code><font color=Black>a</font></code> и состояние типа <code><font color=Black>s</font></code>, а возвращает пару, которая состоит из результата типа <code><font color=Black>b</font></code> и обновлённого состояния. Если мы введём синоним:</p>
@@ -827,27 +814,23 @@
 
 <font color=Black>runState</font> <font color="#b2590f">::</font> <font color=Green>State</font> s a <font color="#b2590f">-&gt;</font> s <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> s<font color=Black>)</font>
 <font color=Black>runState</font> <font color=Black>(</font><font color=Green>State</font> f<font color=Black>)</font> <font color="#b2590f">=</font> f</pre>
-<div>
-<img src="../pic/6/state1.png" alt="Композиция функций с состоянием" />
+<div class="figure">
+<img src="../pic/6/state1.png" alt="Композиция функций с состоянием" /><p class="caption">Композиция функций с состоянием</p>
 </div>
-
-<p></p>
 <p>Функция <code><font color=Black>runState</font></code> просто извлекает функцию из оболочки <code><font color=Green>State</font></code>.</p>
-<p>На <span>рисунке</span>  изображена схема функции с состоянием. В сравнении с обычной функцией у такой функции один дополнительный выход и один дополнительный вход типа <code><font color=Black>s</font></code>. По ним течёт и изменяется состояние.</p>
+<p>На рисунке изображена схема функции с состоянием. В сравнении с обычной функцией у такой функции один дополнительный выход и один дополнительный вход типа <code><font color=Black>s</font></code>. По ним течёт и изменяется состояние.</p>
 <p>Попробуйте по схеме композиции для функций с состоянием написать экземпляры для классов <code><font color=Green>Kleisli</font></code> и <code><font color=Green>Monad</font></code> для типа <code><font color=Green>State</font> s</code>.</p>
 <p>Подсказка: В этом определении есть одна хитрость, в отличае от типов <code><font color=Green>Maybe</font></code> и <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font></code> у типа <code><font color=Green>State</font></code> два параметра, это параметр состояния и параметр значения. Но мы делаем экземпляр не для <code><font color=Green>State</font></code>, а для <code><font color=Green>State</font> s</code>, то есть мы свяжем тип с некоторым произвольным типом <code><font color=Black>s</font></code>.</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Kleisli</font> <font color=Black>(</font><font color=Green>State</font> s<font color=Black>)</font> <font color="#b2590f">where</font>
 	<font color=Black>...</font></pre>
 <h4 id="функции-с-окружением"><a href="#TOC">Функции с окружением</a></h4>
 <p> Сначала мы рассмотрим функции с окружением. Функции с окружением – это такие функции, у которых есть некоторое хранилище данных или окружение, из которых они могут читать информацию. Но в отличие от функций с состоянием они не могут это окружение изменять. Функция с окружением похожа на функцию с состоянием без одного выхода для состояния.</p>
-<div>
-<img src="../pic/6/reader0.png" alt="Функция с окружением" />
+<div class="figure">
+<img src="../pic/6/reader0.png" alt="Функция с окружением" /><p class="caption">Функция с окружением</p>
 </div>
-
-<p></p>
 <p>Функция с окружением принимает аргумент <code><font color=Black>a</font></code> и окружение <code><font color=Black>env</font></code> и возвращает результат <code><font color=Black>b</font></code>:</p>
 <pre><font color=Black>a</font> <font color="#b2590f">-&gt;</font> env <font color="#b2590f">-&gt;</font> b</pre>
-<p>Как и в случае функций с состоянием выделим для функции с окружением отдельный тип. В Haskell он называется <code><font color=Green>Reader</font></code> (от англ.~чтец). Все функции с окружением имеют возможность читать из общего хранилища данных. Например они могут иметь доступ на чтение к общей базе данных.</p>
+<p>Как и в случае функций с состоянием выделим для функции с окружением отдельный тип. В Haskell он называется <code><font color=Green>Reader</font></code> (от англ. чтец). Все функции с окружением имеют возможность читать из общего хранилища данных. Например они могут иметь доступ на чтение к общей базе данных.</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Reader</font> env b <font color="#b2590f">=</font> <font color=Green>Reader</font> <font color=Black>(</font>env <font color="#b2590f">-&gt;</font> b<font color=Black>)</font>
 
 <font color=Black>runReader</font> <font color="#b2590f">::</font> <font color=Green>Reader</font> env b <font color="#b2590f">-&gt;</font> <font color=Black>(</font>env <font color="#b2590f">-&gt;</font> b<font color=Black>)</font>
@@ -855,18 +838,14 @@
 <p>Теперь функция с окружением примет вид:</p>
 <pre><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>Reader</font> env b</pre>
 <p>Определите для функций с окружением экземпляр класса <code><font color=Green>Kleisli</font></code>. У нас возникнет цепочка функций, каждая из которых будет нуждаться в значении окружения. Поскольку окружение общее для всех функций мы всем функциям передадим одно и то же значение.</p>
-<div>
-<img src="../pic/6/reader1.png" alt="Функция с окружением" />
+<div class="figure">
+<img src="../pic/6/reader1.png" alt="Функция с окружением" /><p class="caption">Функция с окружением</p>
 </div>
-
-<p></p>
 <h4 id="функции-накопители"><a href="#TOC">Функции-накопители</a></h4>
 <p> Функции-накопители при вычислении за ширмой накапливают некоторое значение. Функция-накопитель похожа на функцию с состоянием но без стрелки, по которой состояние подаётся в функцию. Функция-накопитель имеет тип: <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>b<font color=Black>,</font> msg<font color=Black>)</font></code></p>
-<div>
-<img src="../pic/6/writer0.png" alt="Функция-накопитель" />
+<div class="figure">
+<img src="../pic/6/writer0.png" alt="Функция-накопитель" /><p class="caption">Функция-накопитель</p>
 </div>
-
-<p></p>
 <p>Выделим результат функции в отдельный тип с именем <code><font color=Green>Writer</font></code>.</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Writer</font> msg b <font color="#b2590f">=</font> <font color=Green>Writer</font> <font color=Black>(</font>b<font color=Black>,</font> msg<font color=Black>)</font>
 
@@ -886,11 +865,9 @@
 <font color=Black>f</font>       <font color=Black>`mappend`</font> mempty    <font color="#b2590f">=</font> f
 
 <font color=Black>f</font> <font color=Black>`mappend`</font> <font color=Black>(</font>g <font color=Black>`mappend`</font> h<font color=Black>)</font> <font color="#b2590f">=</font>  <font color=Black>(</font>f <font color=Black>`mappend`</font> g<font color=Black>)</font> <font color=Black>`mappend`</font> h </pre>
-<div>
-<img src="../pic/6/writer1.png" alt="Композиция функций-накопителей" />
+<div class="figure">
+<img src="../pic/6/writer1.png" alt="Композиция функций-накопителей" /><p class="caption">Композиция функций-накопителей</p>
 </div>
-
-<p></p>
 <p>Первые два свойства говорят о том, что значение <code><font color=Black>mempty</font></code> и вправду является пустым элементом относительно операции <code><font color=Black>mappend</font></code>. А третье свойство говорит о том, что порядок при объединении элементов не важен.</p>
 <p>Посмотрим на определение экземпляра для списков:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Monoid</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">where</font>
@@ -902,7 +879,7 @@
 <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">1</font><font color="#b2590f">]</font>
 <font color=Green>Prelude</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Monoid</font><font color=Black>&gt;</font> <font color=Black>"Hello"</font> <font color=Black>`mappend`</font> <font color=Black>" World"</font> <font color=Black>`mappend`</font> mempty
 <font color=Black>"Hello World"</font></pre>
-<p>Напишите экземпляр класса <code><font color=Green>Kleisli</font></code> для функций накопителей по <span>рисунку</span>. При этом будем считать, что тип <code><font color=Black>msg</font></code> является экземпляром класса <code><font color=Green>Monoid</font></code>.</p>
+<p>Напишите экземпляр класса <code><font color=Green>Kleisli</font></code> для функций накопителей по рисунку. При этом будем считать, что тип <code><font color=Black>msg</font></code> является экземпляром класса <code><font color=Green>Monoid</font></code>.</p>
 <h4 id="экземпляры-для-функторов-и-монад"><a href="#TOC">Экземпляры для функторов и монад</a></h4>
 <p>Представьте, что у нас нет класса <code><font color=Green>Kleisli</font></code>, а есть лишь <code><font color=Green>Functor</font></code>, <code><font color=Green>Applicative</font></code> и <code><font color=Green>Monad</font></code>. Напишите экземпляры для этих классов для всех рассмотренных в этой главе специальных функций (в том числе и для <code><font color=Green>Reader</font></code> и <code><font color=Green>Writer</font></code>). Экземпляры <code><font color=Green>Functor</font></code> и <code><font color=Green>Applicative</font></code> могут быть определены через <code><font color=Green>Monad</font></code>. Но для тренировки определите экземпляры полностью. Сначала <code><font color=Green>Functor</font></code>, затем <code><font color=Green>Applicative</font></code> и в последнюю очередь <code><font color=Green>Monad</font></code>.</p>
 <h4 id="деревья"><a href="#TOC">Деревья</a></h4>

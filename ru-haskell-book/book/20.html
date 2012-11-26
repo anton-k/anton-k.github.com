@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
 <div id="TOC">
@@ -40,7 +40,6 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="императивное-программирование"><a href="#TOC">Императивное программирование</a></h1>
 <p>В этой главе мы потренируемся в укрощении императивного кода. В Haskell все побочные эффекты огорожены от чистых функций бетонной стеной <code><font color=Green>IO</font></code>. Однажды оступившись, мы не можем свернуть с пути побочных эффектов, мы вынуждены тащить на себе груз <code><font color=Green>IO</font></code> до самого конца программы. Тип <code><font color=Green>IO</font></code>, хоть и обволакивает программу, всё же позволяет пользоваться благами чистых вычислений. От программиста зависит насколько сильна будет хватка <code><font color=Green>IO</font></code>. Необходимо уметь выделять точки, в которых применение побочных вычислений действительно необходимо, подключая в них чистые функции через методы классов <code><font color=Green>Functor</font></code>, <code><font color=Green>Applicative</font></code> и <code><font color=Green>Monad</font></code>. Тип <code><font color=Green>IO</font></code> похож на дорогу с контрольными пунктами, в которых необходимо отчитаться перед компилятором за “грязный код”. При неумелом проектировании написание программ, насыщенных побочными эффектами, может превратится в пытку. Контрольные пункты будут встречаться в каждой функции.</p>
 <p>Естественный источник побочных эффектов – это пользователь программы. Но, к сожалению, это не единственный источник. Haskell – открытый язык программирования. В нём можно пользоваться программами из низкоуровневого языка C. Основное преимущество С заключается в непревзойдённой скорости программ. Этот язык позволяет программисту работать с памятью компьютера напрямую. Но за эту силу приходится платить. Возможны очень неприятные и трудноуловимые ошибки. Утечки памяти, обращение по неверному адресу в памяти, неожиданное обновление переменных. Ещё один плюс С в том, что это язык с историей, на нём написано много хороших библиотек. Некоторые из них встроены в Haskell с помощью специального механизма FFI (foreign function interface). Обсуждение того, как устроен FFI выходит за рамки этой книги. Интересующийся читатель может обратиться к книге <em>Real World Haskell</em>. Мы же потренируемся в использовании таких библиотек. Язык C является императивным, поэтому, применяя его функций в Haskell, мы неизбежно сталкиваемся с типом <code><font color=Green>IO</font></code>, поскольку большинство интересных функций в С изменяют состояние своих аргументов. В С пишут и чистые функции, такие функции переносятся в Haskell без потери чистоты, но это не всегда возможно.</p>
@@ -216,11 +215,9 @@ $ ./HelloOpenGL</pre>
           points <font color="#b2590f">=</font> zip xs ys
           xs <font color="#b2590f">=</font> fmap <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> cx <font color=Black>+</font> rad <font color=Black>*</font> sin <font color=Black>(</font><font color="#0000ee">2</font><font color=Black>*</font>pi<font color=Black>*</font>x<font color=Black>/</font>n<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> n<font color="#b2590f">]</font>
           ys <font color="#b2590f">=</font> fmap <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> cy <font color=Black>+</font> rad <font color=Black>*</font> cos <font color=Black>(</font><font color="#0000ee">2</font><font color=Black>*</font>pi<font color=Black>*</font>x<font color=Black>/</font>n<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> n<font color="#b2590f">]</font></pre>
-<div>
-<img src="../pic/20/Static.png" alt="Начальное положение" />
+<div class="figure">
+<img src="../pic/20/Static.png" alt="Начальное положение" /><p class="caption">Начальное положение</p>
 </div>
-
-<p></p>
 <p>Мы рисуем с помощью функции <code><font color=Black>renderPrimitive</font></code>. Она принимает метку элемента, который мы собираемся рисовать и набор вершин. Так метка <code><font color=Green>Lines</font></code> обозначает линии, а метка <code><font color=Green>Polygon</font></code> – закрашенные многоугольники. В <code><font color=Green>OpenGL</font></code> нет специальной операции для рисования окружностей, поэтому нам придётся представить окружность в виде многоугольника (<code><font color=Black>circle</font></code>). Функция <code><font color=Black>ortho</font></code> устанавливает область видимости рисунка, шесть аргументов функции обозначают пары диапазонов по каждой из трёх координат. При этом вершины передаются не списком а в специальном <code><font color="#b2590f">do</font></code>-блоке. За счёт этого мы можем изменить какие-нибудь параметры <code><font color=Green>OpenGL</font></code> во время рисования. Обратите внимание на то, как мы изменяем цвет примитива. Перед тем как рисовать примитив мы устанавливаем значение цвета (<code><font color=Black>color</font></code>).</p>
 <h4 id="анимация"><a href="#TOC">Анимация</a></h4>
 <p>Оживим нашу картинку. При клике мышкой шарик игрока последует в направлении курсора. Для того чтобы картинка задвигалась нам необходимо обновлять рисунок с определённой частотой. Мы будем регулировать частоту обновления с помощью функции <code><font color=Black>sleep</font></code>, с её помощью мы можем задержать выполнение программы (время измеряется в секундах):</p>

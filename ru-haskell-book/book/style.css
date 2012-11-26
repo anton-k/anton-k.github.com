@@ -1,6 +1,29 @@
+h1 {
+    padding-bottom: 10px;
+}
+
+hr {
+    display: block;
+    margin-bottom: 50px;
+    margin-top: 20px;
+}
+
 em {
     color: #2149B1;    
 }
+
+.figure img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.figure p.caption {
+    margin-left: auto;
+    margin-right: auto;
+    width: 20%;
+}
+
 
 body {
     margin-left: 20%;
@@ -65,7 +88,7 @@ pre {
 #home {
     margin-left: auto;
     margin-right: auto;
-    width: 30%;
+    width: 20%;
 }
 
 #home:hover {

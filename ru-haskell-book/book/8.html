@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
 <div id="TOC">
@@ -44,7 +44,6 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="io"><a href="#TOC">IO</a></h1>
 <p>Пока мы не написали ещё ни одной программы, которой можно было бы пользоваться вне интерпретатора. Предполагается, что программа как-то взаимодействует с пользователем (ожидает ввода с клавиатуры) и изменяет состояние компьютера (выводит сообщения на экран, записывает данные в файлы). Но пока что мы не знаем как взаимодействовать с окружающим миром.</p>
 <p>Самое время узнать! Сначала мы посмотрим какие проблемы связаны с реализацией взаимодействия с пользователем. Как эти проблемы решаются в Haskell. Потом мы научимся решать несколько типичных задач, связанных с вводом/выводом.</p>
@@ -72,17 +71,14 @@
 <font color="#b2590f">instance</font> <font color=Green>Functor</font>        <font color=Green>IO</font> <font color="#b2590f">where</font> <font color=Black>...</font>
 <font color="#b2590f">instance</font> <font color=Green>Applicative</font>    <font color=Green>IO</font> <font color="#b2590f">where</font> <font color=Black>...</font>
 <font color="#b2590f">instance</font> <font color=Green>Monad</font>          <font color=Green>IO</font> <font color="#b2590f">where</font> <font color=Black>...</font></pre>
-<p>Тип <code><font color=Green>IO</font></code> (от англ.~input-output или ввод-вывод) обозначает взаимодействие с внешним миром. Внешний мир словно является состоянием наших вычислений. Экземпляры классов композиции специальных функций такие же как и для <code><font color=Green>ST</font></code> (а следовательно и для <code><font color=Green>State</font></code>). Но при этом, поскольку мы конкретизировали первый параметр типа <code><font color=Green>ST</font></code>, мы уже не сможем воспользоваться функцией <code><font color=Black>runST</font></code>.</p>
+<p>Тип <code><font color=Green>IO</font></code> (от англ. input-output или ввод-вывод) обозначает взаимодействие с внешним миром. Внешний мир словно является состоянием наших вычислений. Экземпляры классов композиции специальных функций такие же как и для <code><font color=Green>ST</font></code> (а следовательно и для <code><font color=Green>State</font></code>). Но при этом, поскольку мы конкретизировали первый параметр типа <code><font color=Green>ST</font></code>, мы уже не сможем воспользоваться функцией <code><font color=Black>runST</font></code>.</p>
 <p>Тип <code><font color=Green>RealWorld</font></code> определён в модуле <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>ST</font></code>, там же можно найти и функцию:</p>
 <pre><font color=Black>stToIO</font> <font color="#b2590f">::</font> <font color=Green>ST</font> <font color=Green>RealWorld</font> a <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a</pre>
 <p>Интересно, что класс <code><font color=Green>Monad</font></code> был придуман как раз для решения проблемы ввода-вывода. Классы типов изначально задумывались для решения проблемы определения арифметических операций на разных числах и функции сравнения на равенство для разных типов, мало кто тогда догадывался, что классы типов сыграют такую роль, станут основополагающей особенностью языка.</p>
-
-<div>
-    
-<img src="../pic/8/io.png" alt="Композиция для монады IO" />
+<div class="figure">
+<img src="../pic/8/io.png" alt="Композиция для монады IO" /><p class="caption">Композиция для монады IO</p>
 </div>
-
-<p> Это рисунок для класса <code><font color=Green>Kleisli</font></code>. Здесь под <code><font color=Black>&gt;&gt;</font></code> понимается композиция, как мы её определяли в главе 6, а не метод класса <code><font color=Green>Monad</font></code>, вспомним определение:</p>
+<p>Это рисунок для класса <code><font color=Green>Kleisli</font></code>. Здесь под <code><font color=Black>&gt;&gt;</font></code> понимается композиция, как мы её определяли в главе 6, а не метод класса <code><font color=Green>Monad</font></code>, вспомним определение:</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Kleisli</font> m <font color="#b2590f">where</font>
     idK  <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> m a
     <font color=Black>(</font><font color=Black>&gt;&gt;</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> m b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> m c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> m c<font color=Black>)</font></pre>

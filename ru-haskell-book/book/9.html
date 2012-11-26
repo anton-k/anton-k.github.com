@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
   LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
@@ -237,7 +237,6 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="редукция-выражений"><a href="#TOC">Редукция выражений</a></h1>
 <p>В этой главе мы поговорим о том как вычисляются программы. В самом начале мы говорили о том, что процесса вычисления значений нет. В том смысле, что у нас нет новых значений, у нас ничего не меняется, мы лишь расшифровываем синонимы значений.</p>
 <p>Вкратце вспомним то, что мы уже знаем о вычислениях. Сначала мы с помощью типов определяем множество всех возможных значений. Значения – это деревья в узлах которых записаны конструкторы, которые мы определяем в типах. Так например мы можем определить тип:</p>
@@ -618,12 +617,12 @@
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> converge eps <font color=Black>(</font>a<font color="#b2590f">:</font>b<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> <font color="#b2590f">if</font> abs <font color=Black>(</font>a<font color="#2149c1">-</font>b<font color=Black>)</font><font color=Black>&lt;=</font>eps <font color="#b2590f">then</font> a <font color="#b2590f">else</font> converge eps <font color=Black>(</font>b<font color="#b2590f">:</font>xs<font color=Black>)</font>
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> roots eps x0 f <font color="#b2590f">=</font> converge eps <font color=Black>$</font> iterate f x0</pre>
 <p>Найдём корень уравнения:</p>
-<p><span class="LaTeX">$x (x-2) = 0$</span></p>
-<p><span class="LaTeX">$x^2 - 2 x = 0$</span></p>
-<p><span class="LaTeX">$\frac{1}{2} x^2 = x$</span></p>
+<p><span class="LaTeX">$$x (x-2) = 0$$</span></p>
+<p><span class="LaTeX">$$x^2 - 2 x = 0$$</span></p>
+<p><span class="LaTeX">$$\frac{1}{2} x^2 = x$$</span></p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> roots <font color="#0000ee">0.001</font> <font color="#0000ee">5</font> <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x<font color=Black>*</font>x<font color=Black>/</font><font color="#0000ee">2</font><font color=Black>)</font></pre>
 <p>Метод завис, остаётся только нажать <code><font color=Black>ctrl</font><font color=Black>+</font>c</code> для остановки. На самом деле есть одно условие для сходимости метода. Метод сойдётся, если модуль производной функции <code><font color=Black>f</font></code> меньше единицы. Иначе есть возможность, что мы будем бесконечно генерировать новые подстановки. Вычислим производную нашей функции:</p>
-<p><span class="LaTeX">$\frac{d}{dx} \frac{1}{2} x^2 = x$</span></p>
+<p><span class="LaTeX">$$\frac{d}{dx} \frac{1}{2} x^2 = x$$</span></p>
 <p>Нам следует ожидать решения в интервале от минус единицы до единицы:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> roots <font color="#0000ee">0.001</font> <font color="#0000ee">0.5</font> <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x<font color=Black>*</font>x<font color=Black>/</font><font color="#0000ee">2</font><font color=Black>)</font>
 <font color="#0000ee">3.0517578125e-5</font></pre>
@@ -638,7 +637,7 @@
 <p>Вычисление по необходимости является улучшением вычисления по имени. Мы не дублируем выражения во время применения. Мы сохраняем значения в памяти и подставляем в функцию ссылки на значения. После вычисления значения происходит его обновление в памяти. Так если в одном месте выражение уже было вычислено и мы обратимся к нему по ссылке из другого места, то мы не будем перевычислять его, а просто считаем готовое значение.</p>
 <p>Мы познакомились с терминологией процесса вычислений. Выражение может находится в <em>нормальной форме</em>. Это значит что оно вычислено. Может находится в <em>слабой заголовочной нормальной форме</em>. Это значит, что мы знаем хотя бы один конструктор в корне выражения. Также возможно выражение ещё не вычислялось, тогда оно является <em>отложенным</em> (thunk).</p>
 <p>Суть ленивых вычислений заключается в том, что они происходят синхронно. Если у нас есть композиция двух функций:</p>
-<p><span class="LaTeX">$g\ (f\ x)$</span></p>
+<p><span class="LaTeX">$$g\ (f\ x)$$</span></p>
 <p>Внутренняя функция <code><font color=Black>f</font></code> не начнёт вычисления до тех пор пока значения не понадобятся внешней функции <code><font color=Black>g</font></code>. О последствиях этого мы остановимся подробнее в отдельной главе. Значения могут потребоваться только при сопоставлении с образцом. Когда мы хотим узнать какое из уравнений нам выбрать.</p>
 <p>Иногда ленивые вычисления не эффективны по расходу памяти. Это происходит когда выражение состоит из большого числа подвыражений, которые будут вычислены в любом случае. В Haskell у нас есть способы борьбы с ленью. Это функция <code><font color=Black>seq</font></code>, энергичные образцы и энергичные типы данных.</p>
 <p>Функция <code><font color=Black>seq</font></code>:</p>

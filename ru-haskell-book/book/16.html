@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
   <script src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 </head>
 <body>
@@ -33,7 +33,10 @@
 </div></div>  
  </div> 
 
-<p></p>
+<!-- Switch argument character to $ to escape |  -->
+
+
+
 <h1 id="категориальные-типы"><a href="#TOC">Категориальные типы</a></h1>
 <p>В этой главе мы узнаем как в теории категорий определяются типы. В теории категорий типы определяются как начальные и конечные объекты в специальных категориях, которые называются алгебрами функторов. Для понимания этой главы хорошо освежить в памяти главу о структурной рекурсии, там где мы говорили о свёртках и развёртках.</p>
 <h2 id="программирование-в-стиле-оригами"><a href="#TOC">Программирование в стиле оригами</a></h2>
@@ -110,19 +113,17 @@
 <pre><font color=Black>fold</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>f a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Fix</font> f <font color="#b2590f">-&gt;</font> a<font color=Black>)</font>
 <font color=Black>fold</font> f <font color="#b2590f">=</font> f <font color=Black>.</font> fmap <font color=Black>(</font>fold f<font color=Black>)</font> <font color=Black>.</font> unFix</pre>
 <p>Проверим эту функцию по типам. Для этого нарисуем схему композиции:</p>
-<div>
-<img src="../pic/16/fold.png" alt="Свёртка" />
+<div class="figure">
+<img src="../pic/16/fold.png" /><p class="caption"></p>
 </div>
-
 <p>Сначала мы разворачиваем обёртку <code><font color=Green>Fix</font></code> и получаем значение типа <code><font color=Black>f</font> <font color=Black>(</font><font color=Green>Fix</font> f<font color=Black>)</font></code>, затем с помощью <code><font color=Black>fmap</font></code> мы внутри типа <code><font color=Black>f</font></code> рекурсивно вызываем функцию свёртки и в итоге получаем значение <code><font color=Black>f</font> a</code>, на последнем шаге мы выполняем свёртку на текущем уровне вызовом функции <code><font color=Black>f</font></code>.</p>
 <p>Аналогично определяется и функция <code><font color=Black>unfold</font></code>. Только теперь мы сначала развернём первый уровень, затем рекурсивно вызовем развёртку внутри типа <code><font color=Black>f</font></code> и только в самом конце завернём всё в тип <code><font color=Green>Fix</font></code>:</p>
 <pre><font color=Black>unfold</font> <font color="#b2590f">::</font> <font color=Green>Functor</font> f <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> f a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Fix</font> f<font color=Black>)</font>
 <font color=Black>unfold</font> f <font color="#b2590f">=</font> <font color=Green>Fix</font> <font color=Black>.</font> fmap <font color=Black>(</font>unfold f<font color=Black>)</font> <font color=Black>.</font> f</pre>
 <p>Схема композиции:</p>
-<div>
-<img src="../pic/16/unfold.png" alt="Развёртка" />
+<div class="figure">
+<img src="../pic/16/unfold.png" /><p class="caption"></p>
 </div>
-
 <p>Возможно вы уже догадались о том, что функция <code><font color=Black>fold</font></code> дуальна по отношению к функции <code><font color=Black>unfold</font></code>, это особенно наглядно отражается на схеме композиции. При переходе от <code><font color=Black>fold</font></code> к <code><font color=Black>unfold</font></code> мы просто перевернули все стрелки заменили разворачивание типа <code><font color=Green>Fix</font></code> на заворачивание в <code><font color=Green>Fix</font></code>.</p>
 <p>Определим несколько функций для натуральных чисел и списков в стиле оригами. Для начала сделаем <code><font color=Green>L</font></code> и <code><font color=Green>N</font></code> экземпляром класса <code><font color=Green>Functor</font></code>:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Functor</font> <font color=Green>N</font> <font color="#b2590f">where</font>
@@ -199,38 +200,35 @@
 <pre><font color=Black>a</font> <font color="#b2590f">-&gt;</font> f a</pre>
 <p>А стрелками будут обычные функции одного аргумента. Теперь дадим более формальное определение.</p>
 <p>Эндофунктор \(F : \mathcal{A}\rightarrow \mathcal{A}\) определяет стрелки \(\alpha : FA \rightarrow A\), которые называется \(F\)-<em>алгебрами</em>. Стрелку \(h : A \rightarrow B\) называют \(F\)-<em>гомоморфизмом</em>, если следующая диаграмма коммутирует:</p>
-<div>
-<img src="../pic/16/alg1.png" alt="F-алгебра" />
+<div class="figure">
+<img src="../pic/16/alg1.png" /><p class="caption"></p>
 </div>
-
 <p>Или можно сказать по другому, для \(F\)-алгебр \(\alpha:FA \rightarrow A\) и \(\beta : FB \rightarrow B\) выполняется:</p>
-<p>\(Fh \:\mathbf{;}\:\beta = \alpha \:\mathbf{;}\:h\)</p>
+<p>\[Fh \:\mathbf{;}\:\beta = \alpha \:\mathbf{;}\:h\]</p>
 <p>Это свойство совпадает со свойством естественного преобразования только вместо одного из функторов мы подставили тождественный функтор \(I\). Определим категорию \(\textbf{Alg}(F)\), для категории \(\mathcal{A}\) и эндофунктора \(F : \mathcal{A}\rightarrow \mathcal{A}\)</p>
 <ul>
 <li><p>Объектами являются \(F\)-алгебры \(FA \rightarrow A\), где \(A\) – объект категории \(\mathcal{A}\)</p></li>
 <li><p>Два объекта \(\alpha : FA \rightarrow A\) и \(\beta : FB \rightarrow B\) соединяет \(F\)-гомоморфизм \(h : A \rightarrow B\). Это такая стрелка из \(\mathcal{A}\), для которой выполняется:</p></li>
 </ul>
-<p>\(Fh \:\mathbf{;}\:\beta = \alpha \:\mathbf{;}\:h\)</p>
+<p>\[Fh \:\mathbf{;}\:\beta = \alpha \:\mathbf{;}\:h\]</p>
 <ul>
 <li>Композиция и тождественная стрелка взяты из категории \(\mathcal{A}\).</li>
 </ul>
 <p>Если в этой категории есть начальный объект \(in_F : FT \rightarrow T\), то определён катаморфизм, который переводит объекты \(FA \rightarrow A\) в стрелки \(T \rightarrow A\). Причём следующая диаграмма коммутирует:</p>
-<div>
-<img src="../pic/16/alg2.png" alt="F-алгебра" />
+<div class="figure">
+<img src="../pic/16/alg2.png" /><p class="caption"></p>
 </div>
-
 <p>Этот катаморфизм и будет функцией свёртки для рекурсивного типа \(Т\). Понятие \(\textbf{Alg}(F)\) можно перевернуть и получить категорию \(\textbf{CoAlg}(F)\).</p>
 <ul>
 <li><p>Объектами являются \(F\)-коалгебры \(A \rightarrow FA\), где \(A\) – объект категории \(\mathcal{A}\)</p></li>
 <li><p>Два объекта \(\alpha : FA \rightarrow A\) и \(\beta : FB \rightarrow B\) соединяет \(F\)-когомоморфизм . Это такая стрелка из \(\mathcal{A}\), для которой выполняется:</p>
-<p>\(h \:\mathbf{;}\:\alpha = \beta \:\mathbf{;}\:Fh\)</p></li>
+<p>\[h \:\mathbf{;}\:\alpha = \beta \:\mathbf{;}\:Fh\]</p></li>
 <li><p>Композиция и тождественная стрелка взяты из категории \(\mathcal{A}\).</p></li>
 </ul>
 <p>Если в этой категории есть конечный объект, его называют \(out_F : T \rightarrow FT\), то определён анаморфизм, который переводит объекты \(A \rightarrow FA\) в стрелки \(A \rightarrow T\).<br />Причём следующая диаграмма коммутирует:</p>
-<div>
-<img src="../pic/16/alg3.png" alt="F-алгебра" />
+<div class="figure">
+<img src="../pic/16/alg3.png" /><p class="caption"></p>
 </div>
-
 <p>Если для категории \(\mathcal{A}\) и функтора \(F\) определены стрелки \(in_F\) и \(out_F\), то они являются взаимнообратными и определяют изоморфизм \(T \cong FT\). Часто объект \(T\) в случае \(\textbf{Alg}(F)\) обозначают \(\mu_F\), поскольку начальный объект определяется функтором \(F\), а в случае \(\textbf{CoAlg}(F)\) обозначают \(\nu_F\).</p>
 <p>Типы, которые являются начальными объектами, принято называть индуктивными, а типы, которые являются конечными объектами – коиндуктивными.</p>
 <h3 id="существование-начальных-и-конечных-объектов"><a href="#TOC">Существование начальных и конечных объектов</a></h3>
@@ -238,15 +236,15 @@
 <h4 id="полные-частично-упорядоченные-множества"><a href="#TOC">Полные частично упорядоченные множества</a></h4>
 <p>Оказывается на значениях можно ввести частичный порядок. Порядок называется частичным, если отношение \(\leq\) определено не для всех элементов, а лишь для некоторых из них. Частичный порядок на значениях отражает степень неопределённости значения. Самый маленький объект это полностью неопределённое значение \(\bot\). Любое значение типа содержит больше определённости чем \(\bot\).</p>
 <p>Для того чтобы не путать упорядочивание значений по степени определённости с обычным числовым порядком, пользуются специальным символом \(\sqsubseteq\). Запись</p>
-<p>\(a \sqsubseteq b\)</p>
+<p>\[a \sqsubseteq b\]</p>
 
 <p>означает, что \(b\) более определено (или информативнее) чем \(a\).</p>
 <p>Так для логических значений определены два нетривиальных сравнения:</p>
-<p>\(data\ Bool\ =\ True \ |\ False\)</p>
-<p>\(\bot \sqsubseteq True\) \(\bot \sqsubseteq False\)</p>
+<p>\[data\ Bool\ =\ True \ |\ False\]</p>
+<p>\[\bot \sqsubseteq True\] \[\bot \sqsubseteq False\]</p>
 <p>Мы будем называть нетривиальными сравнения в которых, компоненты слева и справа от \(\sqsubseteq\) не равны. Например ясно, что \(True \sqsubseteq True\) или \(\bot \sqsubseteq \bot\). Это тривиальные сравнения и мы их будем лишь подразумевать. Считается, что если два значения определены полностью, то мы не можем сказать какое из них информативнее. Так к примеру для логических значений мы не можем сказать какое значение более определено \(True\) или \(False\).</p>
 <p>Рассмотрим пример по-сложнее. Частично определённые значения:</p>
-<p>\(data\ Maybe\ a = Nothing \ |\ Just\ a\)</p>
+<p>\[data\ Maybe\ a = Nothing \ |\ Just\ a\]</p>
 <table>
 <tbody>
 <tr class="odd">
@@ -272,22 +270,22 @@
 </tbody>
 </table>
 <p>Если вспомнить как происходит вычисление значения, то значение \(a\) менее определено чем \(b\), если взрывное значение \(\bot\) в \(a\) находится ближе к корню значения, чем в \(b\). Итак получается, что в категории \(\textbf{Hask}\) объекты это множества с частичным порядком. Что означает требование монотонности функции?<br />Монотонность в контексте операции \(\sqsubseteq\) говорит о том, что чем больше определён вход функции тем больше определён выход:</p>
-<p>\(a \sqsubseteq b \quad \Rightarrow \quad f\ a \sqsubseteq f\ b\)</p>
+<p>\[a \sqsubseteq b \quad \Rightarrow \quad f\ a \sqsubseteq f\ b\]</p>
 <p>Это требование накладывает запрет на возможность проведения сопоставления с образцом по значению \(\bot\). Иначе мы можем определять немонотонные функции вроде:</p>
 <pre><font color=Black>isBot</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>isBot</font> undefined <font color="#b2590f">=</font> <font color=Green>True</font>
 <font color=Black>isBot</font> <font color="#b2590f">_</font>         <font color="#b2590f">=</font> undefined</pre>
 <p>Полнота частично упорядоченного множества означает, что у любой последовательности \(x_n\)</p>
-<p>\(x_0 \sqsubseteq x_1 \sqsubseteq x_2 \sqsubseteq ...\)</p>
+<p>\[x_0 \sqsubseteq x_1 \sqsubseteq x_2 \sqsubseteq ...\]</p>
 
 <p>есть значение \(x\), к которому она сходится. Это значение называют супремумом множества. Что такое полные частично упорядоченные множества мы разобрались. А что такое полиномиальный функтор?</p>
 <h4 id="полиномиальный-функтор"><a href="#TOC">Полиномиальный функтор</a></h4>
 <p>Полиномиальный функтор – это функтор который построен лишь с помощью операций суммы, произведения, постоянных функторов, тождественного фуктора и композиции функторов. Определим эти операции:</p>
 <ul>
 <li><p>Сумма функторов \(F\) и \(G\) определяется через операцию суммы объектов:</p>
-<p>\((F+G)X = FX + GX\)</p></li>
+<p>\[(F+G)X = FX + GX\]</p></li>
 <li><p>Произведение функторов \(F\) и \(G\) определяется через операцию произведения объектов:</p>
-<p>\((F\times G)X = FX \times GX\)</p></li>
+<p>\[(F\times G)X = FX \times GX\]</p></li>
 <li><p>Постоянный функтор отображает все объекты категории в один объект, а стрелки в тождественнубю стрелку этого объекта, мы будем обозначать постоянный функтор подчёркиванием:</p>
 <table>
 <tbody>
@@ -319,22 +317,22 @@
 </tbody>
 </table></li>
 <li><p>Композиция функторов \(F\) и \(G\) это последовательное применение функторов</p>
-<p>\(FGX = F(GX)\)</p></li>
+<p>\[FGX = F(GX)\]</p></li>
 </ul>
 <p>По определению функции построенные с помощью этих операций называют полиномиальными. Определим несколько типов данных с помощью полиномиальных функторов. Определим логические значения:</p>
-<p>\(Bool = \mu(\underline{1} + \underline{1})\)</p>
+<p>\[Bool = \mu(\underline{1} + \underline{1})\]</p>
 <p>Объект \(1\) обозначает любую константу, это конечный объект исходной категории. Нам не важны имена конструкторов, но важна структура типа. \(\mu\) обозначает начальный объект в \(F\)-алгебре.</p>
 <p>Определим натуральные числа:</p>
-<p>\(Nat = \mu(\underline{1} + I)\)</p>
+<p>\[Nat = \mu(\underline{1} + I)\]</p>
 <p>Эта запись обозначает начальный объект для \(F\)-алгебры с функтором \(F=\underline{1}+I\). Посмотрим на определение списка:</p>
-<p>\(List_A = \mu(\underline{1} + \underline{A} \times I)\)</p>
+<p>\[List_A = \mu(\underline{1} + \underline{A} \times I)\]</p>
 <p>Список это начальный объект \(F\)-алгебры \(\underline{1}+\underline{A}\times I\). Также можно определить бинарные деревья:</p>
-<p>\(BTree_A = \mu(\underline{A} + I \times I )\)</p>
+<p>\[BTree_A = \mu(\underline{A} + I \times I )\]</p>
 <p>Определим потоки:</p>
-<p>\(Stream_A = \nu (\underline{A} \times I)\)</p>
+<p>\[Stream_A = \nu (\underline{A} \times I)\]</p>
 <p>Потоки являются конечным объектом \(F\)-коалгебры, где \(F= \underline{A} \times I\).</p>
 <h2 id="гиломорфизм"><a href="#TOC">Гиломорфизм</a></h2>
-<p>Оказывается, что с помощью катаморфизма и анаморфизма мы можем определить функцию <code><font color=Black>fix</font></code>, т.е.~мы можем выразить любую рекурсивную функцию с помощью структурной рекурсии.</p>
+<p>Оказывается, что с помощью катаморфизма и анаморфизма мы можем определить функцию <code><font color=Black>fix</font></code>, то есть мы можем выразить любую рекурсивную функцию с помощью структурной рекурсии.</p>
 <p>Функция <code><font color=Black>fix</font></code> строит бесконечную последовательность применений некоторой функции <code><font color=Black>f</font></code>.</p>
 <pre><font color=Black>f</font> <font color=Black>(</font>f <font color=Black>(</font>f <font color=Black>...</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
 <p>Сначала с помощью анаморфизма мы построим бесконечный список, который содержит функцию <code><font color=Black>f</font></code> во всех элементах:</p>

@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
 <div id="TOC">
@@ -41,13 +41,12 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="типы"><a href="#TOC">Типы</a></h1>
 <p>С помощью типов мы определяем все возможные значения в нашей программе. Мы определяем основные примитивы и способы их комбинирования. Например в типе <code><font color=Green>Nat</font></code>:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font></pre>
 <p>Один конструктор-примитив <code><font color=Green>Zero</font></code>, и один конструктор <code><font color=Green>Succ</font></code>, с помощью которого мы можем делать составные значения. Определив тип <code><font color=Green>Nat</font></code> таким образом, мы говорим, что значения типа <code><font color=Green>Nat</font></code> могут быть только такими:</p>
 <pre>    <font color=Green>Zero</font><font color=Black>,</font>  <font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>,</font>  <font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>,</font> <font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>...</font></pre>
-<p>Все значения являются цепочками <code><font color=Green>Succ</font></code> с <code><font color=Green>Zero</font></code> на конце. Если где-нибудь мы попытаемся построить значение, которое не соответствует нашему типу, мы получим ошибку компиляции, т.е.~программа не пройдёт проверку типов. Так типы описывают множество допустимых значений.</p>
+<p>Все значения являются цепочками <code><font color=Green>Succ</font></code> с <code><font color=Green>Zero</font></code> на конце. Если где-нибудь мы попытаемся построить значение, которое не соответствует нашему типу, мы получим ошибку компиляции, то есть программа не пройдёт проверку типов. Так типы описывают множество допустимых значений.</p>
 <p>Значения, которые проходят проверку типов мы будем называть <em>допустимыми</em>, а те, которые не проходят соответственно <em>недопустимыми</em>. Так например следующие значения недопустимы для <code><font color=Green>Nat</font></code></p>
 <pre>    <font color=Green>Succ</font> <font color=Green>Zero</font> <font color=Green>Zero</font><font color=Black>,</font>  <font color=Green>Succ</font> <font color=Green>Succ</font><font color=Black>,</font> <font color=Green>True</font><font color=Black>,</font> <font color=Green>Zero</font> <font color=Black>(</font><font color=Green>Zero</font> <font color=Green>Succ</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>...</font></pre>
 <p>Недопустимых значений конечно гораздо больше. Такое проявляется и в естественном языке, бессмысленных комбинаций слов гораздо больше, чем осмысленных предложений. Обратите внимание на то, что мы говорим о значениях (не)допустимых для некоторого типа, например значение <code><font color=Green>True</font></code> допустимо для <code><font color=Green>Bool</font></code>, но недопустимо для <code><font color=Green>Nat</font></code>.</p>
@@ -81,7 +80,7 @@
     <font color=Green>[]</font>   <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
     <font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font>  <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> </pre>
 <p>Конструктор пустого списка <code><font color=Green>[]</font></code> является константой, а конструктор объединения элемента со списком <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></code>, является функцией. Когда я говорил, что типы определяют примитивы и методы составления из примитивов, я имел ввиду, что некоторые конструкторы по сути являются константами, а другие функциями.</p>
-<p>Эти “методы” определяют базовые значения типа, все другие значения будут комбинациями базовых. При этом сумма типов, определяет число методов “классе” типа, т.е.~число базовых значений, а произведение типов в каждой альтернативе определяет имя метода (именем конструктора) и состав аргументов (перечислением подтипов).</p>
+<p>Эти “методы” определяют базовые значения типа, все другие значения будут комбинациями базовых. При этом сумма типов, определяет число методов “классе” типа, то есть число базовых значений, а произведение типов в каждой альтернативе определяет имя метода (именем конструктора) и состав аргументов (перечислением подтипов).</p>
 <h2 id="структура-констант"><a href="#TOC">Структура констант</a></h2>
 <p>Мы уже знаем, что значения могут быть функциями и константами. Объявляя константу, мы даём имя-синоним некоторой комбинации базовых конструкторов. В функции мы говорим как по одним значениям получить другие. В этом и следующем разделе мы посмотрим на то, как типы определяют структуру констант и функций.</p>
 <p>Давайте присмотримся к константам:</p>
@@ -98,39 +97,29 @@
 <h3 id="несколько-слов-о-теории-графов"><a href="#TOC">Несколько слов о теории графов</a></h3>
 <p>Если вы не знакомы с теорией графов, то сейчас как раз самое время с ней познакомится, хотя бы на уровне основных терминов. Теория графов изучает дискретные объекты в терминах зависимостей между объектами или связей. При этом объекты и связи можно изобразить графически.</p>
 <p>Граф состоит из <em>узлов</em> и <em>рёбер</em>, которые соединяют узлы. Приведём пример графа:</p>
-<div>
-<img src="../pic/3/graph.png" alt="Граф" />
+<div class="figure">
+<img src="../pic/3/graph.png" alt="Граф" /><p class="caption">Граф</p>
 </div>
-
-<p></p>
 <p>В этом графе восемь узлов, они пронумерованы, и восемь рёбер, они обозначены буквами. Теорию графов придумал Леонард Эйлер, когда решал задачу о кёнингсбергских мостах. Он решал задачу о том, можно ли обойти все семь кёнингсбергских мостов так, чтобы пройти по каждому лишь один раз. Эйлер представил мосты в виде рёбер а участки суши в виде узлов графа и показал, что это сделать нельзя. Но мы отвлеклись.</p>
 <p>А что такое дерево? <em>Дерево</em> это такой связанный граф, у которого нет циклов. Несвязанный граф образует несколько островков, или множеств узлов, которые не соединены рёбрами. Циклы – это замкнутые последовательности рёбер. Например граф на рисунке выше не является деревом, но если мы сотрём ребро <em>e</em>, то у нас получится дерево.</p>
 <p>Ориентированный граф – это такой граф, у которого все рёбра являются стрелками, они ориентированы, отсюда и название. При этом теперь каждое ребро не просто связывает узлы, но имеет начало и конец. В ориентированных деревьях обычно выделяют один узел, который называют <em>корнем</em>. Его особенность заключается в том, что все стрелки в ориентированном дереве как бы “разбегаются” от корня или сбегаются к корню. Корень определяет все стрелки в дереве. Ориентированное дерево похоже на иерархию. У нас есть корневой элемент и набор его дочерних поддеревьев, каждое из поддеревьев в свою очередь является ориентированным деревом и так далее. Проиллюстрируем на картинке, давайте сотрём ребро <em>e</em> и назначим первый узел корнем. Все наши стрелки будут идти от корня. Сначала мы проведём стрелки к узлам связанным с корнем:</p>
-<div>
-<img src="../pic/3/tree1.png" alt="Превращаем в дерево …" />
+<div class="figure">
+<img src="../pic/3/tree1.png" alt="Превращаем в дерево" /><p class="caption">Превращаем в дерево</p>
 </div>
-
-<p></p>
 <p>Затем представим, что каждый из этих узлов сам является корнем в своём дереве и повторим эту процедуру. На этом шаге мы дорисовываем стрелки в поддеревьях, которые находятся в узлах 3 и 6. Узел 5 является вырожденным деревом, в нём всего лишь одна вершина. Мы будем называть такие поддеревья <em>листьями</em>. А невырожденные поддеревья мы будем называть узлами. Корневой узел в данном поддереве называют родительским. А его соседние узлы, в которые направлены исходящие из него стрелки называют дочерними узлами. На предыдущем шаге у нас появился один родительский узел 1, у которого три дочерних узла: 3, 6, и 5. А на этом шаге у нас появились ещё два родительских узла 3 и 6. У узла 3 один дочерний узел (4), а у узла 6 – три дочерних узла (2, 8, 7).</p>
-<div>
-<img src="../pic/3/tree2.png" alt="Превращаем в дерево …" />
+<div class="figure">
+<img src="../pic/3/tree2.png" alt="Превращаем в дерево…" /><p class="caption">Превращаем в дерево…</p>
 </div>
-
-<p></p>
 <p>Отметим, что положение узлов и рёбер на картинке не важно, главное это то, какие рёбра какие узлы соединяют. Мы можем перерисовать это дерево в более привычном виде.</p>
 <p>Теперь если вы посмотрите на константы в Haskell вы заметите, что очень похожи на деревья. Листья содержат примитивные конструкторы, а узлы – составные. Это происходит из-за того, что каждый конструктор содержит метку и набор подтипов. В этой аналогии метки становятся узлами, а подтипы-аргументы становятся поддеревьями.</p>
-<div>
-<img src="../pic/3/tree3.png" alt="Ориентированное дерево" />
+<div class="figure">
+<img src="../pic/3/tree3.png" alt="Ориентированное дерево" /><p class="caption">Ориентированное дерево</p>
 </div>
-
-<p></p>
-<p>Но есть одна тонкость, в которой заключается отличие констант Haskell от деревьев из теории графов. В теории графов порядок поддеревьев не важен, мы могли бы нарисовать поддеревья в любом порядке, главное сохранить связи. А в Haskell порядок следования аргументов в конструкторе важен. </p>
-<p>На <span>рисунке</span>  изображены две константы, это <code><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Nat</font></code> и <code><font color=Green>Neg</font> <font color=Black>(</font><font color=Green>Add</font> <font color=Green>One</font> <font color=Black>(</font><font color=Green>Mul</font> <font color=Green>Six</font> <font color=Green>Ten</font><font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Expr</font></code>. Но они изображены немного по-другому. Я перевернул стрелки и добавил корнем ещё один узел, это тип константы.</p>
-<div>
-<img src="../pic/3/tree4.png" alt="Константы" />
+<p>Но есть одна тонкость, в которой заключается отличие констант Haskell от деревьев из теории графов. В теории графов порядок поддеревьев не важен, мы могли бы нарисовать поддеревья в любом порядке, главное сохранить связи. А в Haskell порядок следования аргументов в конструкторе важен.</p>
+<p>На следующем рисунке изображены две константы:<br /><code><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Nat</font></code> и <code><font color=Green>Neg</font> <font color=Black>(</font><font color=Green>Add</font> <font color=Green>One</font> <font color=Black>(</font><font color=Green>Mul</font> <font color=Green>Six</font> <font color=Green>Ten</font><font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Expr</font></code>. Но они изображены немного по-другому. Я перевернул стрелки и добавил корнем ещё один узел, это тип константы.</p>
+<div class="figure">
+<img src="../pic/3/tree4.png" alt="Константы" /><p class="caption">Константы</p>
 </div>
-
-<p></p>
 <p>Стрелки перевёрнуты так, чтобы стрелки на картинке соответствовали стрелкам в типе конструктора. Например по виду узла <code><font color=Green>Succ</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font></code>, можно понять, что это функция от одного аргумента, в неё впадает одна стрелка-аргумент и вытекает одна стрелка-значение. В конструктор <code><font color=Green>Mul</font></code> впадает две стрелки, значит это конструктор-функция от двух аргументов.</p>
 <p>Константы похожи на деревья за счёт структуры операции произведения типов. В произведении типов мы пишем:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Tnew</font> <font color="#b2590f">=</font> <font color=Green>Name</font> <font color=Green>T1</font> <font color=Green>T2</font> <font color=Black>...</font> <font color=Green>Tn</font></pre>
@@ -139,11 +128,9 @@
 <h3 id="строчная-запись-деревьев"><a href="#TOC">Строчная запись деревьев</a></h3>
 <p>Итак все константы в Haskell за счёт особой структуры построения типов являются деревьями, но мы программируем в текстовом редакторе, а не в редакторе векторной графики, поэтому нам нужен удобный способ строчной записи дерева. Мы им уже активно пользуемся, но сейчас давайте опишем его по-подробнее.</p>
 <p>Мы сидим на корне дерева и спускаемся по его вершинам. Нам могут встретиться вершины двух типов узлы и листья. Сначала мы пишем имя в текущем узле, затем через пробел имена в дочерних узлах, если нам встречается невырожденный узел мы заключаем его в скобки. Давайте последовательно запишем в строчной записи дерево из первого примера:</p>
-<div>
-<img src="../pic/3/tree5.png" alt="Ориентированное дерево" />
+<div class="figure">
+<img src="../pic/3/tree5.png" alt="Ориентированное дерево" /><p class="caption">Ориентированное дерево</p>
 </div>
-
-<p></p>
 <p>Начнём с корня и будем последовательно дописывать поддеревья, точками обозначаются дочерние узлы, которые нам ещё предстоит дописать:</p>
 <pre><font color=Black>(</font><font color="#0000ee">1</font>     <font color=Black>.</font>       <font color=Black>.</font>      <font color=Black>.</font>       <font color=Black>)</font>
 <font color=Black>(</font><font color="#0000ee">1</font>    <font color=Black>(</font><font color="#0000ee">3</font> <font color=Black>.</font><font color=Black>)</font>    <font color="#0000ee">5</font>     <font color=Black>(</font><font color="#0000ee">6</font> <font color=Black>.</font> <font color=Black>.</font> <font color=Black>.</font><font color=Black>)</font><font color=Black>)</font>
@@ -201,7 +188,7 @@
 
 <font color=Black>...</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>(</font><font color=Black>(</font>fun a<font color=Black>)</font> b<font color=Black>)</font> c<font color=Black>)</font> d</pre>
 <p>Это очень удобно. Так, определив лишь одну функцию <code><font color=Black>fun</font></code>, мы получили в подарок ещё три функции <code><font color=Black>(</font>fun a<font color=Black>)</font></code>, <code><font color=Black>(</font>fun a b<font color=Black>)</font></code> и <code><font color=Black>(</font>fun a b c<font color=Black>)</font></code>. С ростом числа аргументов растёт и число подарков. Если смотреть на функцию <code><font color=Black>fun</font></code>, как на функцию одного аргумента, то она представляется таким генератором функций типа <code><font color=Black>a2</font> <font color="#b2590f">-&gt;</font> a3 <font color="#b2590f">-&gt;</font> a4 <font color="#b2590f">-&gt;</font> res</code>, который зависит от параметра. Применение функций через пробел значительно упрощает процесс комбинирования функций.</p>
-<p>Поэтому в Haskell аргументы функций, которые играют роль параметров или специфических флагов, т.е.~аргументы, которые меняются редко обычно пишутся в начале функции. Например</p>
+<p>Поэтому в Haskell аргументы функций, которые играют роль параметров или специфических флагов, то есть аргументы, которые меняются редко обычно пишутся в начале функции. Например</p>
 <pre><font color=Black>process</font> <font color="#b2590f">::</font> <font color=Green>Param1</font> <font color="#b2590f">-&gt;</font> <font color=Green>Param2</font> <font color="#b2590f">-&gt;</font> <font color=Green>Arg1</font> <font color="#b2590f">-&gt;</font> <font color=Green>Arg2</font> <font color="#b2590f">-&gt;</font> <font color=Green>Result</font></pre>
 <p>Два первых аргумента функции <code><font color=Black>process</font></code> выступают в роли параметров для генерации функций с типом <code><font color=Green>Arg1</font> <font color="#b2590f">-&gt;</font> <font color=Green>Arg2</font> <font color="#b2590f">-&gt;</font> <font color=Green>Result</font></code>.</p>
 <p>Давайте потренируемся с частичным применением в интерпретаторе. Для этого загрузим модуль <code><font color=Green>Nat</font></code> из предыдущей главы:</p>
@@ -305,7 +292,7 @@
 <pre><font color=Black>lessThan7</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>lessThan7</font>  <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color="#b2590f">_</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Green>False</font>
 <font color=Black>lessThan7</font>  <font color="#b2590f">_</font>                                                   <font color="#b2590f">=</font> <font color=Green>True</font></pre>
-<p>Декомпозицию можно применять только к значениям-константам. Проявляется интересная закономерность: если для композиции необходимым элементом было значение со стрелочным типом (функция), то в случае декомпозиции нам нужно значение с типом без стрелок (константа). Это говорит о том, что все функции будут полностью применены, т.е.~константы будут записаны в виде строчной записи дерева. Если мы ожидаем на входе функцию, то мы можем только дать ей синоним с помощью с помощью переменной или проигнорировать её безразличной переменной.</p>
+<p>Декомпозицию можно применять только к значениям-константам. Проявляется интересная закономерность: если для композиции необходимым элементом было значение со стрелочным типом (функция), то в случае декомпозиции нам нужно значение с типом без стрелок (константа). Это говорит о том, что все функции будут полностью применены, то есть константы будут записаны в виде строчной записи дерева. Если мы ожидаем на входе функцию, то мы можем только дать ей синоним с помощью с помощью переменной или проигнорировать её безразличной переменной.</p>
 <p>Как в</p>
 <pre><font color=Black>name</font>  <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font>       <font color="#b2590f">=</font> <font color=Black>...</font>
 <font color=Black>name</font>  <font color=Black>(</font><font color=Green>Zero</font> <font color="#b2590f">:</font> <font color=Green>Succ</font> <font color=Green>Zero</font> <font color="#b2590f">:</font> <font color=Green>[]</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Black>...</font></pre>
@@ -313,7 +300,7 @@
 <pre><font color=Black>name</font>  <font color=Green>Succ</font>      <font color="#b2590f">=</font> <font color=Black>...</font>
 <font color=Black>name</font>  <font color=Black>(</font><font color=Green>Zero</font> <font color="#b2590f">:</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Black>...</font></pre>
 <p>Отметим, что для композиции это допустимые значения, в первом случае это функция <code><font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font></code>, а во втором это функция типа <code><font color="#b2590f">[</font><font color=Green>Nat</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Nat</font><font color="#b2590f">]</font></code>.</p>
-<p>Ещё одна особенность декомпозиции заключается в том, что при декомпозиции мы можем пользоваться только “настоящими” значениями, т.е.~конструкторами, объявленными в типах. В случае композиции мы могли пользоваться как конструкторами, так и синонимами.</p>
+<p>Ещё одна особенность декомпозиции заключается в том, что при декомпозиции мы можем пользоваться только “настоящими” значениями, то есть конструкторами, объявленными в типах. В случае композиции мы могли пользоваться как конструкторами, так и синонимами.</p>
 <p>Например мы не можем написать в декомпозиции:</p>
 <pre><font color=Black>name</font>  <font color=Black>(</font>add <font color=Green>Zero</font> <font color=Green>Zero</font><font color=Black>)</font>      <font color="#b2590f">=</font> <font color=Black>...</font>
 <font color=Black>name</font>  <font color=Black>(</font>or <font color=Black>(</font>xor a b<font color=Black>)</font> <font color=Green>True</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Black>...</font></pre>
@@ -591,35 +578,27 @@
 <p>Декомпозиция происходит в аргументах функции. С её помощью мы можем извлечь из составной константы-дерева какую-нибудь часть или указать на какие константы мы реагируем в данном уравнении.</p>
 <p>Ещё мы узнали о <em>частичном применении</em>. О том, что все функции в Haskell являются функциями одного аргумента, которые возвращают константы или другие функции одного аргумента.</p>
 <p>Мы потренировались в составлении неправильных выражений и посмотрели как компилятор на основе правил применения узнаёт что они неправильные. Мы узнали, что такое ограничение мономорфизма и как оно появляется. Также мы присмотрелись к рекурсивным функциям.</p>
-<div>
-<img src="../pic/3/vis1.png" alt="Конструкторы и синонимы" />
+<div class="figure">
+<img src="../pic/3/vis1.png" alt="Конструкторы и синонимы" /><p class="caption">Конструкторы и синонимы</p>
 </div>
-
-<p></p>
 <h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
 <ul>
 <li><p>Составьте в интерпретаторе как можно больше неправильных выражений и посмотрите на сообщения об ошибках. Разберитесь почему выражение оказалось неправильным. Для этого проверьте типы с помощью правил применения. Составьте несколько выражений, ведущих к ошибке из-за ограничения мономорфизма.</p></li>
 <li><p>Потренируйтесь в интерпретаторе с функциями <code><font color=Black>map</font></code>, <code><font color=Black>filter</font></code> и <code><font color=Black>foldr</font></code>. Попробуйте их с самыми разными функциями. Воспользуйтесь и теми функциями, что были определены в прошлой главе в тексте или в упражнениях.</p></li>
 <li><p>В этой главе было много картинок и графических аналогий, попробуйте попрограммировать в картинках. Нарисуйте определённые нами функции или какие-нибудь новые в виде деревьев. Например, это можно сделать так. Мы будем отличать конструкторы от синонимов. Конструкторы будем рисовать в одинарном кружке, а синонимы в двойном.</p>
-<div>
-<img src="../pic/3/vis2.png" alt="Синоним-константа" />
+<div class="figure">
+<img src="../pic/3/vis2.png" alt="Синоним-константа" /><p class="caption">Синоним-константа</p>
 </div>
-
-<p></p>
 <p>Мы будем все функции писать также как и прежде, но вместо аргументов слева от знака равно и выражений справа от знака равно, будем рисовать деревья.</p>
 <p>Например, объявим простой синоним-константу. Мы будем дорисовывать сверху типы значений вместо объявления типа функции.</p>
-<p>Несколько функций для списков. Извлечение первого элемента  и функция преобразования всех элементов списка. Попробуйте в таком же духе определить несколько функций.</p></li>
+<p>Несколько функций для списков. Извлечение первого элемента и функция преобразования всех элементов списка. Попробуйте в таком же духе определить несколько функций.</p></li>
 </ul>
-<div>
-<img src="../pic/3/vis3.png" alt="Функция извлечения первого элемента списка" />
+<div class="figure">
+<img src="../pic/3/vis3.png" alt="Функция извлечения первого элемента списка" /><p class="caption">Функция извлечения первого элемента списка</p>
 </div>
-
-<p></p>
-<div>
-<img src="../pic/3/vis4.png" alt="Функция преобразования элементов списка" />
+<div class="figure">
+<img src="../pic/3/vis4.png" alt="Функция преобразования элементов списка" /><p class="caption">Функция преобразования элементов списка</p>
 </div>
-
-<p></p>
 <div id="footer">  
 <div id="nav">
 <a id="prev" class="button" href="2.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="4.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>

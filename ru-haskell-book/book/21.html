@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
   LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
@@ -248,19 +248,21 @@
 </div></div>  
  </div> 
 
-<p></p>
 <h1 id="музыкальный-пример"><a href="#TOC">Музыкальный пример</a></h1>
 <p>В этой главе мы напишем музыкальный секвенсор. Мы будем переводить нотную запись в midi-файл с помощью библиотеки <code><font color=Green>HCodecs</font></code>. Она предоставляет возможность создания midi-файлов по описанию в Haskell. При этом описание напоминает описание самого формата midi. Мы же хотим подняться уровнем выше и описывать музыку нотами и композицией нот.</p>
 <h2 id="музыкальная-нотация"><a href="#TOC">Музыкальная нотация</a></h2>
 <p>Для начала зададимся выясним: а что же такое музыка с точки зрения нашего секвенсора? Мы ищем представление музыки, термины, в которых было бы удобно мыслить композитору. При этом необходимо понимать, что наш поиск ограничен средствами низкоуровневого представления музыки. В нашем случае это midi-файл. Так например мы можем сразу отбросить представление в виде сигналов, последовательности сэмплов, поскольку мы не сможем реализовать это представление в рамках midi. За ответом обратимся к истории.</p>
 <h3 id="нотная-запись-в-европейской-традиции"><a href="#TOC">Нотная запись в европейской традиции</a></h3>
 <p>В европейской традиции принято описывать музыку в виде нотной записи. Нотный лист состоит из серии нотных станов. Нотный стан состоит из пяти линеек. Каждая линейка обозначает определённую высоту. Нота состоит из обозначения длительности и высоты. Разные длительности обозначаются штрихами и цветом ноты, а высоте соответствует расположение на нотном стане.</p>
-<div>
-<img src="../pic/21/notes.jpg" alt="Буквенные обозначения высоты ноты" />
+<div class="figure">
+<img src="../pic/21/notes.jpg" alt="Буквенные обозначения высоты ноты" /><p class="caption">Буквенные обозначения высоты ноты</p>
 </div>
-
-
 <p>По длительности ноты различают на: целые, половины, четверти, восьмые, шестнадцатые и так далее. Каждая последующая длительность в два раза меньше предыдущей. Длительность измеряется в долях от такта. Такты обозначаются сплошной линией, которая перечёркивает все пять линеек нотного стана. По высоте ноты, зависят от двух целых чисел, это номер октавы и номер ступени лада. В ладе обычно всего 12 ступеней. Их обозначают разными именами. Например в латинской нотации их обозначают так:</p>
+<!-- Switch arguments separator to ? instead of | -->
+
+
+
+
 <table>
 <col width="6%" />
 <col width="8%" />
@@ -485,7 +487,7 @@
 
 <font color=Black>c</font> <font color="#b2590f">=</font> note <font color="#0000ee">0</font><font color=Black>;</font>    cs <font color="#b2590f">=</font> note <font color="#0000ee">1</font><font color=Black>;</font>    d <font color="#b2590f">=</font> note <font color="#0000ee">2</font><font color=Black>;</font>    ds <font color="#b2590f">=</font> note <font color="#0000ee">3</font><font color=Black>;</font>	
 <font color=Black>...</font></pre>
-<p>Первая буква содержит буквенное обозначение ноты, а вторая либо <code><font color=Black>s</font></code> (от англ.~sharp диез) или <code><font color=Black>f</font></code> (от англ.~flat бемоль). Все эти ноты находятся в первой октаве, но смещением высоты на 12 единиц мы легко можем смещать эти ноты в любую другую октаву:</p>
+<p>Первая буква содержит буквенное обозначение ноты, а вторая либо <code><font color=Black>s</font></code> (от англ. sharp диез) или <code><font color=Black>f</font></code> (от англ. flat бемоль). Все эти ноты находятся в первой октаве, но смещением высоты на 12 единиц мы легко можем смещать эти ноты в любую другую октаву:</p>
 <pre><font color=Black>higher</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>higher</font> n <font color="#b2590f">=</font> fmap <font color=Black>(</font><font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>{</font> notePitch <font color="#b2590f">=</font> <font color="#0000ee">12</font><font color=Black>*</font>n <font color=Black>+</font> notePitch a <font color=Black>}</font><font color=Black>)</font>
 
@@ -743,7 +745,7 @@
 <pre><font color=Green>TFun</font> <font color=Black>(</font><font color="#0000ee">4</font> <font color="#0000ee">2</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Single</font> a<font color=Black>)</font></pre>
 <p>Значение <code><font color=Green>Tfm</font> k d</code> обозначает линейную функцию</p>
 <p><span class="LaTeX">$f(x) = k x + d$</span></p>
-<p>Для того чтобы получить настоящие отсчёты по времени мы применяем её к временным координатам “не преобразованного” события, т.е.~события <code><font color=Green>Event</font> <font color="#0000ee">0</font> <font color="#0000ee">1</font> a</code>.</p>
+<p>Для того чтобы получить настоящие отсчёты по времени мы применяем её к временным координатам “не преобразованного” события, то есть события <code><font color=Green>Event</font> <font color="#0000ee">0</font> <font color="#0000ee">1</font> a</code>.</p>
 <p>Единственное, что нам нужно для того чтобы встроить этот вариант в библиотеку это написать функцию:</p>
 <pre><font color=Black>fromTList</font> <font color="#b2590f">::</font> <font color=Green>TList</font> t a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Event</font> t a<font color="#b2590f">]</font></pre>
 <p>И конечно переопределить все функции композиции. Но все сложные функции, которые отвечают за перевод из <code><font color=Green>Track</font></code> в <code><font color=Green>Midi</font></code> останутся прежними.</p>

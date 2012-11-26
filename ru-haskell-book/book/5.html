@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
 <div id="TOC">
@@ -149,7 +149,7 @@
 <font color="#2149c1">-</font><font color="#0000ee">10</font></pre>
 <p>Иногда это бывает полезно.</p>
 <h3 id="функция-on"><a href="#TOC">Функция on</a></h3>
-<p>Функция <code><font color=Black>on</font></code> (от англ.~на) перед применением бинарной функции пропускает аргументы через унарную функцию:</p>
+<p>Функция <code><font color=Black>on</font></code> (от англ. на) перед применением бинарной функции пропускает аргументы через унарную функцию:</p>
 <pre><font color=Black>on</font> <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> c
 <font color=Black>(</font><font color=Black>.*.</font><font color=Black>)</font> <font color=Black>`on`</font> f <font color="#b2590f">=</font> <font color="#b2590f">\</font>x y <font color="#b2590f">-&gt;</font> f x <font color=Black>.*.</font> f y</pre>
 <p>Она часто используется в сочетании с функцией <code><font color=Black>sortBy</font></code> из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font></code>. Эта функция имеет тип:</p>
@@ -215,7 +215,7 @@
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Black>(</font><font color=Black>^</font><font color=Black>)</font>
 <font color=Black>(</font><font color=Black>^</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Num</font> a<font color=Black>,</font> <font color=Green>Integral</font> b<font color=Black>)</font> <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> a 	<font color="#2149c1">-- Defined in GHC.Real</font>
 <font color="#b2590f">infixr</font> <font color="#0000ee">8</font> <font color=Black>^</font></pre>
-<p>Приоритет указывается в строчках <code><font color="#b2590f">infixl</font> <font color="#0000ee">6</font> <font color=Black>+</font></code> и <code><font color="#b2590f">infixl</font> <font color="#0000ee">7</font> <font color=Black>*</font></code>. Цифра указывает на старшинство операции, а суффикс <code><font color=Black>l</font></code> (от англ.~left – левая) или <code><font color=Black>r</font></code> (от англ.~right – правая) на ассоциативность.</p>
+<p>Приоритет указывается в строчках <code><font color="#b2590f">infixl</font> <font color="#0000ee">6</font> <font color=Black>+</font></code> и <code><font color="#b2590f">infixl</font> <font color="#0000ee">7</font> <font color=Black>*</font></code>. Цифра указывает на старшинство операции, а суффикс <code><font color=Black>l</font></code> (от англ. left – левая) или <code><font color=Black>r</font></code> (от англ. right – правая) на ассоциативность.</p>
 <p>Если мы создали свою функцию, мы можем определить для неё ассоциативность. Для этого мы пишем в коде:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Fixity</font> <font color="#b2590f">where</font>
 
@@ -559,7 +559,7 @@
 <pre><font color=Black>repeat</font> a <font color="#b2590f">=</font> fix <font color=Black>$</font> <font color="#b2590f">\</font>xs <font color="#b2590f">-&gt;</font> a <font color="#b2590f">:</font> xs</pre>
 <p>Заметим, что мы можем избавиться от аргумента <code><font color=Black>xs</font></code> с помощью сечения:</p>
 <pre><font color=Black>repeat</font> a <font color="#b2590f">=</font> fix <font color=Black>(</font>a<font color="#b2590f">:</font><font color=Black>)</font></pre>
-<p>Но мы можем пойти ещё дальше, если вспомним, что функция двух аргументов <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></code> является функцией от одного аргумента  которая возвращает функцию одного аргумента:</p>
+<p>Но мы можем пойти ещё дальше, если вспомним, что функция двух аргументов <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></code> является функцией от одного аргумента <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font><font color=Black>)</font></code>, которая возвращает функцию одного аргумента:</p>
 <pre><font color=Black>repeat</font> <font color="#b2590f">=</font> fix <font color=Black>.</font> <font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></pre>
 <p>Смотрите в этом выражении мы составили композицию двух функций. Функция <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></code> примет первый аргумент и вернёт функцию, как раз то, что и нужно для <code><font color=Black>fix</font></code>.</p></li>
 </ul>

@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
-  <link rel="stylesheet" href="style.css" type="text/css" />
+  <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
   LaTeXMathML.js from http://math.etsu.edu/LaTeXMathML/
@@ -249,10 +249,10 @@
 <p>Что это за стили? В декларативном стиле определения функций больше похожи на математическую нотацию, словно это предложения языка. В композиционном стиле мы строим из маленьких выражений более сложные, применяем к этим выражениям другие выражения и строим ещё большие.</p>
 <p>В Haskell есть полноценная поддержка и того и другого стиля, поэтому конструкции которые мы рассмотрим в этой главе будут по смыслу дублировать друг друга. Выбор стиля скорее дело вкуса, существуют приверженцы и того и другого стиля, поэтому разработчики Haskell не хотели никого ограничивать.</p>
 <h2 id="локальные-переменные"><a href="#TOC">Локальные переменные</a></h2>
-<p>Вспомним определение площади треугольника по трём сторонам:</p>
-<p><span class="LaTeX">$S = \sqrt{p \cdot (p - a) \cdot (p - b) \cdot (p - c)}$</span></p>
+<p>Вспомним формулу вычисления площади треугольника по трём сторонам:</p>
+<p><span class="LaTeX">$$S = \sqrt{p \cdot (p - a) \cdot (p - b) \cdot (p - c)}$$</span></p>
 <p>Где <span class="LaTeX">$a$</span>, <span class="LaTeX">$b$</span> и <span class="LaTeX">$c$</span> – длины сторон треугольника, а <span class="LaTeX">$p$</span> это полупериметр.</p>
-<p>Как бы мы определили эту функцию теми средствами, что у нас есть? Наверное мы бы написали так:</p>
+<p>Как бы мы определили эту функцию теми средствами, что у нас есть? Наверное, мы бы написали так:</p>
 <pre><font color=Black>square</font> a b c <font color="#b2590f">=</font> sqrt <font color=Black>(</font>p a b c <font color=Black>*</font> <font color=Black>(</font>p a b c <font color="#2149c1">-</font> a<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p a b c <font color="#2149c1">-</font> b<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p a b c <font color="#2149c1">-</font> c<font color=Black>)</font><font color=Black>)</font>
 
 <font color=Black>p</font> a b c <font color="#b2590f">=</font> <font color=Black>(</font>a <font color=Black>+</font> b <font color=Black>+</font> c<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font></pre>
@@ -699,7 +699,7 @@
 <li><p>Попробуйте определить функции из предыдущих глав в чисто композиционном стиле.</p></li>
 <li><p>Посмотрите на те функции, которые мы прошли и попробуйте переписать их определения шиворот на выворот. Если вы видите, что элемент написан композиционном стиле перепишите его в декларативном и наоборот. Получившиеся функции могут показаться монстрами, но это упражнение может помочь вам в закреплении новых конструкций и почувствовать сильные и слабые стороны того или иного стиля.</p></li>
 <li><p>Определите модуль, который будет вычислять площади простых фигур, треугольника, окружности, прямоугольника, трапеции. Помните, что фигуры могут задаваться различными способами.</p></li>
-<li><p>Поток это бесконечный список, т.е.~список, у которого нет конструктора пустого списка:</p></li>
+<li><p>Поток это бесконечный список, или список, у которого нет конструктора пустого списка:</p></li>
 </ul>
 <pre><font color="#b2590f">data</font> <font color=Green>Stream</font> a <font color="#b2590f">=</font> a <font color="#b2590f">:&amp;</font> <font color=Green>Stream</font> a</pre>
 <p>Так например мы можем составить поток из всех чисел Пеано:</p>
