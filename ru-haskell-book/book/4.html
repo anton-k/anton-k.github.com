@@ -630,7 +630,7 @@
                     <font color="#b2590f">in</font>  l <font color="#b2590f">:</font> <font color="#b2590f">case</font> s' <font color="#b2590f">of</font>
                               <font color=Green>[]</font>      <font color="#b2590f">-&gt;</font> <font color=Green>[]</font>
                               <font color=Black>(</font><font color="#b2590f">_</font><font color="#b2590f">:</font>s''<font color=Black>)</font> <font color="#b2590f">-&gt;</font> lines s''</pre>
-<p>Функция <code><font color=Black>line</font></code> разбивает строку на список строк. Эти строки были разделены в исходной строке символом переноса <code><font color=Black>'\n'</font></code>.</p>
+<p>Функция <code><font color=Black>lines</font></code> разбивает строку на список строк. Эти строки были разделены в исходной строке символом переноса <code><font color=Black>'\n'</font></code>.</p>
 <p>Функция <code><font color=Black>break</font></code> принимает предикат и список и возвращает два списка. В первом все элементы от начала списка, которые не удовлетворяют предикату, а во втором все остальные. Наш предикат <code><font color=Black>(</font><font color=Black>==</font> <font color=Black>'\n'</font><font color=Black>)</font></code> выделяет все символы кроме переноса каретки. В строке</p>
 <pre><font color="#b2590f">let</font> <font color=Black>(</font>l<font color=Black>,</font> s'<font color=Black>)</font> <font color="#b2590f">=</font> break <font color=Black>(</font><font color=Black>==</font> <font color=Black>'\n'</font><font color=Black>)</font> s</pre>
 <p>Мы сохраняем все символы до <code><font color=Black>'\n'</font></code> от начала строки в переменной <code><font color=Black>l</font></code>. Затем мы рекурсивно вызываем функцию <code><font color=Black>lines</font></code> на оставшейся части списка:</p>
@@ -699,8 +699,7 @@
 <li><p>Попробуйте определить функции из предыдущих глав в чисто композиционном стиле.</p></li>
 <li><p>Посмотрите на те функции, которые мы прошли и попробуйте переписать их определения шиворот на выворот. Если вы видите, что элемент написан композиционном стиле перепишите его в декларативном и наоборот. Получившиеся функции могут показаться монстрами, но это упражнение может помочь вам в закреплении новых конструкций и почувствовать сильные и слабые стороны того или иного стиля.</p></li>
 <li><p>Определите модуль, который будет вычислять площади простых фигур, треугольника, окружности, прямоугольника, трапеции. Помните, что фигуры могут задаваться различными способами.</p></li>
-<li><p>Поток это бесконечный список, или список, у которого нет конструктора пустого списка:</p></li>
-</ul>
+<li><p>Поток это бесконечный список, или список, у которого нет конструктора пустого списка:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Stream</font> a <font color="#b2590f">=</font> a <font color="#b2590f">:&amp;</font> <font color=Green>Stream</font> a</pre>
 <p>Так например мы можем составить поток из всех чисел Пеано:</p>
 <pre><font color=Black>nats</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> <font color=Green>Nat</font>
@@ -749,7 +748,8 @@
 <p>Так с помощью этой функции можно создать поток всех чисел Пеано от нуля или постоянный поток:</p>
 <pre><font color=Black>nats</font>            <font color="#b2590f">=</font> iterate <font color=Green>Succ</font> <font color=Green>Zero</font> 
 <font color=Black>constStream</font> a   <font color="#b2590f">=</font> iterate <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x<font color=Black>)</font> a</pre>
-<p>Возможно вас удивляет тот факт, что в этом упражнении мы оперируем бесконечными значениями, но пока мы не будем вдаваться в детали того как это работает, просто попробуйте определить этот модуль и посмотрите в интерпретаторе, что получится.</p>
+<p>Возможно вас удивляет тот факт, что в этом упражнении мы оперируем бесконечными значениями, но пока мы не будем вдаваться в детали того как это работает, просто попробуйте определить этот модуль и посмотрите в интерпретаторе, что получится.</p></li>
+</ul>
 <div id="footer">  
 <div id="nav">
 <a id="prev" class="button" href="3.html"><strong><code><font color="#b2590f">&lt;-</font></code></strong></a><a id="next" class="button" href="5.html"><strong><code><font color="#b2590f">-&gt;</font></code></strong></a>
