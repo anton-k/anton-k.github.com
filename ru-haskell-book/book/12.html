@@ -91,7 +91,7 @@
 
 <font color=Black>even</font>    <font color="#b2590f">=</font> foldNat <font color=Green>True</font>  not
 <font color=Black>odd</font>     <font color="#b2590f">=</font> foldNat <font color=Green>False</font> not</pre>
-<p>Эти функции определяют чётность числа, сдесь мы пользуемся тем свойством, что <code><font color=Black>not</font> <font color=Black>(</font>not a<font color=Black>)</font> <font color=Black>==</font> a</code>.</p>
+<p>Эти функции определяют чётность числа, здесь мы пользуемся тем свойством, что <code><font color=Black>not</font> <font color=Black>(</font>not a<font color=Black>)</font> <font color=Black>==</font> a</code>.</p>
 <p>Определим сложение и умножение:</p>
 <pre><font color=Black>add</font><font color=Black>,</font> mul <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font>
 
@@ -268,7 +268,7 @@
 <font color=Black>zip</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> b <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font>
 <font color=Black>zip</font> <font color="#b2590f">=</font> curry <font color=Black>$</font> unfoldStream <font color=Black>$</font> <font color="#b2590f">\</font><font color=Black>(</font>a <font color="#b2590f">:&amp;</font> <font color="#b2590f">as</font><font color=Black>,</font> b <font color="#b2590f">:&amp;</font> bs<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#b2590f">as</font><font color=Black>,</font> bs<font color=Black>)</font><font color=Black>)</font></pre>
 <h3 id="натуральные-числа-1"><a href="#TOC">Натуральные числа</a></h3>
-<p>Если присмотреться к натуральным числам, то можно заметить, что они очень похожи на списки. Списки без элементов. Это отражается на функции развёртки. Для натуральных чисел мы будем возвращать не пару а просто слкедующий элемент для развёртки:</p>
+<p>Если присмотреться к натуральным числам, то можно заметить, что они очень похожи на списки. Списки без элементов. Это отражается на функции развёртки. Для натуральных чисел мы будем возвращать не пару а просто следующий элемент для развёртки:</p>
 <pre><font color=Black>unfoldNat</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font>
 <font color=Black>unfoldNat</font> f <font color="#b2590f">=</font> maybe <font color=Green>Zero</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>.</font> unfoldNat f<font color=Black>)</font></pre>
 <p>Напишем функцию преобразования из целых чисел в натуральные:</p>
@@ -321,7 +321,7 @@
 <font color=Black>divSafe</font> a <font color="#0000ee">0</font> <font color="#b2590f">=</font> <font color=Green>Left</font> <font color=Black>"division by zero"</font>
 <font color=Black>divSafe</font> a b <font color="#b2590f">=</font> <font color=Green>Right</font> <font color=Black>(</font>a<font color=Black>/</font>b<font color=Black>)</font></pre>
 <p>Для этого типа также определена функция свёртки она называется <code><font color=Black>either</font></code>. Не подглядывая в <code><font color=Green>Prelude</font></code>, определите её.</p></li>
-<li><p>Список является частным случаем дерева. Список это дерево, в каждом узле которого, лишь однин дочерний узел. Деревья из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Tree</font></code> похожи на списки, но есть в них одно существенное отличие. Они всегда содержат хотя бы один элемент. Пустой список не может быть представлен в виде такого дерева. Например это различие сказывается, еслим вы захотите определить функцию-аналог <code><font color=Black>takeWhile</font></code> для деревьев.</p>
+<li><p>Список является частным случаем дерева. Список это дерево, в каждом узле которого, лишь один дочерний узел. Деревья из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Tree</font></code> похожи на списки, но есть в них одно существенное отличие. Они всегда содержат хотя бы один элемент. Пустой список не может быть представлен в виде такого дерева. Например это различие сказывается, если вы захотите определить функцию-аналог <code><font color=Black>takeWhile</font></code> для деревьев.</p>
 <p>Определите деревья, которые не страдают от этого недостатка. Определите для них функции свёртки/развёртки, а также функции, которые мы определили для стандартных деревьев. Определите функцию <code><font color=Black>takeWhile</font></code> (в рекурсивном виде и в виде развёртки) и сделайте их экземпляром класса <code><font color=Green>Monad</font></code>, похожий на экземпляр для списков.</p></li>
 </ul>
 <div id="footer">  

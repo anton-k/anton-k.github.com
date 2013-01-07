@@ -110,7 +110,7 @@
     a <font color="#b2590f">&lt;-</font> getLine
     b <font color="#b2590f">&lt;-</font> getLine
     return <font color=Black>(</font>a <font color=Black>++</font> b<font color=Black>)</font></pre>
-<p>В <code><font color="#b2590f">do</font></code>-нотации можно вводить локальные переменные с помощью :</p>
+<p>В <code><font color="#b2590f">do</font></code>-нотации можно вводить локальные переменные с помощью слова :</p>
 <pre><font color=Black>t</font> <font color="#b2590f">=</font> <font color="#b2590f">do</font>
     b <font color="#b2590f">&lt;-</font> f a
     c <font color="#b2590f">&lt;-</font> g b
@@ -375,7 +375,7 @@
 
 <font color="#b2590f">data</font> <font color=Green>Zero</font>
 <font color="#b2590f">data</font> <font color=Green>Succ</font> a</pre>
-<p>Значения этих типов нам не понадобятся, поэтому мы воспользуемся расширением <code><font color=Green>EmptyDataDecls</font></code>, которое позволяет определять типы без значенеий. Значениями будут комбинации типов. Мы определим операции сложения и умножения для чисел. Для начала определим сложение:</p>
+<p>Значения этих типов нам не понадобятся, поэтому мы воспользуемся расширением <code><font color=Green>EmptyDataDecls</font></code>, которое позволяет определять типы без значений. Значениями будут комбинации типов. Мы определим операции сложения и умножения для чисел. Для начала определим сложение:</p>
 <pre><font color="#b2590f">type</font> family <font color=Green>Add</font> a b <font color="#b2590f">::</font> <font color=Black>*</font>
 
 <font color="#b2590f">type</font> <font color="#b2590f">instance</font> <font color=Green>Add</font> a <font color=Green>Zero</font>        <font color="#b2590f">=</font> a
@@ -545,7 +545,7 @@
 
 <font color=Black>dt</font> <font color="#b2590f">::</font> <font color="#b2590f">forall</font> n<font color=Black>.</font> <font color=Black>(</font><font color=Green>Nat</font> n<font color=Black>,</font> <font color=Green>Fractional</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Stream</font> n a <font color="#b2590f">-&gt;</font> a
 <font color=Black>dt</font> xs <font color="#b2590f">=</font> <font color="#0000ee">1</font> <font color=Black>/</font> <font color=Black>(</font>fromIntegral <font color=Black>$</font> toInt <font color=Black>(</font>undefined <font color="#b2590f">::</font> n<font color=Black>)</font><font color=Black>)</font></pre>
-<p>Обратите внимение на появление <code><font color="#b2590f">forall</font></code> в определении типа. Попробуйте скомпилировать пример без него или переместите его в другое место. Во многих случаях применения этого рсширения можно избежать с помощью стандартной функции <code><font color=Black>asTypeOf</font></code>, посмотрим на определение из <code><font color=Green>Prelude</font></code>:</p>
+<p>Обратите внимание на появление <code><font color="#b2590f">forall</font></code> в определении типа. Попробуйте скомпилировать пример без него или переместите его в другое место. Во многих случаях применения этого расширения можно избежать с помощью стандартной функции <code><font color=Black>asTypeOf</font></code>, посмотрим на определение из <code><font color=Green>Prelude</font></code>:</p>
 <pre><font color=Black>asTypeOf</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>asTypeOf</font> x y <font color="#b2590f">=</font> x</pre>
 <p>Фактически это функция <code><font color=Black>const</font></code>, оба типа которой одинаковы. Она часто используется в инфиксной форме для фиксации типа первого аргумента:</p>
