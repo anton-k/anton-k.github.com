@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
@@ -18,15 +19,7 @@
 <li><a href="#контекст-классов-типов.-суперклассы">Контекст классов типов. Суперклассы</a></li>
 </ul></li>
 <li><a href="#экземпляры-классов-типов">Экземпляры классов типов</a></li>
-<li><a href="#ядро-haskell">Ядро Haskell</a><ul>
-<li><a href="#модули">Модули</a></li>
-<li><a href="#типы-1">Типы</a></li>
-<li><a href="#значения-1">Значения</a></li>
-<li><a href="#классы-типов-1">Классы типов</a></li>
-<li><a href="#экземпляры-классов-типов-1">Экземпляры классов типов</a></li>
-<li><a href="#типы-значения-и-классы-типов">Типы, значения и классы типов</a></li>
-<li><a href="#суперклассы">Суперклассы</a></li>
-</ul></li>
+<li><a href="#ядро-haskell">Ядро Haskell</a></li>
 <li><a href="#двумерный-синтаксис">Двумерный синтаксис</a></li>
 <li><a href="#краткое-содержание">Краткое содержание</a></li>
 <li><a href="#упражнения">Упражнения</a></li>
@@ -42,9 +35,9 @@
  </div> 
 
 <p></p>
-<h1 id="основы"><a href="#TOC">Основы</a></h1>
+<h1 id="основы"><a href="#основы">Основы</a></h1>
 <p>Есть мнение, что Haskell очень большой язык. Это и правда так. В Haskell много разных конструкций, синтаксического сахара, которые делают код более наглядным. Также в Haskell много библиотек на разные случаи жизни. Однако, обману ли я ваши ожидания, сказав, что всё это имеет достаточно компактную основу? Это и правда так, вам осталось лишь убедиться в наглядности и простоте Haskell. В этой главе мы пробежимся по нему, охватив одним взглядом целиком весь язык. Несколько наглядных конструкций, немного моих пояснений, и вы поймёте, что к чему. Если что-то сразу не станет ясно, или где-то я опущу какие-то пояснения, будьте уверены – в следующих главах мы обязательно обратимся к этим моментам и обсудим их подробнее.</p>
-<h2 id="общая-картина"><a href="#TOC">Общая картина</a></h2>
+<h2 id="общая-картина"><a href="#общая-картина">Общая картина</a></h2>
 <p>Программы на Haskell бывают двух видов: это <em>приложения</em> (executable) и <em>библиотеки</em> (library). Приложения представляют собой исполняемые файлы, которые решают некоторую задачу, к примеру – это может быть компилятор языка, сортировщик данных в директориях, календарь, или цитатник на каждый день, любая полезная утилита. Библиотеки тоже решают задачи, но решают их внутри самого языка. Они содержат отдельные значения, функции, которые можно подключать к другой программе Haskell, и которыми можно пользоваться.</p>
 <p>Программа состоит из <em>модулей</em> (module). И здесь работает правило: один модуль – один файл. Имя модуля совпадает с именем файла. Имя модуля начинается с большой буквы, тогда как файлы имеют расширение <code><font color=Black>.</font>hs</code>. Например <code><font color=Green>FirstModule</font><font color=Black>.</font>hs</code>. Посмотрим на типичный модуль в Haskell:</p>
 <pre><font color="#2149c1">--------------------------------------</font>
@@ -83,7 +76,7 @@
 <li><p>Экземпляры классов типов.</p></li>
 </ul>
 <p>Теперь давайте рассмотрим их подробнее.</p>
-<h2 id="типы"><a href="#TOC">Типы</a></h2>
+<h2 id="типы"><a href="#типы">Типы</a></h2>
 <p>Типы представляют собой каркас программы. Они кратко описывают все возможные значения. Это очень удобно. Опытный программист на Haskell может понять смысл функции по её названию и типу. Это не очень сложно. Например, мы видим:</p>
 <pre><font color=Black>not</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></pre>
 <p>Выражение <code><font color=Black>v</font> <font color="#b2590f">::</font> <font color=Green>T</font></code> означает, что значение <code><font color=Black>v</font></code> имеет тип <code><font color=Green>T</font></code>. Стрелка <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code> означает функцию, то есть из <code><font color=Black>a</font></code> мы можем получить <code><font color=Black>b</font></code>. Итак, перед нами функция из <code><font color=Green>Bool</font></code> в <code><font color=Green>Bool</font></code>, под названием <code><font color=Black>not</font></code>. Мы можем предположить, что это логическая операция “не”. Или, перед нами такое определение типа:</p>
@@ -135,7 +128,7 @@
 <p>компилятор предупредит нас об ошибке. Наверное, вы думаете, что приведенный пример надуман, ведь кому захочется составлять время из логических значений? Но когда вы пишете программу, часто процесс работы складывается так: вы думаете над одним, пишете другое, а также планируете вернуться к третьему. И знание того, что есть надежный компилятор, который не пропустит глупых ошибок, освобождает руки, вы можете не заботиться о таких пустяках, как правильное построение предложения.</p>
 <p>Отметим, что такой подход с разделением вычисления на две стадии и проверкой типов называется <em>статической типизацией</em>. Есть и другие языки, в них типы лишь подразумеваются и программа сразу начинает вычисляться, если есть какие-то несоответствия, об ошибке программисту сообщит вычислитель, причём только тогда, когда вычисление дойдёт до ошибки. Такой подход называют <em>динамической типизацией</em>.</p>
 <p>Типы требуют серьёзных размышлений на начальном этапе, этапе определения базовых терминов и способов их комбинирования. Не упускаем ли мы что-то важное из виду, или, может быть, типы имеют слишком общий характер и допускают ненужные нам предложения? Приходится задумываться. Но если типы подобраны удачно, они сами начинают подсказывать, как строить программу.</p>
-<h2 id="значения"><a href="#TOC">Значения</a></h2>
+<h2 id="значения"><a href="#значения">Значения</a></h2>
 <p>Итак, мы определили типами базовые понятия и способы комбинирования. Обычно это небольшой набор слов. Например в логических выражениях всего лишь два слова. Можем ли мы на что либо рассчитывать с таким словарным запасом? Оказывается, что да. Здесь на помощь приходят синонимы. Сейчас у нас в активе лишь два слова:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Bool</font> <font color="#b2590f">=</font> <font color=Green>True</font> <font color="#b2590f">|</font> <font color=Green>False</font></pre>
 <p>И мы можем определить два синонима:</p>
@@ -214,7 +207,7 @@
 <font color="#b2590f">=&gt;</font> jonny <font color=Green>Saturday</font>
 <font color="#b2590f">=&gt;</font> <font color=Green>Rest</font></pre>
 <p>Интересно, у нас опять всего лишь два значения, но, дав такое большое имя одному из значений, мы смогли получить полезную нам информацию, ничего не вычисляя.</p>
-<h2 id="классы-типов"><a href="#TOC">Классы типов</a></h2>
+<h2 id="классы-типов"><a href="#классы-типов">Классы типов</a></h2>
 <p>Если типы и значения – привычные понятия, которые можно найти в том или ином виде в любом языке программирования, то термин класс типов встречается не часто. У него нет аналогов и в обычном языке, поэтому я сначала постараюсь объяснить его смысл на примере.</p>
 <p>В типизированном языке у каждой функции есть тип, но бывают функции, которые могут быть определены на аргументах разных типов; по сути, они описывают схожие понятия, но определены для значений разных типов. Например, функция сравнения на равенство, говорящая о том, что два значения одного типа <code><font color=Black>a</font></code> равны, имеет тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>, или функция печати выражения имеет тип <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font></code>, но что такое <code><font color=Black>a</font></code> в этих типах? Тип <code><font color=Black>a</font></code> является любым типом, для которого сравнение на равенство или печать (преобразование в строку) имеют смысл. Это понятие как раз и кодируется в классах типов. <code><font color=Green>Классы</font> типов</code> (type class) позволяют определять функции с одинаковым именем для разных типов.</p>
 <p>У классов типов есть имена. Также как и имена классов, они начинаются с большой буквы. Например, класс сравнений на равенство называется <code><font color=Green>Eq</font></code> (от англ. <em>equals</em> – равняется), а класс печати выражений имеет имя <code><font color=Green>Show</font></code> (от англ. <em>show</em> – показывать). Посмотрим на их определения:</p>
@@ -244,7 +237,7 @@
 <font color=Black>isE</font> x <font color="#b2590f">=</font> <font color=Black>(</font>x <font color=Black>==</font> e<font color=Black>)</font></pre>
 <p>Обратите внимание на запись <code><font color=Green>Group</font> a <font color="#b2590f">=&gt;</font></code> и <code><font color=Black>(</font><font color=Green>Group</font> a<font color=Black>,</font> <font color=Green>Eq</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font></code>. Это называется контекстом объявления типа. В контексте мы говорим, что данный тип должен быть из класса <code><font color=Green>Group</font></code> или из классов <code><font color=Green>Group</font></code> и <code><font color=Green>Eq</font></code>. Это значит, что для этого типа мы можем пользоваться методами из этих классов.</p>
 <p>В первой функции <code><font color=Black>twice</font></code> мы воспользовались методом <code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font></code> из класса <code><font color=Green>Group</font></code>, поэтому функция имеет контекст <code><font color=Green>Group</font> a <font color="#b2590f">=&gt;</font></code>. А во второй функции <code><font color=Black>isE</font></code> мы воспользовались методом <code><font color=Black>e</font></code> из класса <code><font color=Green>Group</font></code> и методом <code><font color=Black>(</font><font color=Black>==</font><font color=Black>)</font></code> из класса <code><font color=Green>Eq</font></code>, поэтому функция имеет контекст <code><font color=Black>(</font><font color=Green>Group</font> a<font color=Black>,</font> <font color=Green>Eq</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font></code>.</p>
-<h3 id="контекст-классов-типов.-суперклассы"><a href="#TOC">Контекст классов типов. Суперклассы</a></h3>
+<h3 id="контекст-классов-типов.-суперклассы"><a href="#контекст-классов-типов.-суперклассы">Контекст классов типов. Суперклассы</a></h3>
 <p>Класс типов также может содержать контекст. Он указывается между словом <code><font color="#b2590f">class</font></code> и именем класса. Например</p>
 <pre><font color="#b2590f">class</font> <font color=Green>IsPerson</font> a
 
@@ -255,7 +248,7 @@
 <pre><font color=Black>fun</font> <font color="#b2590f">::</font> <font color=Green>HasName</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
 <p>Это означает, что мы можем пользоваться для значений типа <code><font color=Black>a</font></code> как методами из класса <code><font color=Green>HasName</font></code>, так и методами из класса <code><font color=Green>IsPerson</font></code>. Поскольку если тип принадлежит классу <code><font color=Green>HasName</font></code>, то он также принадлежит и <code><font color=Green>IsPerson</font></code>.</p>
 <p>Запись <code><font color=Black>(</font><font color=Green>IsPerson</font> a <font color="#b2590f">=&gt;</font> <font color=Green>HasName</font> a<font color=Black>)</font></code> немного обманывает, было бы точнее писать <code><font color=Green>IsPerson</font> a <font color=Black>&lt;=</font> <font color=Green>HasName</font> a</code>, если тип <code><font color=Black>a</font></code> в классе <code><font color=Green>HasName</font></code>, то он точно в классе <code><font color=Green>IsPerson</font></code>, но в Haskell закрепилась другая запись.</p>
-<h2 id="экземпляры-классов-типов"><a href="#TOC">Экземпляры классов типов</a></h2>
+<h2 id="экземпляры-классов-типов"><a href="#экземпляры-классов-типов">Экземпляры классов типов</a></h2>
 <p>В <em>экземплярах</em> (instance) классов типов мы даём конкретное наполнение для методов класса типов. Определение экземпляра пишется так же, как и определение класса типа, но вместо <code><font color="#b2590f">class</font></code> мы пишем <code><font color="#b2590f">instance</font></code>, вместо некоторого типа наш конкретный тип, а вместо типов методов – уравнения для них.</p>
 <p>Определим экземпляры для <code><font color=Green>Bool</font></code></p>
 <p>Класс <code><font color=Green>Eq</font></code>:</p>
@@ -290,9 +283,9 @@
  <font color="#b2590f">=&gt;</font> and <font color=Green>True</font>      <font color=Green>False</font>
  <font color="#b2590f">=&gt;</font> <font color=Green>False</font></pre>
 <p>Проверять свойства очень важно, потому что другие люди, читая ваш код и используя ваши функции, будут на них рассчитывать.</p>
-<h2 id="ядро-haskell"><a href="#TOC">Ядро Haskell</a></h2>
+<h2 id="ядро-haskell"><a href="#ядро-haskell">Ядро Haskell</a></h2>
 <p>Фуууухх. Мы закончили наш пробег. Теперь можно остановиться, отдышаться и подвести итоги. Давайте вспомним синтаксические конструкции, которые нам встретились.</p>
-<h4 id="модули"><a href="#TOC">Модули</a></h4>
+<h4 id="модули"><a href="#модули">Модули</a></h4>
 <pre><font color="#b2590f">module</font> <font color=Green>New</font><font color=Black>(</font>edef1<font color=Black>,</font> edef2<font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> edefN<font color=Black>)</font> <font color="#b2590f">where</font>
 
 <font color="#b2590f">import</font> <font color=Green>Old1</font><font color=Black>(</font>idef11<font color=Black>,</font> idef12<font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> idef1N<font color=Black>)</font>
@@ -303,7 +296,7 @@
 <font color="#2149c1">-- определения :</font>
 <font color=Black>...</font></pre>
 <p>Ключевые слова: <code><font color="#b2590f">module</font></code>, <code><font color="#b2590f">where</font></code>, <code><font color="#b2590f">import</font></code>. Мы определили модуль с именем <code><font color=Green>New</font></code>, который экспортирует определения <code><font color=Black>edef1</font></code>, <code><font color=Black>edef2</font></code>, … , <code><font color=Black>edefN</font></code>. И импортирует определения из модулей <code><font color=Green>Old1</font></code>, <code><font color=Green>Old2</font></code>, и т.д., определения написаны в скобках за ключевыми словами <code><font color="#b2590f">import</font></code> и именами модулей.</p>
-<h4 id="типы-1"><a href="#TOC">Типы</a></h4>
+<h4 id="типы-1"><a href="#типы-1">Типы</a></h4>
 <p>Тип определяется с помощью:</p>
 <ul>
 <li><p>Перечисления альтернатив через <code><font color="#b2590f">|</font></code></p>
@@ -322,28 +315,28 @@
           <font color="#b2590f">|</font> <font color=Green>NameK</font>  <font color=Green>SubK1</font>  <font color=Green>SubK2</font>  <font color=Black>...</font>  <font color=Green>SubKP</font></pre></li>
 </ul>
 <p>Такие типы называют <em>алгебраическими типами данных</em>. С помощью типов мы определяем основные понятия и способы их комбинирования.</p>
-<h4 id="значения-1"><a href="#TOC">Значения</a></h4>
+<h4 id="значения-1"><a href="#значения-1">Значения</a></h4>
 <p>Как это ни странно, нам встретилась лишь одна операция создания значений: <em>определение синонима</em>. Она пишется так</p>
 <pre><font color=Black>name</font> x1  x2 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Green>Expr1</font>
 <font color=Black>name</font> x1  x2 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Green>Expr2</font>
 <font color=Black>name</font> x1  x2 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Green>Expr3</font></pre>
 <p>Слева от знака равно стоит составное имя, а справа от знака равно некоторое выражение, построенное согласно типам. Разные комбинации имени <code><font color=Black>name</font></code> с параметрами определяют разные уравнения для синонима <code><font color=Black>name</font></code>.</p>
 <p>Также мы видели символ <code><font color="#b2590f">_</font></code>, который означает “всё, что угодно” на месте аргумента. А также мы увидели, как с помощью переменных можно перетаскивать значения из аргументов в результат.</p>
-<h4 id="классы-типов-1"><a href="#TOC">Классы типов</a></h4>
+<h4 id="классы-типов-1"><a href="#классы-типов-1">Классы типов</a></h4>
 <p>Нам встретилась одна конструкция определения классов типов:</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Name</font> a <font color="#b2590f">where</font>
     method1 <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>...</font>
     method2 <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>...</font>
     <font color=Black>...</font>
     methodN <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>...</font></pre>
-<h4 id="экземпляры-классов-типов-1"><a href="#TOC">Экземпляры классов типов</a></h4>
+<h4 id="экземпляры-классов-типов-1"><a href="#экземпляры-классов-типов-1">Экземпляры классов типов</a></h4>
 <p>Нам встретилась одна конструкция определения экземпляров классов типов:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Name</font> <font color=Green>Type</font> <font color="#b2590f">where</font>
     method1 x1 <font color=Black>...</font> xN <font color="#b2590f">=</font> <font color=Black>...</font>
     method2 x1 <font color=Black>...</font> xM <font color="#b2590f">=</font> <font color=Black>...</font>
     <font color=Black>...</font>
     methodN x1 <font color=Black>...</font> xP <font color="#b2590f">=</font> <font color=Black>...</font></pre>
-<h4 id="типы-значения-и-классы-типов"><a href="#TOC">Типы, значения и классы типов</a></h4>
+<h4 id="типы-значения-и-классы-типов"><a href="#типы-значения-и-классы-типов">Типы, значения и классы типов</a></h4>
 <p>Каждое значение имеет тип. Значение <code><font color=Black>v</font></code> имеет тип <code><font color=Green>T</font></code> на Haskell:</p>
 <pre><font color=Black>v</font> <font color="#b2590f">::</font> <font color=Green>T</font></pre>
 <p>Функциональный тип обозначается стрелкой: <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code></p>
@@ -351,12 +344,12 @@
 <p>Тип значения может иметь контекст, он говорит о том, что параметр должен принадлежать классу типов:</p>
 <pre><font color=Black>fun1</font> <font color="#b2590f">::</font> <font color=Green>С</font> a                 <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>fun2</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>C1</font> a<font color=Black>,</font> <font color=Green>C2</font><font color=Black>,</font> <font color=Black>...</font><font color=Black>,</font> <font color=Green>CN</font><font color=Black>)</font> <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
-<h4 id="суперклассы"><a href="#TOC">Суперклассы</a></h4>
+<h4 id="суперклассы"><a href="#суперклассы">Суперклассы</a></h4>
 <p>Также контекст может быть и у классов, запись</p>
 <pre><font color="#b2590f">class</font> <font color=Green>A</font> a <font color="#b2590f">=&gt;</font> <font color=Green>B</font> a <font color="#b2590f">where</font>
     <font color=Black>...</font></pre>
 <p>Означает, что класс <code><font color=Green>B</font></code> целиком содержится в <code><font color=Green>A</font></code>, и перед тем как объявлять экземпляр для класса <code><font color=Green>B</font></code>, необходимо определить экземпляр для класса <code><font color=Green>A</font></code>. При этом класс <code><font color=Green>A</font></code> называют суперклассом для <code><font color=Green>B</font></code>.</p>
-<h2 id="двумерный-синтаксис"><a href="#TOC">Двумерный синтаксис</a></h2>
+<h2 id="двумерный-синтаксис"><a href="#двумерный-синтаксис">Двумерный синтаксис</a></h2>
 <p>Наверное вы обратили внимание на то, что в Haskell нет разделителей строк и дополнительных скобок, которые бы указывали границы определения классов или функций. Компилятор Haskell ориентируется по переносам строки и отступам.</p>
 <p>Так если мы пишем в классе:</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Eq</font> a <font color="#b2590f">where</font>
@@ -367,10 +360,10 @@
     <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
 <p>То смысл был бы совсем другим. Теперь мы определяем класс <code><font color=Green>Eq</font></code> с одним методом <code><font color=Black>==</font></code> и указываем тип некоторого значения <code><font color=Black>(</font><font color=Black>/=</font><font color=Black>)</font></code>. Основное правило такое: конструкции, расположенные на одном уровне, выравниваются с помощью отступов. Чем правее находится определение, тем глубже оно вложено в какую-нибудь специальную конструкцию. Пока нам встретилось лишь несколько специальных конструкций, но дальше появятся и другие. Часто отступы набираются с помощью табуляции. Это удобно. Но лучше пользоваться пробелами или настроить ваш любимый текстовый редактор так, чтобы он автоматически заменял табуляцию на пробелы. Зачем это нужно? Дело в том, что в разных редакторах на табуляцию может быть назначено разное количество пробелов, так код набранный с двухзначной табуляцией будет очень трудно прочитать если открыть его в редакторе с четырьмя пробелами вместо табуляции. Поскольку очень часто табуляция перемежается с пробелами и выравнивание может “поехать”. Поэтому признаком хорошего стиля в Haskell считается полный отказ от табуляции.</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>Итак подведём итоги: у нас есть две операции для определения типов (сумма и произведение) и по одной для значений (синонимы), классов типов и экземпляров. А также бесконечное множество их комбинаций, из которых и состоит увлекательный мир Haskell. Конечно не только из них, есть нюансы, синтаксический сахар, расширения языка. Об этом и многом другом мы узнаем из этой книги.</p>
 <p>Интересно, что в Haskell, несмотря на обилие конструкций и библиотек, ты чувствуешь, что за ними стоит нечто из мира науки, мира чистого знания. Ты не просто учишься пользоваться определёнными функциями или классами, а узнаёшь что-то новое и красивое.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <p>Потренируйтесь в описаниях в рамках системы типов. Вы определяете базовые понятия и способы их комбинирования. У вас есть три операции:</p>
 <ul>
 <li><p>Сумма типов <code><font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A1</font> <font color="#b2590f">|</font> <font color=Green>A2</font></code>. Перечисление альтернатив</p></li>

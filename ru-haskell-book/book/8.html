@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
@@ -21,9 +22,7 @@
 <li><a href="#ленивое-и-энергичное-чтение-файлов">Ленивое и энергичное чтение файлов</a></li>
 <li><a href="#аргументы-программы">Аргументы программы</a></li>
 <li><a href="#вызов-других-программ">Вызов других программ</a></li>
-<li><a href="#случайные-значения">Случайные значения</a><ul>
-<li><a href="#цитатник">Цитатник</a></li>
-</ul></li>
+<li><a href="#случайные-значения">Случайные значения</a></li>
 <li><a href="#исключения">Исключения</a></li>
 <li><a href="#потоки-текстовых-данных">Потоки текстовых данных</a></li>
 </ul></li>
@@ -44,10 +43,10 @@
 </div></div>  
  </div> 
 
-<h1 id="io"><a href="#TOC">IO</a></h1>
+<h1 id="io"><a href="#io">IO</a></h1>
 <p>Пока мы не написали ещё ни одной программы, которой можно было бы пользоваться вне интерпретатора. Предполагается, что программа как-то взаимодействует с пользователем (ожидает ввода с клавиатуры) и изменяет состояние компьютера (выводит сообщения на экран, записывает данные в файлы). Но пока что мы не знаем как взаимодействовать с окружающим миром.</p>
 <p>Самое время узнать! Сначала мы посмотрим какие проблемы связаны с реализацией взаимодействия с пользователем. Как эти проблемы решаются в Haskell. Потом мы научимся решать несколько типичных задач, связанных с вводом/выводом.</p>
-<h2 id="чистота-и-побочные-эффекты"><a href="#TOC">Чистота и побочные эффекты</a></h2>
+<h2 id="чистота-и-побочные-эффекты"><a href="#чистота-и-побочные-эффекты">Чистота и побочные эффекты</a></h2>
 <p>Когда мы определяем новые функции или константы мы лишь даём новые имена комбинациям значений. В этом смысле у нас ничего не изменяется. По-другому это называется <em>функциональной чистотой</em> (referential transparency). Это свойство говорит о том, что мы свободно можем заменить в тексте программы любой синоним на его определение и это никак не скажется на результате.</p>
 <p>Функция является чистой, если её выход зависит только от её входов. В любой момент выполнения программы для одних и тех же входов будет один и тот же выход. Это свойство очень ценно. Оно облегчает понимание поведения функции. Оно говорит о том, что функция может зависеть от других функций только <em>явно</em>. Если мы видим, что другая функция используется в данной функции, то она используется в этой функции. У нас нет таинственных глобальных переменных, в которые мы можем записывать данные из одной функции и читать их с помощью другой. Мы вообще не можем ничего записывать и ничего читать. Мы не можем изменять состояния, мы можем лишь давать новые имена или строить новые выражения из уже существующих.</p>
 <p>Но в этот статичный мир описаний не вписывается взаимодействие с пользователем. Предположим, что мы хотим написать такую программу: мы набираем на клавиатуре имя файла, нажимаем <code><font color=Green>Enter</font></code> и программа показывает на экране содержимое этого файла, затем мы набираем текст, нажимаем <code><font color=Green>Enter</font></code> и текст дописывается в конец файла, файл сохраняется. Это описание предполагает упорядоченность действий. Мы не можем сначала сохранить текст, затем прочитать обновления. Тогда текст останется прежним.</p>
@@ -58,7 +57,7 @@
 <pre><font color=Black>print</font> <font color=Black>$</font> getChar <font color="#b2590f">:</font> getChar <font color="#b2590f">:</font> <font color=Green>[]</font></pre>
 <p>Это выражение уже говорит о том, что читать с клавиатуры необходимо дважды! А ведь мы сделали обычное преобразование, заменили вхождения синонима на его определение, но смысл изменился. Взаимодействие с пользователем нарушает чистоту функций, нечистые функции называются функциями с побочными эффектами.</p>
 <p>Как быть? Можно ли внести в мир описаний порядок выполнения, сохранив преимущества функциональной чистоты? Долгое время этот вопрос был очень трудным для чистых функциональных языков. Как можно пользоваться языком, который не позволяет сделать такие базовые вещи как ввод/вывод?</p>
-<h2 id="монада-io"><a href="#TOC">Монада IO</a></h2>
+<h2 id="монада-io"><a href="#монада-io">Монада IO</a></h2>
 <p> Где-то мы уже встречались с такой проблемой. Когда мы говорили о типе <code><font color=Green>ST</font></code> и обновлении значений. Там тоже были проблемы порядка вычислений, нам удалось преодолеть их с помощью скрытой передачи фиктивного состояния. Тогда наши обновления были <em>чистыми</em>, мы могли безболезненно скрыть их от пользователя. Теперь всё гораздо труднее. Нам всё-таки хочется взаимодействовать с внешним миром. Для обозначения внешнего мира мы определим специальный тип и назовём его <code><font color=Green>RealWorld</font></code>:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>IO</font><font color=Black>(</font>
     <font color=Green>IO</font>
@@ -131,7 +130,7 @@
 <pre><font color=Green>Prelude</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> res <font color="#b2590f">=</font> liftA2 <font color=Black>(</font><font color="#b2590f">\</font>a b <font color="#b2590f">-&gt;</font> a<font color="#b2590f">:</font>b<font color="#b2590f">:</font><font color=Green>[]</font><font color=Black>)</font> getChar getChar <font color=Black>&gt;&gt;=</font> print
 <font color=Green>Prelude</font> <font color=Green>Control</font><font color=Black>.</font><font color=Green>Applicative</font><font color=Black>&gt;</font> res
 <font color=Black>qw</font><font color=Black>"qw"</font></pre>
-<h2 id="как-пишутся-программы"><a href="#TOC">Как пишутся программы</a></h2>
+<h2 id="как-пишутся-программы"><a href="#как-пишутся-программы">Как пишутся программы</a></h2>
 <p>Мы уже умеем читать с клавиатуры и выводить значения на экран. Давайте научимся писать самостоятельные программы. Программа обозначается специальным именем:</p>
 <pre><font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
 <p>Если модуль называется <code><font color=Green>Main</font></code> или в нём нет директивы <code><font color="#b2590f">module</font> <font color=Black>...</font> <font color="#b2590f">where</font></code> и в модуле есть функция <code><font color=Black>main</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font></code>, то после компиляции будет сделан исполняемый файл. Его можно запускать независимо от <code><font color=Black>ghci</font></code>. Просто нажимаем дважды мышкой или вызываем из командной строки.</p>
@@ -166,8 +165,8 @@ $ ./rev3str
 321$</pre>
 <p>Видно, что после вывода не произошёл перенос каретки, терминал приглашает нас к вводу команды сразу за ответом, если перенос нужен, можно воспользоваться функцией <code><font color=Black>putStrLn</font></code>. Обратите внимание на то, что кроме бинарного файла появились ещё два файла с расширениями <code><font color=Black>.</font>hi</code> и <code><font color=Black>.</font>o</code>. Первый файл называется интерфейсным он описывает какие в модуле определения, а второй файл называется объектным. Он содержит скомпилированный код модуля.</p>
 <p>Стоит отметить команду <code><font color=Black>runhaskell</font></code>. Она запускает программу без создания дополнительных файлов. Но в этом случае выполнение программы будет происходить медленнее.</p>
-<h2 id="типичные-задачи-io"><a href="#TOC">Типичные задачи IO</a></h2>
-<h3 id="вывод-на-экран"><a href="#TOC">Вывод на экран</a></h3>
+<h2 id="типичные-задачи-io"><a href="#типичные-задачи-io">Типичные задачи IO</a></h2>
+<h3 id="вывод-на-экран"><a href="#вывод-на-экран">Вывод на экран</a></h3>
 <p>Нам уже встретилось несколько функций вывода на экран. Это функции: <code><font color=Black>print</font></code> (вывод значения из экземпляра класса <code><font color=Green>Show</font></code>), <code><font color=Black>putStr</font></code> (вывод строки) и <code><font color=Black>putStrLn</font></code> (вывод строки с переносом). Каждый раз когда мы набираем какое-нибудь выражение в строке интерпретатора и нажимаем <code><font color=Green>Enter</font></code>, интерпретатор применяет к выражению функцию <code><font color=Black>print</font></code> и мы видим его на экране.</p>
 <p>Из простейших функций вывода на экран осталось не рассмотренной лишь функция <code><font color=Black>putChar</font></code>, но я думаю вы без труда догадаетесь по типу и имени чем она занимается:</p>
 <pre><font color=Black>putChar</font> <font color="#b2590f">::</font> <font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
@@ -175,13 +174,13 @@ $ ./rev3str
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> putStr <font color=Black>"Hello"</font> <font color=Black>&gt;&gt;</font> putChar <font color=Black>' '</font> <font color=Black>&gt;&gt;</font> putStrLn <font color=Black>"World!"</font> 
 <font color=Green>Hello</font> <font color=Green>World</font><font color=Black>!</font></pre>
 <p>Обратите внимание на применение постоянной функции для монад <code><font color=Black>&gt;&gt;</font></code>. В этом выражении нас интересует не результат, а те побочные эффекты, которые выполняются при композиции специальных функций. Также мы пользовались функцией <code><font color=Black>&gt;&gt;</font></code> в сочетании с монадой <code><font color=Green>Writer</font></code> для накопления результата.</p>
-<h3 id="ввод-пользователя"><a href="#TOC">Ввод пользователя</a></h3>
+<h3 id="ввод-пользователя"><a href="#ввод-пользователя">Ввод пользователя</a></h3>
 <p>Мы уже умеем принимать от пользователя буквы. Это делается функцией <code><font color=Black>getChar</font></code>. Функцией <code><font color=Black>getLine</font></code> мы можем прочитать целую строчку. Строка читается до тех пор пока мы не нажмём <code><font color=Green>Enter</font></code>.</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> fmap reverse <font color=Black>$</font> getLine
 <font color=Green>Hello</font><font color="#2149c1">-</font>hello<font color=Black>!</font>
 <font color=Black>"!olleh-olleH"</font></pre>
 <p>Есть ещё одна функция для чтения строк, она называется <code><font color=Black>getContents</font></code>. Основное отличие от <code><font color=Black>getLine</font></code> заключается в том, что содержание не читается сразу, а откладывается на потом, когда содержание действительно понадобится. Это ленивый ввод. Для задачи чтения символов с терминала эта функция может показаться странной. Но часто в символы вводятся не вручную, а передаются из другого файла. Например, если мы направим на ввод данные из какого-нибудь большого-большого файла, файл не будет читаться сразу, и память не будет заполнена не нужным пока содержанием. Вместо этого программа отложит считывание на потом и будет заниматься им лишь тогда, когда оно понадобится в вычислениях. Это может существенно снизить расход памяти. Мы читаем файл в 2Гб моментально (мы делаем вид, что читаем его). А на самом деле сохраняем себе задачу на будущее: читать ввод, когда придёт пора.</p>
-<h3 id="чтение-и-запись-файлов"><a href="#TOC">Чтение и запись файлов</a></h3>
+<h3 id="чтение-и-запись-файлов"><a href="#чтение-и-запись-файлов">Чтение и запись файлов</a></h3>
 <p>Для чтения и записи файлов есть три простые функции:</p>
 <pre><font color="#b2590f">type</font> <font color=Green>FilePath</font> <font color="#b2590f">=</font> <font color=Green>String</font>
 
@@ -216,7 +215,7 @@ $ ./rev3str
 <font color=Black>input</font> file<font color="#b2590f">:</font> test
 <font color=Green>Hello</font><font color=Black>!</font><font color=Green>Hi</font><font color=Black>)</font></pre>
 <p>В самом начале наш файл пуст, поэтому сначала мы видим пустую строчку вместо содержания, но потом мы начинаем добавлять в него новые записи.</p>
-<h3 id="ленивое-и-энергичное-чтение-файлов"><a href="#TOC">Ленивое и энергичное чтение файлов</a></h3>
+<h3 id="ленивое-и-энергичное-чтение-файлов"><a href="#ленивое-и-энергичное-чтение-файлов">Ленивое и энергичное чтение файлов</a></h3>
 <p>С чтением файлов связана одна тонкость. Функция <code><font color=Black>readFile</font></code> читает содержимое файла в ленивом стиле. Подробнее о ленивой стратегии вычислений мы поговорим в следующей главе. По ка отметим, что <code><font color=Black>readFile</font></code> не читает следующую порцию файла до тех пор пока она не понадобится в программе. Иногда это очень удобно. Например мы можем читать содержание очень большого файла и составлять какую-нибудь статистику на основе прочитанного текста. При этом в памяти будет храниться лишь малая часть файла. Но иногда это свойство мешает. Рассмотрим такую задачу: перевернуть текст в файле под именем <code><font color=Black>"test"</font></code>. Мы должны сначала считать текст из файла, затем перевернуть его и в конце записать в <em>тот же</em> файл. Мы могли бы написать эту программу так:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
 
@@ -234,7 +233,7 @@ $ ./rev3str
 <font color=Black>inFile</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>inFile</font> fun file <font color="#b2590f">=</font> writeFile file <font color=Black>.</font> fun <font color=Black>=&lt;&lt;</font> <font color=Green>StrictIO</font><font color=Black>.</font>readFile file</pre>
 <p>Функция <code><font color=Black>main</font></code> осталась прежней. Теперь наша программа спокойно переворачивает текст файла.</p>
-<h3 id="аргументы-программы"><a href="#TOC">Аргументы программы</a></h3>
+<h3 id="аргументы-программы"><a href="#аргументы-программы">Аргументы программы</a></h3>
 <p>Пока программы, которые мы создавали просили пользователя ввести данные вручную при выполнении программы, они работали в интерактивном режиме, но чаще всего программы принимают какие-нибудь начальные данные, установки или флаги. Читать начальные данные можно с помощью функций из модуля <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Environment</font></code>.</p>
 <p>Узнать, что передаётся в программу можно функцией <code><font color=Black>getArgs</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color="#b2590f">[</font><font color=Green>String</font><font color="#b2590f">]</font></code>. Она возвращает список строк. Это те строки, что мы написали за именем программы через пробел при вызове в терминале. Напишем простую программу, которая распечатывает свои аргументы по порядку, в виде пронумерованного списка.</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
@@ -285,11 +284,11 @@ $ ./rev3str
 <font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> <font color="#b2590f">:!</font> <font color=Black>./</font>ninja sad
 <font color=Green>Hi</font><font color=Black>!</font> <font color=Green>My</font> name is ninja<font color=Black>.</font>
 <font color=Green>Ooohh</font><font color=Black>.</font> <font color=Green>Have</font> you got some news for me<font color=Black>?</font></pre>
-<h3 id="вызов-других-программ"><a href="#TOC">Вызов других программ</a></h3>
+<h3 id="вызов-других-программ"><a href="#вызов-других-программ">Вызов других программ</a></h3>
 <p>Мы можем вызвать любую программу из нашей программы. Это делается с помощью функции <code><font color=Black>system</font></code>, которая живёт в модуле <code><font color=Green>System</font></code>.</p>
 <pre><font color=Black>system</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>ExitCode</font></pre>
 <p>Она принимает строку и запускает её в терминале. Так же как мы делали это с помощью приставки <code><font color="#b2590f">:!</font></code> в интерпретаторе. Значение типа <code><font color=Green>ExitCode</font></code> говорит о результате выполнения строки. Он может быть успешным, тогда функция вернёт <code><font color=Green>ExitSuccess</font></code> и закончиться ошибкой, тогда мы сможем узнать код ошибки по значению <code><font color=Green>ExitFailure</font> <font color=Green>Int</font></code>.</p>
-<h3 id="случайные-значения"><a href="#TOC">Случайные значения</a></h3>
+<h3 id="случайные-значения"><a href="#случайные-значения">Случайные значения</a></h3>
 <p>Функции для создания случайных значений определены в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font></code>. Модуль <code><font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font></code> входит в библиотеку <code><font color=Black>random</font></code>. Если в вашей поставке <code><font color=Black>ghc</font></code> его не оказалось, вы можете установить его вручную через интернет, набрав в командной строке <code><font color=Black>cabal</font> install random</code>. Сначала давайте разберёмся как генерируются случайные числа. Стандартные случайные числа очень похожи на те, что были у нас, когда мы рассматривали примеры специальных функций. У нас есть генератор случайных чисел типа <code><font color=Black>g</font></code> и с помощью функции <code><font color=Black>next</font></code> мы можем получить обновлённый генератор и случайное целое число:</p>
 <pre><font color=Black>next</font> <font color="#b2590f">::</font> g <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> g<font color=Black>)</font></pre>
 <p>Не правда ли этот тип очень похож на тип результата функций с состоянием. В качестве состояния теперь выступает генератор случайных чисел <code><font color=Black>g</font></code>. Это поведение описывается классом <code><font color=Green>RandomGen</font></code>:</p>
@@ -346,7 +345,7 @@ $ ./rev3str
 <font color=Black>"maclg"</font>
 <font color=Green>Prelude</font> <font color=Green>System</font><font color=Black>.</font><font color=Green>Random</font><font color=Black>&gt;</font> fmap <font color=Black>(</font>take <font color="#0000ee">5</font> <font color=Black>.</font> randomRs <font color=Black>(</font><font color=Black>'a'</font><font color=Black>,</font> <font color=Black>'z'</font><font color=Black>)</font><font color=Black>)</font> newStdGen
 <font color=Black>"nfjoa"</font></pre>
-<h4 id="цитатник"><a href="#TOC">Цитатник</a></h4>
+<h4 id="цитатник"><a href="#цитатник">Цитатник</a></h4>
 <p>Напишем небольшую программу, которая будет выводить на экран в случайном порядке цитаты. Цитаты хранятся в виде списка пар <code><font color=Black>(</font>автор<font color=Black>,</font> высказывание<font color=Black>)</font></code>. Сначала мы генерируем случайное число в диапазоне длины списка, затем выбираем цитату под этим номером и выводим её на экран.</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Main</font> <font color="#b2590f">where</font>
 
@@ -391,7 +390,7 @@ $ ./rev3str
 <font color=Green>Не</font> гоняйся за счастьем<font color=Black>,</font> оно всегда находится в тебе самом
 
 <font color=Green>Пифагор</font></pre>
-<h3 id="исключения"><a href="#TOC">Исключения</a></h3>
+<h3 id="исключения"><a href="#исключения">Исключения</a></h3>
 <p>Мы уже знаем несколько типов, с помощью которых функции могут сказать, что что-то случилось не так. Это типы <code><font color=Green>Maybe</font></code> и <code><font color=Green>Either</font></code>. Если функции не удалось вычислить значение она возвращает специальное значение <code><font color=Green>Nothing</font></code> или <code><font color=Green>Left</font> reason</code>, по которому следующая функция может опознать ошибку и предпринять какие-нибудь действия. Так обрабатываются ошибки в чистых функциях. В этом разделе мы узнаем о том, как обрабатываются ошибки, которые происходят при взаимодействии с внешним миром, ошибки, которые происходят внутри типа <code><font color=Green>IO</font></code>.</p>
 <p>Ошибки функций с побочными эффектами обрабатываются с помощью специальной функции <code><font color=Black>catch</font></code>, она определена в <code><font color=Green>Prelude</font></code>:</p>
 <pre><font color=Black>catch</font> <font color="#b2590f">::</font> <font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>IOError</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> a</pre>
@@ -436,7 +435,7 @@ $ ./rev3str
 
 <font color=Black>msg2</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>++</font> <font color=Black>"Try again."</font><font color=Black>)</font></pre>
 <p>В модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Error</font></code> вы можете найти ещё много разных предикатов.</p>
-<h3 id="потоки-текстовых-данных"><a href="#TOC">Потоки текстовых данных</a></h3>
+<h3 id="потоки-текстовых-данных"><a href="#потоки-текстовых-данных">Потоки текстовых данных</a></h3>
 <p>Обмен данными, чтение и запись происходят с помощью потоков. Каждый поток имеет <em>дескриптор</em> (handle), через него мы можем общаться с потоком, например считывать данные или записывать. Функции для работы с потоками данных определены в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font></code>.</p>
 <p>В любой момент в системе открыты три стандартных потока:</p>
 <ul>
@@ -492,19 +491,19 @@ $ ./rev3str
 
 <font color=Black>writeFile</font> <font color="#b2590f">::</font> <font color=Green>FilePath</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>writeFile</font> f txt <font color="#b2590f">=</font> withFile f <font color=Green>WriteMode</font> <font color=Black>(</font><font color="#b2590f">\</font>hdl <font color="#b2590f">-&gt;</font> hPutStr hdl txt<font color=Black>)</font></pre>
-<h2 id="форточка-в-мир-побочных-эффектов"><a href="#TOC">Форточка в мир побочных эффектов</a></h2>
+<h2 id="форточка-в-мир-побочных-эффектов"><a href="#форточка-в-мир-побочных-эффектов">Форточка в мир побочных эффектов</a></h2>
 <p>В самом начале главы я сказал о том, что из мира <code><font color=Green>IO</font></code><br />нет выхода. Нет функции с типом <code><font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> a</code>. На самом деле выход есть. Функция с таким типом живёт в модуле <code><font color=Green>System</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Unsafe</font></code>:</p>
 <pre><font color=Black>unsafePerformIO</font> <font color="#b2590f">::</font> <font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> a</pre>
 <p>Длинное имя функции намекает на то, что её необходимо использовать с <em>крайней</em> осторожностью. Поскольку последствия могут быть непредсказуемыми.</p>
 <p>Эта функция используется при чтении конфигурационных файлов. Если есть уверенность в том, что файл будет только читаться и во время выполнения программы файл не может быть изменён другой программой, то мы можем считать, что его значение окажется неизменным на протяжении работы программы. Это говорит о том, что нам не важно когда читать данные. Поэтому здесь мы вроде бы ничем не рискуем. “Вроде бы” потому что ответственность за постоянство файла лежит на наших плечах.</p>
 <p>Эта функция часто используется при вызове функций С через Haskell. В Haskell есть возможность вызывать функции, написанные на C. Но по умолчанию такие функции заворачиваются в тип <code><font color=Green>IO</font></code>. Если функция является чистой в С, то она будет чистой и при вызове через Haskell. Мы можем поручиться за её чистоту и вычислитель нам поверит. Но если мы его обманули, мы пожнём плоды своего обмана.</p>
-<h3 id="отладка-программ"><a href="#TOC">Отладка программ</a></h3>
+<h3 id="отладка-программ"><a href="#отладка-программ">Отладка программ</a></h3>
 <p>Раз уж речь зашла о “грязных” возможностях языка стоит упомянуть функцию <code><font color=Black>trace</font></code> из модуля <code><font color=Green>Debug</font><font color=Black>.</font><font color=Green>Trace</font></code>. Посмотрим на её тип:</p>
 <pre><font color=Black>trace</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</pre>
 <p>Это служебная функция эхо-печати. Когда дело доходит до вычисления функции <code><font color=Black>trace</font></code> на экран выводится строка, которая была передана в неё первым аргументом, после чего функция возвращает второй аргумент. Это функция <code><font color=Black>id</font></code> с побочным эффектом вывода сообщения на экран. Ею можно пользоваться для отладки. Например так можно вернуть значение и распечатать его:</p>
 <pre><font color=Black>echo</font> <font color="#b2590f">::</font> <font color=Green>Show</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>echo</font> a <font color="#b2590f">=</font> trace <font color=Black>(</font>show a<font color=Black>)</font> a</pre>
-<h2 id="композиция-монад"><a href="#TOC">Композиция монад</a></h2>
+<h2 id="композиция-монад"><a href="#композиция-монад">Композиция монад</a></h2>
 <p>Эта глава завершает наше путешествие в мире типов-монад. Мы начали наше знакомство с монадами с композиции, мы определили класс <code><font color=Green>Monad</font></code> через класс <code><font color=Green>Kleisli</font></code>, который упрощал составление специальных функций вида <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> m b</code>. Тогда мы познакомились с самыми простыми типами монадами (списки и частично определённые функции), потом мы перешли к типам посложнее, мы научились проводить вычисления с состоянием. В этой главе мы рассмотрели самый важный тип монаду <code><font color=Green>IO</font></code>. Мне бы хотелось замкнуть этот рассказ на теме композиции. Мы поговорим о композиции нескольких монад.<br />Если вы посмотрите в исходный код библиотеки <code><font color=Black>transformers</font></code>, то увидите совсем другое определение для <code><font color=Green>State</font></code>:</p>
 <pre><font color="#b2590f">type</font> <font color=Green>State</font> s <font color="#b2590f">=</font> <font color=Green>StateT</font> s <font color=Green>Identity</font>
 
@@ -554,11 +553,11 @@ $ ./rev3str
 <pre><font color="#b2590f">class</font> <font color=Green>Monad</font> m <font color="#b2590f">=&gt;</font> <font color=Green>MonadIO</font> m <font color="#b2590f">where</font>
     liftIO <font color="#b2590f">::</font> <font color=Green>IO</font> a <font color="#b2590f">-&gt;</font> m a</pre>
 <p>Этот класс живёт в модуле <code><font color=Green>Control</font><font color=Black>.</font><font color=Green>Monad</font><font color=Black>.</font><font color=Green>IO</font><font color=Black>.</font><font color=Green>Class</font></code>. С его помощью мы можем выполнять <code><font color=Green>IO</font></code>-действия внутри другой монады. Эта возможность бывает очень полезной. Вам она обязательно понадобится, если вы начнёте писать веб-сайты на Haskell (например в happstack) или будете пользоваться библиотеками, которые надстроены над C (например физический движок Hipmunk).</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>Наконец-то мы научились писать программы! Программы, которые можно исполнять за пределами интерпретатора. Для этого нам пришлось познакомиться с типом <code><font color=Green>IO</font></code>. Экземпляр класса <code><font color=Green>Monad</font></code> для этого типа интерпретируется специальным образом. Он вносит упорядоченность в выполнение программы. В нашем статическом мире описаний появляются такие понятия как “сначала”, “затем”, “до” и “после”. Но они не смогут нанести много вреда.</p>
 <p>Вычисление операций с побочными эффектами разбивает программу на кадры. Но это не мешает нам писать основные функции в чистом виде, подставляя их по мере необходимости в изменчивый мир побочных эффектов с помощью методов из классов <code><font color=Green>Functor</font></code>, <code><font color=Green>Applicative</font></code>, <code><font color=Green>Monad</font></code>.</p>
 <p>Мы узнали как в Haskell обстоят дела с такими типичными задачами мира побочных эффектов как ввод/вывод, чтение/запись файлов, генерация случайных значений, выполнение внешних программ, инициализация программ с помощью флагов. Также мы узнали о том, как обрабатываются специфические для типа <code><font color=Green>IO</font></code> исключения.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <p>Старайтесь свести присутствие функций с побочными эффектами к минимуму. Идеальный случай, когда тип <code><font color=Green>IO</font></code> встречается только в функции <code><font color=Black>main</font></code>. Часто программы устроены более хитрым образом и функции с побочными эффектами пытаются расползтись по всему коду. Но даже в этом случае программу можно разделить на две части: в одной живут подлинные источники побочных эффектов, такие как чтение файлов, генерация случайных значений, а в другой – чистые функции. Старайтесь устроить программу так, чтобы она была максимально чистой. Чистые функции гораздо проще комбинировать, понимать, изменять.</p>
 <ul>
 <li><p>Это упражнение даёт вам возможность почувствовать преимущества чистого кода. Вспомните функцию поиска корней методом неподвижной точки (этот пример встречался в главе о ленивых вычислениях). Напишите на основе этого примера программу, которая будет распечатывать решение и последовательность приближений. Последовательность приближений состоит из текущего значения корня и расстоянии между корнями.</p>

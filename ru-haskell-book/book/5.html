@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
@@ -43,17 +44,17 @@
 </div></div>  
  </div> 
 
-<h1 id="функции-высшего-порядка"><a href="#TOC">Функции высшего порядка</a></h1>
+<h1 id="функции-высшего-порядка"><a href="#функции-высшего-порядка">Функции высшего порядка</a></h1>
 <p> <em>Функцией высшего порядка</em> называют функцию, которая может принимать на вход функции или возвращать функции в качестве результата. За счёт частичного применения в Haskell все функции, которые принимают более одного аргумента, являются функциями высшего порядка.</p>
 <p>В этой главе мы подробно обсудим способы составления функций, недаром Haskell – функциональный язык. В Haskell функции являются очень гибким объектом, они позволяют выделять сложные способы комбинирования значений. Часто за счёт развитых средств составления новых функций в Haskell пользователь определяет лишь базовые функции, получая остальные “на лету” применением двух-трёх операций, это выглядит примерно как <code><font color=Black>(</font><font color="#0000ee">2</font><font color=Black>+</font><font color="#0000ee">3</font><font color=Black>)</font><font color=Black>*</font><font color="#0000ee">5</font></code>, где вместо чисел стоят базовые функции, а операции <code><font color=Black>+</font></code> и <code><font color=Black>*</font></code> составляют новые функции из простейших.</p>
-<h2 id="обобщённые-функции"><a href="#TOC">Обобщённые функции</a></h2>
+<h2 id="обобщённые-функции"><a href="#обобщённые-функции">Обобщённые функции</a></h2>
 <p>В этом разделе мы познакомимся с несколькими функциями, которые принимают одни функции и составляют по ним другие. Эти функции используются в Haskell очень часто. Все они живут в модуле <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font></code>. Модуль <code><font color=Green>Prelude</font></code> экспортирует их из этого модуля.</p>
-<h3 id="функция-тождества"><a href="#TOC">Функция тождества</a></h3>
+<h3 id="функция-тождества"><a href="#функция-тождества">Функция тождества</a></h3>
 <p>Начнём с самой простой функции. Это функция <code><font color=Black>id</font></code>. Она ничего не делает с аргументом, просто возвращает его:</p>
 <pre><font color=Black>id</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>id</font> x <font color="#b2590f">=</font> x</pre>
 <p>Зачем нам может понадобиться такая функция? Сама по себе она бесполезна. Она приобретает ценность при совместном использовании с другими функциями, поэтому пока мы не будем приводить примеров.</p>
-<h3 id="константная-функция"><a href="#TOC">Константная функция</a></h3>
+<h3 id="константная-функция"><a href="#константная-функция">Константная функция</a></h3>
 <p>Следующая функция <code><font color=Black>const</font></code> принимает значение и возвращает постоянную функцию. Эта функция будет возвращать константу для любого переданного в неё значения:</p>
 <pre><font color=Black>const</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> a
 <font color=Black>const</font> a <font color="#b2590f">_</font> <font color="#b2590f">=</font> a</pre>
@@ -79,7 +80,7 @@
 <p>Также мы можем определить и логическое “или”:</p>
 <pre><font color=Black>(</font><font color=Black>||</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>(</font><font color=Black>||</font><font color=Black>)</font> a <font color="#b2590f">=</font> <font color="#b2590f">if</font> a <font color="#b2590f">then</font> <font color=Black>(</font>const <font color=Green>True</font><font color=Black>)</font> <font color="#b2590f">else</font> id</pre>
-<h3 id="функция-композиции"><a href="#TOC">Функция композиции</a></h3>
+<h3 id="функция-композиции"><a href="#функция-композиции">Функция композиции</a></h3>
 <p>Функция композиции принимает две функции и составляет из них последовательное применение функций:</p>
 <pre><font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> c
 <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> f g <font color="#b2590f">=</font> <font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> f <font color=Black>(</font>g x<font color=Black>)</font></pre>
@@ -121,7 +122,7 @@
 <font color="#b2590f">=&gt;</font>  <font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> three<font color=Black>)</font>
 <font color="#b2590f">=&gt;</font>  <font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> x<font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
 <p>Так мы получили, что и ожидалось от сложения. За каждый конструктор <code><font color=Green>Succ</font></code> в первом аргументе мы добавляем применение <code><font color=Green>Succ</font></code> к результату, а вместо <code><font color=Green>Zero</font></code> протаскиваем через <code><font color=Black>id</font></code> второй аргумент.</p>
-<h3 id="аналогия-с-числами"><a href="#TOC">Аналогия с числами</a></h3>
+<h3 id="аналогия-с-числами"><a href="#аналогия-с-числами">Аналогия с числами</a></h3>
 <p>С помощью функции композиции мы можем нанизывать друг на друга списки функций. Попробуем в интерпретаторе:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> f <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> id <font color="#b2590f">[</font>sin<font color=Black>,</font> cos<font color=Black>,</font> sin<font color=Black>,</font> cos<font color=Black>,</font> exp<font color=Black>,</font> <font color=Black>(</font><font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font><font color=Black>,</font> tan<font color="#b2590f">]</font>
 <font color=Green>Prelude</font><font color=Black>&gt;</font> f <font color="#0000ee">2</font>
@@ -138,7 +139,7 @@
 <p>Если сравнить <code><font color=Black>(</font><font color=Black>.</font><font color=Black>)</font></code> с умножением, то <code><font color=Black>id</font></code> похоже на единицу, а <code><font color=Black>(</font>const a<font color=Black>)</font></code> на ноль. В самом деле для любой функции <code><font color=Black>f</font></code> и любого значения <code><font color=Black>a</font></code> выполнено тождество:</p>
 <pre><font color=Black>const</font> a  <font color=Black>.</font>  f  <font color=Black>==</font> const a</pre>
 <p>Мы словно умножаем функцию на ноль, делая её вычисление бессмысленным.</p>
-<h3 id="функция-перестановки"><a href="#TOC">Функция перестановки</a></h3>
+<h3 id="функция-перестановки"><a href="#функция-перестановки">Функция перестановки</a></h3>
 <p>Функция перестановки <code><font color=Black>flip</font></code> принимает функцию двух аргументов и меняет аргументы местами:</p>
 <pre><font color=Black>flip</font>  <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> c
 <font color=Black>flip</font> f x y <font color="#b2590f">=</font> f y x</pre>
@@ -148,7 +149,7 @@
 <font color=Green>Prelude</font><font color=Black>&gt;</font> foldr <font color=Black>(</font>flip <font color=Black>(</font><font color="#2149c1">-</font><font color=Black>)</font><font color=Black>)</font> <font color="#0000ee">0</font> <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">4</font><font color="#b2590f">]</font>
 <font color="#2149c1">-</font><font color="#0000ee">10</font></pre>
 <p>Иногда это бывает полезно.</p>
-<h3 id="функция-on"><a href="#TOC">Функция on</a></h3>
+<h3 id="функция-on"><a href="#функция-on">Функция on</a></h3>
 <p>Функция <code><font color=Black>on</font></code> (от англ. на) перед применением бинарной функции пропускает аргументы через унарную функцию:</p>
 <pre><font color=Black>on</font> <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> c
 <font color=Black>(</font><font color=Black>.*.</font><font color=Black>)</font> <font color=Black>`on`</font> f <font color="#b2590f">=</font> <font color="#b2590f">\</font>x y <font color="#b2590f">-&gt;</font> f x <font color=Black>.*.</font> f y</pre>
@@ -170,12 +171,12 @@
 
 <font color=Black>fst</font> <font color="#b2590f">=</font> <font color="#b2590f">\</font><font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a</pre>
 <p>Тем самым ввели функцию упорядочивания на парах, которая будет сравнивать пары по первому элементу. Отметим, что аналогичного эффекта можно добиться с помощью функции <code><font color=Black>comparing</font></code> из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Ord</font></code>.</p>
-<h3 id="функция-применения"><a href="#TOC">Функция применения</a></h3>
+<h3 id="функция-применения"><a href="#функция-применения">Функция применения</a></h3>
 <p>Ещё одной очень полезной функцией является функция применения <code><font color=Black>(</font><font color=Black>$</font><font color=Black>)</font></code>. Посмотрим на её определение:</p>
 <pre><font color=Black>(</font><font color=Black>$</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> b
 <font color=Black>f</font> <font color=Black>$</font> x  <font color="#b2590f">=</font>  f x</pre>
 <p>На первый взгляд её определение может показаться бессмысленным. Зачем нам специальный знак для применения, если у нас уже есть пробел? Для ответа на этот вопрос нам придётся познакомиться с приоритетом инфиксных операций.</p>
-<h2 id="приоритет-инфиксных-операций"><a href="#TOC">Приоритет инфиксных операций</a></h2>
+<h2 id="приоритет-инфиксных-операций"><a href="#приоритет-инфиксных-операций">Приоритет инфиксных операций</a></h2>
 <p>В Haskell очень часто используются бинарные операции для составления функций “на лету”. В этом помогает и частичное применение, мы можем в одном выражении применить к функции часть аргументов, построить из неё новую функцию с помощью какой-нибудь такой бинарной операции и всё это передать в другую функцию!</p>
 <p>Для сокращения числа скобок нам понадобится разобраться в понятии приоритета операции. Так например в выражении</p>
 <pre><font color=Black>&gt;</font> <font color="#0000ee">2</font> <font color=Black>+</font> <font color="#0000ee">3</font> <font color=Black>*</font> <font color="#0000ee">10</font>
@@ -247,14 +248,14 @@
 <font color="#0000ee">1</font>   <font color="#2149c1">-</font>   <font color="#0000ee">2</font>   <font color="#2149c1">-</font>  <font color="#0000ee">3</font>  <font color=Black>==</font>  <font color=Black>(</font><font color="#0000ee">1</font>   <font color="#2149c1">-</font>    <font color="#0000ee">2</font><font color=Black>)</font>   <font color="#2149c1">-</font>   <font color="#0000ee">3</font>
 <font color="#0000ee">1</font> <font color=Black>`neg`</font> <font color="#0000ee">2</font> <font color=Black>`</font>neg <font color="#0000ee">3</font><font color=Black>`</font> <font color=Black>==</font>   <font color="#0000ee">1</font> <font color=Black>`neg`</font> <font color=Black>(</font><font color="#0000ee">2</font>  <font color=Black>`neg`</font> <font color="#0000ee">3</font><font color=Black>)</font></pre>
 <p>Также в Haskell есть директива <code><font color="#b2590f">infix</font></code> это тоже самое, что и <code><font color="#b2590f">infixl</font></code>.</p>
-<h3 id="приоритет-функции-композиции"><a href="#TOC">Приоритет функции композиции</a></h3>
+<h3 id="приоритет-функции-композиции"><a href="#приоритет-функции-композиции">Приоритет функции композиции</a></h3>
 <p>Посмотрим на приоритет функции композиции:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font>
 <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> c 	<font color="#2149c1">-- Defined in GHC.Base</font>
 <font color="#b2590f">infixr</font> <font color="#0000ee">9</font> <font color=Black>.</font></pre>
 <p>Она имеет высший приоритет. Она очень часто используется при определении функции в бесточечном стиле. Такая функция похожа на конвейер функций:</p>
 <pre><font color=Black>fun</font> a <font color="#b2590f">=</font> fun1 a <font color=Black>.</font> fun2 <font color=Black>(</font>x1 <font color=Black>+</font> x2<font color=Black>)</font> <font color=Black>.</font> fun3 <font color=Black>.</font> <font color=Black>(</font><font color=Black>+</font>x1<font color=Black>)</font> </pre>
-<h3 id="приоритет-функции-применения"><a href="#TOC">Приоритет функции применения</a></h3>
+<h3 id="приоритет-функции-применения"><a href="#приоритет-функции-применения">Приоритет функции применения</a></h3>
 <p>Теперь посмотрим на полное определение функции применения:</p>
 <pre><font color="#b2590f">infixr</font> <font color="#0000ee">0</font> <font color=Black>$</font>
 
@@ -286,20 +287,13 @@
 <font color="#b2590f">[</font><font color="#0000ee">21</font><font color=Black>,</font><font color="#0000ee">41</font><font color=Black>,</font><font color="#0000ee">61</font><font color=Black>,</font><font color="#0000ee">81</font><font color=Black>,</font><font color="#0000ee">101</font><font color=Black>,</font><font color="#0000ee">121</font><font color=Black>,</font><font color="#0000ee">141</font><font color=Black>,</font><font color="#0000ee">161</font><font color=Black>,</font><font color="#0000ee">181</font><font color=Black>,</font><font color="#0000ee">201</font><font color="#b2590f">]</font></pre>
 <p>Если бы не функция применения нам пришлось бы написать это выражение так:</p>
 <pre><font color=Black>xs</font> <font color="#b2590f">=</font> reverse <font color=Black>(</font>map <font color=Black>(</font><font color=Black>(</font><font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font> <font color=Black>.</font> <font color=Black>(</font><font color=Black>*</font><font color="#0000ee">10</font><font color=Black>)</font><font color=Black>)</font> <font color=Black>(</font>filter even <font color=Black>(</font>ns <font color="#0000ee">40</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
-<h2 id="функциональный-калькулятор"><a href="#TOC">Функциональный калькулятор</a></h2>
+<h2 id="функциональный-калькулятор"><a href="#функциональный-калькулятор">Функциональный калькулятор</a></h2>
 <p>Мне бы хотелось сделать акцент на одном из вступительных предложений этой главы:</p>
 <blockquote>
 <p>За счёт развитых средств составления новых функций в Haskell пользователь определяет лишь базовые функции, получая остальные “на лету” применением двух-трёх операций, это выглядит примерно как <code><font color=Black>(</font><font color="#0000ee">2</font><font color=Black>+</font><font color="#0000ee">3</font><font color=Black>)</font><font color=Black>*</font><font color="#0000ee">5</font></code>, где вместо чисел стоят базовые функции, а операции <code><font color=Black>+</font></code> и <code><font color=Black>*</font></code> составляют новые функции из простейших.</p>
 </blockquote>
 <p>Такие обобщённые функции как <code><font color=Black>id</font></code>, <code><font color=Black>const</font></code>, <code><font color=Black>(</font><font color=Black>.</font><font color=Black>)</font></code>, <code><font color=Black>map</font></code> <code><font color=Black>filter</font></code> позволяют очень легко комбинировать различные функции. Бесточечный стиль записи функций превращает функции в простые значения или значения-константы, которые можно подставлять в другие функции. В этом разделе мы немного потренируемся в перегрузке численных значений и превратим числа в функции, функции и в самом деле станут константами. Мы определим экземпляр <code><font color=Green>Num</font></code> для функций, которые возвращают числа. Смысл этих операций заключается в том, что теперь мы применяем обычные операции сложения умножения к функциям, аргумент которых совпадает по типу. Например для того чтобы умножить функции <code><font color="#b2590f">\</font>t <font color="#b2590f">-&gt;</font> t<font color=Black>+</font><font color="#0000ee">2</font></code> и <code><font color="#b2590f">\</font>t <font color="#b2590f">-&gt;</font> t<font color=Black>+</font><font color="#0000ee">3</font></code> мы составляем новую функцию <code><font color="#b2590f">\</font>t <font color="#b2590f">-&gt;</font> <font color=Black>(</font>t<font color=Black>+</font><font color="#0000ee">2</font><font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>t<font color=Black>+</font><font color="#0000ee">3</font><font color=Black>)</font></code>, которая получает на вход значение <code><font color=Black>t</font></code> применяет его к каждой из функций и затем умножает результаты:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>FunNat</font> <font color="#b2590f">where</font>
-
-<font color="#b2590f">import</font> <font color=Green>Prelude</font><font color=Black>(</font><font color=Green>Show</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> <font color=Green>Num</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> error<font color=Black>)</font>
-
-<font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Black>(</font>t <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">where</font>
-    show <font color="#b2590f">_</font> <font color="#b2590f">=</font> error <font color=Black>"Sorry, no show. It's just for Num"</font>
-<font color="#b2590f">instance</font> <font color=Green>Eq</font> <font color=Black>(</font>t <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">where</font>
-    <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">_</font> <font color="#b2590f">_</font> <font color="#b2590f">=</font> error <font color=Black>"Sorry, no Eq. It's just for Num"</font>
 
 <font color="#b2590f">instance</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Num</font> <font color=Black>(</font>t <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">where</font>
     <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color="#b2590f">=</font> fun2 <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font>
@@ -316,8 +310,7 @@
 
 <font color=Black>fun2</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> c<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Black>(</font>t <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>t <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font>t <font color="#b2590f">-&gt;</font> c<font color=Black>)</font><font color=Black>)</font>
 <font color=Black>fun2</font> op a b <font color="#b2590f">=</font> <font color="#b2590f">\</font>t <font color="#b2590f">-&gt;</font> a t <font color=Black>`op`</font> b t</pre>
-<p>Функции <code><font color=Black>fun1</font></code> и <code><font color=Black>fun2</font></code> превращают функции, которые принимают значения, в функции, которые принимают другие функции.</p>
-<p>Из-за контекста класса <code><font color=Green>Num</font></code> нам пришлось объявить два фиктивных экземпляра для классов <code><font color=Green>Show</font></code> и <code><font color=Green>Eq</font></code>. Загрузим модуль <code><font color=Green>FunNat</font></code> в интерпретатор и посмотрим что же у нас получилось:</p>
+<p>Функции <code><font color=Black>fun1</font></code> и <code><font color=Black>fun2</font></code> превращают функции, которые принимают значения, в функции, которые принимают другие функции. Загрузим модуль <code><font color=Green>FunNat</font></code> в интерпретатор и посмотрим что же у нас получилось:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>FunNat</font><font color=Black>.</font>hs
 <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>FunNat</font>           <font color=Black>(</font> <font color=Green>FunNat</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
 <font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>FunNat</font><font color=Black>.</font>
@@ -338,26 +331,7 @@
 <p>Получается, что за счёт механизма частичного применения мы одним махом определили экземпляры <code><font color=Green>Num</font></code> для функций <em>любого</em> числа аргументов, которые возвращают значение типа <code><font color=Green>Num</font></code>.</p>
 <p>Итак функция <code><font color=Black>f</font></code> имеет вид:</p>
 <pre><font color="#b2590f">\</font>t1 t2 <font color="#b2590f">-&gt;</font> <font color=Black>(</font>t1 <font color=Black>+</font> t2<font color=Black>)</font> <font color="#2149c1">-</font> <font color=Black>(</font>t1 <font color=Black>*</font> t2<font color=Black>)</font></pre>
-<p>Подставим значения:</p>
-<pre><font color=Black>(</font><font color="#b2590f">\</font>t1 t2 <font color="#b2590f">-&gt;</font> <font color=Black>(</font>t1 <font color=Black>+</font> t2<font color=Black>)</font> <font color="#2149c1">-</font> <font color=Black>(</font>t1 <font color=Black>*</font> t2<font color=Black>)</font><font color=Black>)</font> <font color="#0000ee">1</font> <font color="#0000ee">2</font>
-<font color=Black>(</font><font color="#b2590f">\</font>t2 <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#0000ee">1</font> <font color=Black>+</font> t2<font color=Black>)</font> <font color="#2149c1">-</font> <font color=Black>(</font><font color="#0000ee">1</font> <font color=Black>*</font> t2<font color=Black>)</font> <font color="#0000ee">2</font>
-<font color=Black>(</font><font color="#0000ee">1</font> <font color=Black>+</font> <font color="#0000ee">2</font><font color=Black>)</font> <font color="#2149c1">-</font> <font color=Black>(</font><font color="#0000ee">1</font> <font color=Black>*</font> <font color="#0000ee">2</font><font color=Black>)</font>
-<font color="#0000ee">3</font> <font color="#2149c1">-</font> <font color="#0000ee">2</font>
-<font color="#0000ee">1</font></pre>
-<p>Теперь давайте составим несколько выражений с обобщёнными функциями. Для этого добавим в модуль <code><font color=Green>FunNat</font></code> директиву импорта функций из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font></code>. Также добавим несколько основных функций для списков и класс <code><font color=Green>Ord</font></code>:</p>
-<pre><font color="#b2590f">module</font> <font color=Green>FunNat</font> <font color="#b2590f">where</font>
-
-<font color="#b2590f">import</font> <font color=Green>Prelude</font><font color=Black>(</font><font color=Green>Show</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> <font color=Green>Ord</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> <font color=Green>Num</font><font color=Black>(</font><font color="#b2590f">..</font><font color=Black>)</font><font color=Black>,</font> error<font color=Black>)</font>
-
-<font color="#b2590f">import</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font><font color=Black>(</font>id<font color=Black>,</font> const<font color=Black>,</font> <font color=Black>(</font><font color=Black>.</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color=Black>$</font><font color=Black>)</font><font color=Black>,</font> flip<font color=Black>,</font> on<font color=Black>)</font>
-<font color="#b2590f">import</font> <font color=Green>Prelude</font><font color=Black>(</font>map<font color=Black>,</font> foldr<font color=Black>,</font> filter<font color=Black>,</font> zip<font color=Black>,</font> zipWith<font color=Black>)</font>
-
-<font color=Black>...</font></pre>
-<p>и загрузим модуль в интерпретатор:</p>
-<pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>load <font color=Green>FunNat</font>
-<font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>FunNat</font>           <font color=Black>(</font> <font color=Green>FunNat</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
-<font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>FunNat</font><font color=Black>.</font></pre>
-<p>Составим функцию, которая принимает один аргумент, умножает его на два, вычитает 10 и берёт модуль числа.</p>
+<p>Теперь давайте составим несколько выражений с обобщёнными функциями. Составим функцию, которая принимает один аргумент, умножает его на два, вычитает 10 и берёт модуль числа.</p>
 <pre><font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> f <font color="#b2590f">=</font> abs <font color=Black>$</font> id <font color=Black>*</font> <font color="#0000ee">2</font> <font color="#2149c1">-</font> <font color="#0000ee">10</font> 
 <font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> f <font color="#0000ee">2</font>
 <font color="#0000ee">6</font>
@@ -381,7 +355,7 @@
 <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">9</font><font color=Black>,</font><font color="#0000ee">16</font><font color=Black>,</font><font color="#0000ee">25</font><font color="#b2590f">]</font>
 <font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> map <font color=Black>(</font>id <font color=Black>*</font> id <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">5</font><font color="#b2590f">]</font>
 <font color="#b2590f">[</font><font color="#0000ee">0</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">8</font><font color=Black>,</font><font color="#0000ee">15</font><font color=Black>,</font><font color="#0000ee">24</font><font color="#b2590f">]</font></pre>
-<p>Обратите внимание на краткость записи. В этом выражении <code><font color=Black>(</font>id <font color=Black>*</font> id <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font></code> проявляется основное преимущество бесточечного стиля, избавившись от аргументов, мы можем пользоваться функциями так, словно это простые значения. Этот приём используется в Haskell очень активно. Пока нам встретились лишь две инфиксных операции для функций (это композиция и применение с низким приоритетом), но в будущем вы столкнётесь с целым морем подобных операций. Все они служат одной цели, они прячут аргументы функции, позволяя быстро составлять функции на лету из примитивов. Чтобы не захлебнуться в этом море помните, что скорее всего новый символ означает либо композицию либо применение для функций специального вида.</p>
+<p>Обратите внимание на краткость записи. В этом выражении <code><font color=Black>(</font>id <font color=Black>*</font> id <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font></code> проявляется основное преимущество бесточечного стиля, избавившись от аргументов, мы можем пользоваться функциями так, словно это простые значения. Этот приём используется в Haskell очень активно. Пока нам встретились лишь две инфиксных операции для функций (это композиция и применение с низким приоритетом), но в будущем вы столкнётесь с целым морем подобных операций. Все они служат одной цели, они прячут аргументы функции, позволяя быстро составлять функции на лету из примитивов.</p>
 <p>Возведём в четвёртую степень:</p>
 <pre><font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> map <font color=Black>(</font>f <font color=Black>.</font> f<font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">4</font><font color=Black>,</font><font color="#0000ee">5</font><font color="#b2590f">]</font>
 <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">16</font><font color=Black>,</font><font color="#0000ee">81</font><font color=Black>,</font><font color="#0000ee">256</font><font color=Black>,</font><font color="#0000ee">625</font><font color="#b2590f">]</font></pre>
@@ -399,11 +373,8 @@
 <font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> zipWith d <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color="#b2590f">]</font> <font color="#b2590f">[</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">1</font><font color="#b2590f">]</font>
 <font color="#b2590f">[</font><font color="#0000ee">10</font><font color=Black>,</font><font color="#0000ee">8</font><font color=Black>,</font><font color="#0000ee">10</font><font color="#b2590f">]</font>
 <font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> foldr <font color=Black>(</font>x<font color=Black>*</font>x <font color="#2149c1">-</font> y<font color=Black>*</font>y<font color=Black>)</font> <font color="#0000ee">0</font> <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">4</font><font color="#b2590f">]</font>
-<font color="#0000ee">3721610024</font>
-<font color=Black>*</font><font color=Green>FunNat</font><font color=Black>&gt;</font> zipWith <font color=Black>(</font><font color=Black>(</font><font color="#2149c1">-</font><font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font><font color="#2149c1">-</font><font color=Black>)</font> <font color=Black>+</font> const id<font color=Black>)</font> <font color="#b2590f">[</font><font color="#0000ee">1</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">3</font><font color="#b2590f">]</font> <font color="#b2590f">[</font><font color="#0000ee">3</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">1</font><font color="#b2590f">]</font>
-<font color="#b2590f">[</font><font color="#0000ee">7</font><font color=Black>,</font><font color="#0000ee">2</font><font color=Black>,</font><font color="#0000ee">5</font><font color="#b2590f">]</font></pre>
-<p>В последнем выражении трудно предугадать результат. В таких выражениях всё-таки лучше пользоваться синонимами. В бесточечном стиле мы можем несколькими операциями собрать из базовых функций сложную функцию и передать её аргументом в другую функцию, которая также может поучаствовать в комбинации других функций!</p>
-<h2 id="функции-возвращающие-несколько-значений"><a href="#TOC">Функции, возвращающие несколько значений</a></h2>
+<font color="#0000ee">3721610024</font></pre>
+<h2 id="функции-возвращающие-несколько-значений"><a href="#функции-возвращающие-несколько-значений">Функции, возвращающие несколько значений</a></h2>
 <p> Как было сказано ранее функции, которые возвращают несколько значений, реализованы в Haskell с помощью кортежей. Например функция, которая расщепляет поток на голову и хвост выглядит так:</p>
 <pre><font color=Black>decons</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a<font color=Black>,</font> <font color=Green>Stream</font> a<font color=Black>)</font>
 <font color=Black>decons</font> <font color=Black>(</font>a <font color="#b2590f">:&amp;</font> <font color="#b2590f">as</font><font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>a<font color=Black>,</font> <font color="#b2590f">as</font><font color=Black>)</font></pre>
@@ -435,12 +406,12 @@
 <font color=Black>norm</font>        <font color="#b2590f">::</font> <font color=Green>Point</font>  <font color="#b2590f">-&gt;</font> <font color=Green>Point</font>
 <font color=Black>translate</font>   <font color="#b2590f">::</font> <font color=Green>Vector</font> <font color="#b2590f">-&gt;</font> <font color=Green>Point</font> <font color="#b2590f">-&gt;</font> <font color=Green>Point</font>
 <font color=Black>...</font>    </pre>
-<h2 id="комбинатор-неподвижной-точки"><a href="#TOC">Комбинатор неподвижной точки</a></h2>
+<h2 id="комбинатор-неподвижной-точки"><a href="#комбинатор-неподвижной-точки">Комбинатор неподвижной точки</a></h2>
 <p>Познакомимся с функцией <code><font color=Black>fix</font></code> или комбинатором неподвижной точки. По хорошему об этой функции следовало бы рассказать в разделе обобщённые функции. Но я пропустил её нарочно, для простоты изложения. В этом разделе градус сложности резко подскакивает, если вы ранее не встречались с этой функцией она может показаться вам очень необычной. Для начала посмотрим на её тип:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>m <font color=Black>+</font><font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font>
 <font color=Green>Prelude</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>t fix
 <font color=Black>fix</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a</pre>
-<p>Странно <code><font color=Black>fix</font></code> принимает функцию и возвращает значение, обычно всё происходит наоборот. Теперь посмотрим на определение:</p>
+<p>Странно, <code><font color=Black>fix</font></code> принимает функцию и возвращает значение, обычно всё происходит наоборот. Теперь посмотрим на определение:</p>
 <pre><font color=Black>fix</font> f <font color="#b2590f">=</font> <font color="#b2590f">let</font> x <font color="#b2590f">=</font> f x
         <font color="#b2590f">in</font>  x</pre>
 <p>Если вы запутались, то по смыслу это определение равносильно такому:</p>
@@ -453,13 +424,13 @@
 <font color=Black>constStream</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> a
 <font color=Black>constStream</font> a <font color="#b2590f">=</font> a <font color="#b2590f">:&amp;</font> constStream a</pre>
 <p>Если смотреть на функцию <code><font color=Black>constStream</font></code> очень долго, то рано или поздно в ней проглянет функция <code><font color=Black>fix</font></code>. Я нарочно не буду выписывать, а вы мысленно обозначьте <code><font color=Black>(</font>a <font color="#b2590f">:&amp;</font><font color=Black>)</font></code> за <code><font color=Black>f</font></code> и <code><font color=Black>constStream</font> a</code> за <code><font color=Black>fix</font> f</code>. Получилось?</p>
-<p>Через <code><font color=Black>fix</font></code> можно очень просто определить бесконечность для <code><font color=Green>Nat</font></code>, бесконечность это цепочка <code><font color=Green>Succ</font></code>, которая никогда не заканчивается <code><font color=Green>Zero</font></code>. Оказывается, что в Haskell мы можем составлять выражения с такими значениями (как это получается мы обсудим попозже):</p>
+<p>Через <code><font color=Black>fix</font></code> можно очень просто определить бесконечность для <code><font color=Green>Nat</font></code>, бесконечность это цепочка <code><font color=Green>Succ</font></code>, которая никогда не заканчивается <code><font color=Green>Zero</font></code>. Оказывается, что в Haskell мы можем составлять выражения с такими значениями (как вычислителю удаётся справиться с бесконечными выражениями мы обсудим попозже):</p>
 <pre><font color=Black>ghci</font> <font color=Green>Nat</font>
 <font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font>m <font color=Black>+</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font>
 <font color=Black>*</font><font color=Green>Nat</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> infinity <font color="#b2590f">=</font> fix <font color=Green>Succ</font>
 <font color=Black>*</font><font color=Green>Nat</font> <font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font><font color=Black>&gt;</font> infinity <font color=Black>&lt;</font> <font color=Green>Succ</font> <font color=Green>Zero</font>
 <font color=Green>False</font></pre>
-<p>С помощью функции <code><font color=Black>fix</font></code> можно выразить любую рекурсивную функцию. Посмотрим как на примере функции <code><font color=Black>foldNat</font></code>, у нас есть рекурсивное определение:</p>
+<p>С помощью функции <code><font color=Black>fix</font></code> можно выразить любую рекурсивную функцию. Посмотрим на примере функции <code><font color=Black>foldNat</font></code>, у нас есть рекурсивное определение:</p>
 <pre><font color=Black>foldNat</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> a
 <font color=Black>foldNat</font> z  s  <font color=Green>Zero</font>      <font color="#b2590f">=</font> z
 <font color=Black>foldNat</font> z  s  <font color=Black>(</font><font color=Green>Succ</font> n<font color=Black>)</font>  <font color="#b2590f">=</font> s <font color=Black>(</font>foldNat z s n<font color=Black>)</font></pre>
@@ -479,8 +450,8 @@
 <font color=Black>x</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color="#b2590f">\</font>t <font color="#b2590f">-&gt;</font> <font color="#b2590f">\</font>nat <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> nat <font color="#b2590f">of</font>
                         <font color=Green>Zero</font>    <font color="#b2590f">-&gt;</font> z
                         <font color=Green>Succ</font> n  <font color="#b2590f">-&gt;</font> s <font color=Black>(</font>t n<font color=Black>)</font><font color=Black>)</font> x </pre>
-<p>Смотрите мы обозначили вхождение <code><font color=Black>x</font></code> в выражении справа за <code><font color=Black>t</font></code> и создали лямбда-функцию с таким аргументом. Так мы вынесли <code><font color=Black>x</font></code> из выражения.</p>
-<p>Получилось, мы пришли к виду комбинатора неподвижной точки:</p>
+<p>Смотрите, для этого мы обозначили вхождение <code><font color=Black>x</font></code> в выражении справа за <code><font color=Black>t</font></code> и создали лямбда-функцию с таким аргументом.</p>
+<p>Получилось! Мы пришли к виду комбинатора неподвижной точки:</p>
 <pre><font color=Black>x</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> a
 <font color=Black>x</font> <font color="#b2590f">=</font> f x
     <font color="#b2590f">where</font> f <font color="#b2590f">=</font> <font color="#b2590f">\</font>t <font color="#b2590f">-&gt;</font> <font color="#b2590f">\</font>nat <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> nat <font color="#b2590f">of</font>
@@ -492,8 +463,8 @@
     <font color="#b2590f">where</font> f t <font color="#b2590f">=</font> <font color="#b2590f">\</font>nat <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> nat <font color="#b2590f">of</font>
                             <font color=Green>Zero</font>    <font color="#b2590f">-&gt;</font> z
                             <font color=Green>Succ</font> n  <font color="#b2590f">-&gt;</font> s <font color=Black>(</font>t n<font color=Black>)</font></pre>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
-<h3 id="основные-функции-высшего-порядка"><a href="#TOC">Основные функции высшего порядка</a></h3>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
+<h3 id="основные-функции-высшего-порядка"><a href="#основные-функции-высшего-порядка">Основные функции высшего порядка</a></h3>
 <p>Мы познакомились с функциями из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font></code>. Их можно разбить на несколько типов:</p>
 <ul>
 <li>Примитивные функции (генераторы функций).</li>
@@ -516,7 +487,7 @@
 </ul>
 <pre><font color=Black>fix</font> f <font color="#b2590f">=</font> <font color="#b2590f">let</font> x <font color="#b2590f">=</font> f x
         <font color="#b2590f">in</font>  x</pre>
-<h3 id="приоритет-инфиксных-операций-1"><a href="#TOC">Приоритет инфиксных операций</a></h3>
+<h3 id="приоритет-инфиксных-операций-1"><a href="#приоритет-инфиксных-операций-1">Приоритет инфиксных операций</a></h3>
 <p>Мы узнали о специальном синтаксисе для задания приоритета применения функций в инфиксной форме:</p>
 <pre><font color="#b2590f">infixl</font> <font color="#0000ee">3</font> <font color=Black><em>#</em></font>
 <font color="#b2590f">infixr</font> <font color="#0000ee">6</font> <font color=Black>`op`</font></pre>
@@ -532,7 +503,7 @@
 <font color="#0000ee">1</font> <font color=Black>+</font> <font color="#0000ee">2</font> <font color=Black>+</font> <font color="#0000ee">3</font> <font color=Black>==</font> <font color=Black>(</font><font color="#0000ee">1</font> <font color=Black>+</font> <font color="#0000ee">2</font><font color=Black>)</font> <font color=Black>+</font> <font color="#0000ee">3</font>    
 <font color="#0000ee">1</font> <font color=Black>^</font> <font color="#0000ee">2</font> <font color=Black>^</font> <font color="#0000ee">3</font> <font color=Black>==</font>  <font color="#0000ee">1</font> <font color=Black>^</font> <font color=Black>(</font><font color="#0000ee">2</font> <font color=Black>^</font> <font color="#0000ee">3</font><font color=Black>)</font>  </pre>
 <p>Мы узнали, что функции <code><font color=Black>(</font><font color=Black>$</font><font color=Black>)</font></code> и <code><font color=Black>(</font><font color=Black>.</font><font color=Black>)</font></code> стоят на разных концах шкалы приоритетов функций и как этим пользоваться.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Просмотрите написанные вами функции, или функции из примеров. Можно ли их переписать с помощью основных функций высшего порядка? Если да, то перепишите. Попробуйте определить их в бесточечном стиле.</p></li>
 <li><p>В прошлой главе у нас было упражнение о потоках. Сделайте поток экземпляром класса <code><font color=Green>Num</font></code>. Для этого поток должен содержать значения из класса <code><font color=Green>Num</font></code>. Методы из класса <code><font color=Green>Num</font></code> применяются поэлементно. Так сложение двух потоков будет выглядеть так:</p>

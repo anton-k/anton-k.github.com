@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
@@ -217,20 +218,12 @@
 <li><a href="#протокол-midi">Протокол midi</a></li>
 </ul></li>
 <li><a href="#музыкальная-запись-в-виде-событий">Музыкальная запись в виде событий</a><ul>
-<li><a href="#преобразование-событий-во-времени">Преобразование событий во времени</a><ul>
-<li><a href="#класс-преобразований-во-времени">Класс преобразований во времени</a></li>
-</ul></li>
+<li><a href="#преобразование-событий-во-времени">Преобразование событий во времени</a></li>
 <li><a href="#композиция-треков">Композиция треков</a></li>
 <li><a href="#экземпляры-стандартных-классов">Экземпляры стандартных классов</a></li>
 </ul></li>
 <li><a href="#ноты-в-midi">Ноты в midi</a><ul>
-<li><a href="#синонимы-для-нот">Синонимы для нот</a><ul>
-<li><a href="#высота-ноты">Высота ноты</a></li>
-<li><a href="#длительность-ноты">Длительность ноты</a></li>
-<li><a href="#громкость-ноты">Громкость ноты</a></li>
-<li><a href="#смена-инструмента">Смена инструмента</a></li>
-<li><a href="#паузы">Паузы</a></li>
-</ul></li>
+<li><a href="#синонимы-для-нот">Синонимы для нот</a></li>
 </ul></li>
 <li><a href="#перевод-в-midi">Перевод в midi</a></li>
 <li><a href="#пример">Пример</a></li>
@@ -248,11 +241,11 @@
 </div></div>  
  </div> 
 
-<h1 id="музыкальный-пример"><a href="#TOC">Музыкальный пример</a></h1>
+<h1 id="музыкальный-пример"><a href="#музыкальный-пример">Музыкальный пример</a></h1>
 <p>В этой главе мы напишем музыкальный секвенсор. Мы будем переводить нотную запись в midi-файл с помощью библиотеки <code><font color=Green>HCodecs</font></code>. Она предоставляет возможность создания midi-файлов по описанию в Haskell. При этом описание напоминает описание самого формата midi. Мы же хотим подняться уровнем выше и описывать музыку нотами и композицией нот.</p>
-<h2 id="музыкальная-нотация"><a href="#TOC">Музыкальная нотация</a></h2>
+<h2 id="музыкальная-нотация"><a href="#музыкальная-нотация">Музыкальная нотация</a></h2>
 <p>Для начала зададимся выясним: а что же такое музыка с точки зрения нашего секвенсора? Мы ищем представление музыки, термины, в которых было бы удобно мыслить композитору. При этом необходимо понимать, что наш поиск ограничен средствами низкоуровневого представления музыки. В нашем случае это midi-файл. Так например мы можем сразу отбросить представление в виде сигналов, последовательности сэмплов, поскольку мы не сможем реализовать это представление в рамках midi. За ответом обратимся к истории.</p>
-<h3 id="нотная-запись-в-европейской-традиции"><a href="#TOC">Нотная запись в европейской традиции</a></h3>
+<h3 id="нотная-запись-в-европейской-традиции"><a href="#нотная-запись-в-европейской-традиции">Нотная запись в европейской традиции</a></h3>
 <p>В европейской традиции принято описывать музыку в виде нотной записи. Нотный лист состоит из серии нотных станов. Нотный стан состоит из пяти линеек. Каждая линейка обозначает определённую высоту. Нота состоит из обозначения длительности и высоты. Разные длительности обозначаются штрихами и цветом ноты, а высоте соответствует расположение на нотном стане.</p>
 <div class="figure">
 <img src="../pic/21/notes.jpg" alt="Буквенные обозначения высоты ноты" /><p class="caption">Буквенные обозначения высоты ноты</p>
@@ -294,59 +287,54 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><span class="LaTeX">$C$</span></td>
-<td align="left"><span class="LaTeX">$C#$</span></td>
-<td align="left"><span class="LaTeX">$D$</span></td>
-<td align="left"><span class="LaTeX">$D#$</span></td>
-<td align="left"><span class="LaTeX">$E$</span></td>
-<td align="left"><span class="LaTeX">$F$</span></td>
-<td align="left"><span class="LaTeX">$F#$</span></td>
-<td align="left"><span class="LaTeX">$G$</span></td>
-<td align="left"><span class="LaTeX">$G#$</span></td>
-<td align="left"><span class="LaTeX">$A$</span></td>
-<td align="left"><span class="LaTeX">$A#$</span></td>
-<td align="left"><span class="LaTeX">$B$</span></td>
+<td align="left"><p><span class="LaTeX">$C$</span></p></td>
+<td align="left"><p><span class="LaTeX">$C#$</span></p></td>
+<td align="left"><p><span class="LaTeX">$D$</span></p></td>
+<td align="left"><p><span class="LaTeX">$D#$</span></p></td>
+<td align="left"><p><span class="LaTeX">$E$</span></p></td>
+<td align="left"><p><span class="LaTeX">$F$</span></p></td>
+<td align="left"><p><span class="LaTeX">$F#$</span></p></td>
+<td align="left"><p><span class="LaTeX">$G$</span></p></td>
+<td align="left"><p><span class="LaTeX">$G#$</span></p></td>
+<td align="left"><p><span class="LaTeX">$A$</span></p></td>
+<td align="left"><p><span class="LaTeX">$A#$</span></p></td>
+<td align="left"><p><span class="LaTeX">$B$</span></p></td>
 </tr>
 <tr class="even">
-<td align="left"><span class="LaTeX">$C$</span></td>
-<td align="left"><span class="LaTeX">$Db$</span></td>
-<td align="left"><span class="LaTeX">$D$</span></td>
-<td align="left"><span class="LaTeX">$Eb$</span></td>
-<td align="left"><span class="LaTeX">$E$</span></td>
-<td align="left"><span class="LaTeX">$F$</span></td>
-<td align="left"><span class="LaTeX">$Gb$</span></td>
-<td align="left"><span class="LaTeX">$G$</span></td>
-<td align="left"><span class="LaTeX">$Ab$</span></td>
-<td align="left"><span class="LaTeX">$A$</span></td>
-<td align="left"><span class="LaTeX">$Bb$</span></td>
-<td align="left"><span class="LaTeX">$B$</span></td>
+<td align="left"><p><span class="LaTeX">$C$</span></p></td>
+<td align="left"><p><span class="LaTeX">$Db$</span></p></td>
+<td align="left"><p><span class="LaTeX">$D$</span></p></td>
+<td align="left"><p><span class="LaTeX">$Eb$</span></p></td>
+<td align="left"><p><span class="LaTeX">$E$</span></p></td>
+<td align="left"><p><span class="LaTeX">$F$</span></p></td>
+<td align="left"><p><span class="LaTeX">$Gb$</span></p></td>
+<td align="left"><p><span class="LaTeX">$G$</span></p></td>
+<td align="left"><p><span class="LaTeX">$Ab$</span></p></td>
+<td align="left"><p><span class="LaTeX">$A$</span></p></td>
+<td align="left"><p><span class="LaTeX">$Bb$</span></p></td>
+<td align="left"><p><span class="LaTeX">$B$</span></p></td>
 </tr>
 <tr class="odd">
-<td align="left"><span class="LaTeX">$do$</span></td>
-<td align="left">
-</td>
-<td align="left"><span class="LaTeX">$re$</span></td>
-<td align="left">
-</td>
-<td align="left"><span class="LaTeX">$mi$</span></td>
-<td align="left"><span class="LaTeX">$fa$</span></td>
-<td align="left">
-</td>
-<td align="left"><span class="LaTeX">$sol$</span></td>
-<td align="left">
-</td>
-<td align="left"><span class="LaTeX">$la$</span></td>
-<td align="left">
-</td>
-<td align="left"><span class="LaTeX">$ti$</span></td>
+<td align="left"><p><span class="LaTeX">$do$</span></p></td>
+<td align="left"></td>
+<td align="left"><p><span class="LaTeX">$re$</span></p></td>
+<td align="left"></td>
+<td align="left"><p><span class="LaTeX">$mi$</span></p></td>
+<td align="left"><p><span class="LaTeX">$fa$</span></p></td>
+<td align="left"></td>
+<td align="left"><p><span class="LaTeX">$sol$</span></p></td>
+<td align="left"></td>
+<td align="left"><p><span class="LaTeX">$la$</span></p></td>
+<td align="left"></td>
+<td align="left"><p><span class="LaTeX">$ti$</span></p></td>
 </tr>
 </tbody>
 </table>
 <p>В самом нижнем ряду расположены имена нот. Во втором и четвёртом – обозначения нот с диезами и с бемолями. Одна и та же нота может обозначаться по-разному. Буквами обозначают ноты тональности до мажор (это семь букв для семи нот), а остальные ноты получают повышением на один шаг с помощью знака диез <span class="LaTeX">$#$</span> или понижением на один шаг с помощью знака бемоль <span class="LaTeX">$b$</span>.</p>
 <p>Также ноты различают по громкости. В европейской традиции считается, что громкость изменяется не часто в сравнении с высотой и длительностью, поэтому для обозначения громкости введены специальные символы, которые пишутся под нотным станом, только когда громкость изменяется.</p>
 <p>Из этого обзора мы поняли, что единицей музыкальной записи является нота, она состоит из обозначения длительности, высоты и громкости. Высота в свою очередь состоит из обозначения октавы и ступени лада. Теперь давайте посмотрим крупным планом на протокол <code><font color=Black>midi</font></code>.</p>
-<h3 id="протокол-midi"><a href="#TOC">Протокол midi</a></h3>
-<p>Протокол midi появился в ответ на бурное развитие синтезаторов. Каждый из синтезаторов предлагал свои тембры, при этом люди задумались, а нужна ли синтезатору клавиатура? Вопрос кажется абсурдным, если мы думаем об одном синтезаторе, но представьте, что у вас их десять, в каждом свой чем-то особенный тембр. При этом нам нужно десять разных тембров, но мы вынужденны таскать за собой десять примерно одинаковых клавиатур. Для того чтобы отделить тембр от управления (нажатия на клавиши игроком) был придуман протокол midi. Протокол midi описывает специфическую для нажатия на клавиши информацию. Производители тембров или генераторов тона, могут научить генератор тона понимать midi. При этом мы можем сделать отдельную клавиатуру, которая не имеет собственного генератора тона, но умеет посылать сообщения протокола midi, так мы сможем управлять десятью генераторами тона от разных производителей с помощью одной клавиатуры. Такие клавиатуры называют midi-клавиатурами.</p>
+<h3 id="протокол-midi"><a href="#протокол-midi">Протокол midi</a></h3>
+<p>Протокол midi появился в ответ на бурное развитие синтезаторов. Каждый из синтезаторов предлагал свои тембры, при этом люди задумались, а нужна ли синтезатору клавиатура? Вопрос кажется абсурдным, если мы думаем об одном синтезаторе, но представьте, что у вас их десять, в каждом свой чем-то особенный тембр. При этом нам нужно десять разных тембров, но мы вынуждены таскать за собой десять примерно одинаковых клавиатур. Для того чтобы отделить тембр от управления (нажатия на клавиши игроком) был придуман протокол midi. Протокол midi описывает специфическую для нажатия на клавиши информацию. Производители тембров или генераторов тона, могут научить генератор тона понимать midi. При этом мы можем сделать отдельную клавиатуру, которая не имеет собственного генератора тона, но умеет посылать сообщения протокола midi, так мы сможем управлять десятью генераторами тона от разных производителей с помощью одной клавиатуры. Такие клавиатуры называют midi-клавиатурами.</p>
 <p>Познакомимся с терминологией midi. Протокол midi рассчитан на управление синтезаторами в режиме реального времени. Можно сказать, что midi-файл – это история концерта или выступления, низкоуровневая нотная запись. Каждое движение игрока кодируется событием. Например нажатие на клавишу, отпускание клавиши, сила давления на клавишу в определённый момент времени, нажатие педали, поворот реле или смена тембра.</p>
 <p>Протокол midi изначально задумывался как расширяемый протокол. Каждый производитель тембров имеет возможность добавить какие-то особенные настройки. При этом те сообщения, которые данный генератор тона не понимает просто игнорируются. Наш секвенсор будет понимать такие события как нажатие на клавишу и отпускание клавиши. Также у нас будут разные инструменты.</p>
 <p>Установим библиотеку <code><font color=Green>HCodecs</font></code> с <code><font color=Green>Hackage</font></code>:</p>
@@ -384,7 +372,7 @@
 <pre><font color="#b2590f">type</font> <font color=Green>Track</font> a <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color=Black>(</font>a<font color=Black>,</font> <font color=Green>Message</font><font color=Black>)</font><font color="#b2590f">]</font></pre>
 <p>Трек это список событий с временными отсчётами. Время в midi отсчитывается относительно предыдущего события. Например в следующей записи три события произошли одновременно и затем спустя 10 тактов произошли ещё два события:</p>
 <pre><font color="#b2590f">[</font><font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> e1<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> e2<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> e3<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#0000ee">10</font><font color=Black>,</font> e4<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> e5<font color=Black>)</font><font color="#b2590f">]</font></pre>
-<h2 id="музыкальная-запись-в-виде-событий"><a href="#TOC">Музыкальная запись в виде событий</a></h2>
+<h2 id="музыкальная-запись-в-виде-событий"><a href="#музыкальная-запись-в-виде-событий">Музыкальная запись в виде событий</a></h2>
 <p>Писать музыку в виде событий midi очень неудобно, пусть даже и через <code><font color=Green>HCodecs</font></code>, необходимо придумать надстройку над протоколом midi. Я долго думал об этом и в итоге пришёл к выводу, что наиболее простой и податливый способ представления музыки на нотном уровне реализован в языке Csound. Там ноты представлены в виде последовательности событий. Каждое событие начинается в определённый момент и длится некоторое время. Событие содержит код инструмента и набор параметров, которые могут включать в себя громкость, высоту звука и какие-то специфические для данного инструмента настройки. Обязательными параметрами события являются лишь номер инструмента, который играет ноту, начало события и длительность события. Мы ослабим эти ограничения. Событие будет содержать лишь время начала, длительность и некоторое содержание.</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Event</font> t a <font color="#b2590f">=</font> <font color=Green>Event</font> <font color=Black>{</font>
     eventStart      <font color="#b2590f">::</font> t<font color=Black>,</font>
@@ -399,7 +387,7 @@
 <p>Первый параметр указывает на общую длительность трека, а второй содержит события, которые произошли. Мы явно указываем длительность трека для того, чтобы иметь возможность представить тишину. Значение тишины будет выглядеть так:</p>
 <pre><font color=Black>silence</font> t <font color="#b2590f">=</font> <font color=Green>Track</font> t <font color=Green>[]</font></pre>
 <p>Этим мы говорим, что ничего не произошло в течение <code><font color=Black>t</font></code> единиц времени.</p>
-<h3 id="преобразование-событий-во-времени"><a href="#TOC">Преобразование событий во времени</a></h3>
+<h3 id="преобразование-событий-во-времени"><a href="#преобразование-событий-во-времени">Преобразование событий во времени</a></h3>
 <p>Наши события привязаны ко времени. Мы можем ввести линейные операции, которые будут изменять расположение событий во времени. Самый простой способ изменения положения это задержка. Мы можем задержать появление события, прибавив какое-нибудь число ко времени начала события:</p>
 <pre><font color=Black>delayEvent</font> <font color="#b2590f">::</font> <font color=Green>Num</font> t <font color="#b2590f">=&gt;</font> t <font color="#b2590f">-&gt;</font> <font color=Green>Event</font> t a <font color="#b2590f">-&gt;</font> <font color=Green>Event</font> t a
 <font color=Black>delayEvent</font> d e <font color="#b2590f">=</font> e<font color=Black>{</font> eventStart <font color="#b2590f">=</font> d <font color=Black>+</font> eventStart e <font color=Black>}</font></pre>
@@ -414,7 +402,7 @@
 
 <font color=Black>stretchTrack</font> <font color="#b2590f">::</font> <font color=Green>Num</font> t <font color="#b2590f">=&gt;</font> t <font color="#b2590f">-&gt;</font> <font color=Green>Track</font> t a <font color="#b2590f">-&gt;</font> <font color=Green>Track</font> t a
 <font color=Black>stretchTrack</font> s <font color=Black>(</font><font color=Green>Track</font> t es<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Green>Track</font> <font color=Black>(</font>t <font color=Black>*</font> s<font color=Black>)</font> <font color=Black>(</font>map <font color=Black>(</font>stretchEvent s<font color=Black>)</font> es<font color=Black>)</font> </pre>
-<h4 id="класс-преобразований-во-времени"><a href="#TOC">Класс преобразований во времени</a></h4>
+<h4 id="класс-преобразований-во-времени"><a href="#класс-преобразований-во-времени">Класс преобразований во времени</a></h4>
 <p>У нас есть аналогичные операции преобразования во времени для событий и треков, это говорит о том, что мы можем ввести специальный класс, который объединит в себе эти операции. Назовём его классом <code><font color=Green>Temporal</font></code> (временн<em>о</em>й):</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Temporal</font> a <font color="#b2590f">where</font>
     <font color="#b2590f">type</font> <font color=Green>Dur</font> a <font color="#b2590f">::</font> <font color=Black>*</font>
@@ -433,7 +421,7 @@
     dur     <font color="#b2590f">=</font> trackDur
     delay   <font color="#b2590f">=</font> delayTrack
     stretch <font color="#b2590f">=</font> stretchTrack    </pre>
-<h3 id="композиция-треков"><a href="#TOC">Композиция треков</a></h3>
+<h3 id="композиция-треков"><a href="#композиция-треков">Композиция треков</a></h3>
 <p>Определим две полезные в музыке операции: параллельную и последовательную композицию треков. В параллельной композиции мы играем два трека одновременно:</p>
 <pre><font color=Black>(</font><font color=Black>=:=</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> t <font color="#b2590f">=&gt;</font> <font color=Green>Track</font> t a <font color="#b2590f">-&gt;</font> <font color=Green>Track</font> t a <font color="#b2590f">-&gt;</font> <font color=Green>Track</font> t a
 <font color=Green>Track</font> t es <font color=Black>=:=</font> <font color=Green>Track</font> t' es' <font color="#b2590f">=</font> <font color=Green>Track</font> <font color=Black>(</font>max t t'<font color=Black>)</font> <font color=Black>(</font>es <font color=Black>++</font> es'<font color=Black>)</font></pre>
@@ -449,7 +437,7 @@
 <p>Мы можем определить в терминах этих операций цикличный повтор событий:</p>
 <pre><font color=Black>loop</font> <font color="#b2590f">::</font> <font color=Black>(</font><font color=Green>Num</font> t<font color=Black>,</font> <font color=Green>Ord</font> t<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Track</font> t a <font color="#b2590f">-&gt;</font> <font color=Green>Track</font> t a
 <font color=Black>loop</font> n t <font color="#b2590f">=</font> line <font color=Black>$</font> replicate n t</pre>
-<h3 id="экземпляры-стандартных-классов"><a href="#TOC">Экземпляры стандартных классов</a></h3>
+<h3 id="экземпляры-стандартных-классов"><a href="#экземпляры-стандартных-классов">Экземпляры стандартных классов</a></h3>
 <p>Мы можем сделать тип трек экземпляром класса <code><font color=Green>Functor</font></code>:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Functor</font> <font color=Black>(</font><font color=Green>Event</font> t<font color=Black>)</font> <font color="#b2590f">where</font>
     fmap f e <font color="#b2590f">=</font> e<font color=Black>{</font> eventContent <font color="#b2590f">=</font> f <font color=Black>(</font>eventContent e<font color=Black>)</font> <font color=Black>}</font>
@@ -460,7 +448,7 @@
 <pre><font color="#b2590f">instance</font> <font color=Black>(</font><font color=Green>Ord</font> t<font color=Black>,</font> <font color=Green>Num</font> t<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Monoid</font> <font color=Black>(</font><font color=Green>Track</font> t a<font color=Black>)</font> <font color="#b2590f">where</font>
     mappend <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>=:=</font><font color=Black>)</font>
     mempty  <font color="#b2590f">=</font> silence <font color="#0000ee">0</font></pre>
-<h2 id="ноты-в-midi"><a href="#TOC">Ноты в midi</a></h2>
+<h2 id="ноты-в-midi"><a href="#ноты-в-midi">Ноты в midi</a></h2>
 <p>С помощью типа <code><font color=Green>Track</font></code> мы можем описывать всё, что имеет свойство случаться во времени и длиться, мы можем описывать наборы событий. Операции из класса <code><font color=Green>Temporal</font></code> и операции последовательной и параллельной композиции дают нам возможность собирать сложные наборы событий из простейших. Но для того чтобы это стало музыкой, нам не хватает нот.</p>
 <p>Так построим их. Поскольку мы собираемся играть музыку в midi, наши ноты будут содержать только три основных параметра, это номер инструмента, громкость и высота. Длительность ноты будет кодироваться в событии, эта информация уже встроена в тип <code><font color=Green>Track</font></code>.</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Note</font> <font color="#b2590f">=</font> <font color=Green>Note</font> <font color=Black>{</font>
@@ -475,8 +463,8 @@
 <p>Целые числа соответствуют целым числам в протоколе midi. Значения для типов <code><font color=Green>Volume</font></code> и <code><font color=Green>Pitch</font></code> лежат в диапазоне от 0 до 127.</p>
 <p>Введём специальное обозначение для музыкального типа <code><font color=Green>Track</font></code>:</p>
 <pre><font color="#b2590f">type</font> <font color=Green>Score</font> <font color="#b2590f">=</font> <font color=Green>Track</font> <font color=Green>Double</font> <font color=Green>Note</font></pre>
-<h3 id="синонимы-для-нот"><a href="#TOC">Синонимы для нот</a></h3>
-<h4 id="высота-ноты"><a href="#TOC">Высота ноты</a></h4>
+<h3 id="синонимы-для-нот"><a href="#синонимы-для-нот">Синонимы для нот</a></h3>
+<h4 id="высота-ноты"><a href="#высота-ноты">Высота ноты</a></h4>
 <p>Музыкантам ближе буквенные обозначения для нот нежели коды midi. Определим удобные синонимы:</p>
 <pre><font color=Black>note</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>note</font> n <font color="#b2590f">=</font> <font color=Green>Track</font> <font color="#0000ee">1</font> <font color="#b2590f">[</font><font color=Green>Event</font> <font color="#0000ee">0</font> <font color="#0000ee">1</font> <font color=Black>(</font><font color=Green>Note</font> <font color="#0000ee">0</font> <font color="#0000ee">64</font> <font color=Black>(</font><font color="#0000ee">60</font><font color=Black>+</font>n<font color=Black>)</font> <font color=Green>False</font><font color=Black>)</font><font color="#b2590f">]</font></pre>
@@ -500,7 +488,7 @@
 <font color=Black>low</font> <font color="#b2590f">::</font> <font color=Green>Score</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font> 
 <font color=Black>low</font> <font color="#b2590f">=</font> lower <font color="#0000ee">1</font></pre>
 <p>С помощью этих функций мы легко можем смещать группы нот в любую октаву. Функция <code><font color=Black>higher</font></code> принимает число октав, на которые необходимо сместить вверх высоту во всех нотах трека. Смещение высоты на 12 определяет смещение на одну октаву. Остальные функции определены в через функцию <code><font color=Black>higher</font></code>.</p>
-<h4 id="длительность-ноты"><a href="#TOC">Длительность ноты</a></h4>
+<h4 id="длительность-ноты"><a href="#длительность-ноты">Длительность ноты</a></h4>
 <p>Пока что наши ноты длятся 1 единицу времени. Но нам бы хотелось иметь в распоряжении и другие длительности. Ноты других длительностей мы можем легко получать с помощью функции <code><font color=Black>stretch</font></code>, мы просто изменим масштаб времени и длительность всех нот изменится. Определим несколько синонимов:</p>
 <pre><font color=Black>bn</font><font color=Black>,</font> hn<font color=Black>,</font> qn<font color=Black>,</font> en<font color=Black>,</font> sn <font color="#b2590f">::</font> <font color=Green>Score</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 
@@ -510,14 +498,14 @@
 <font color="#2149c1">-- (eighth note)      (sizth note)</font>
 <font color=Black>en</font> <font color="#b2590f">=</font> stretch <font color="#0000ee">0.125</font><font color=Black>;</font>   sn <font color="#b2590f">=</font> stretch <font color="#0000ee">0.0625</font><font color=Black>;</font></pre>
 <p>Эти преобразования отвечают длительностям нот в европейской музыкальной традиции.</p>
-<h4 id="громкость-ноты"><a href="#TOC">Громкость ноты</a></h4>
+<h4 id="громкость-ноты"><a href="#громкость-ноты">Громкость ноты</a></h4>
 <p>Пока мы умеем создавать ноты средней громкости, но мы можем определить преобразователи на манер тех, что изменяли высоту звука октавами:</p>
 <pre><font color=Black>louder</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>louder</font> n <font color="#b2590f">=</font> fmap <font color=Black>$</font> <font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>{</font> noteVolume <font color="#b2590f">=</font> n <font color=Black>+</font> noteVolume a <font color=Black>}</font>
 
 <font color=Black>quieter</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>quieter</font> n <font color="#b2590f">=</font> louder <font color=Black>(</font><font color="#2149c1">-</font>n<font color=Black>)</font></pre>
-<h4 id="смена-инструмента"><a href="#TOC">Смена инструмента</a></h4>
+<h4 id="смена-инструмента"><a href="#смена-инструмента">Смена инструмента</a></h4>
 <p>Изначально мы создаём ноты, которые играются на инструменте с кодом 0, в протоколе General Midi этот номер соответствует роялю. Но с помощью класса <code><font color=Green>Functor</font></code> мы легко можем изменить инструмент:</p>
 <pre><font color=Black>instr</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>instr</font> n <font color="#b2590f">=</font> fmap <font color=Black>$</font> <font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>{</font> noteInstr <font color="#b2590f">=</font> n<font color=Black>,</font> isDrum <font color="#b2590f">=</font> <font color=Green>False</font> <font color=Black>}</font>
@@ -528,14 +516,14 @@
 <pre><font color=Black>bam</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>bam</font> n <font color="#b2590f">=</font> <font color=Green>Track</font> <font color="#0000ee">1</font> <font color="#b2590f">[</font><font color=Green>Event</font> <font color="#0000ee">0</font> <font color="#0000ee">1</font> <font color=Black>(</font><font color=Green>Note</font> <font color="#0000ee">0</font> n <font color="#0000ee">35</font> <font color=Green>True</font><font color=Black>)</font><font color="#b2590f">]</font></pre>
 <p>Номер 35 кодирует “бочку”.</p>
-<h4 id="паузы"><a href="#TOC">Паузы</a></h4>
+<h4 id="паузы"><a href="#паузы">Паузы</a></h4>
 <p>Слово <code><font color=Black>silence</font></code> верно отражает смысл, но оно слишком длинное. Давайте определим несколько синонимов:</p>
 <pre><font color=Black>rest</font> <font color="#b2590f">::</font> <font color=Green>Double</font> <font color="#b2590f">-&gt;</font> <font color=Green>Score</font>
 <font color=Black>rest</font> <font color="#b2590f">=</font> silence
 
 <font color=Black>wnr</font> <font color="#b2590f">=</font> rest <font color="#0000ee">1</font><font color=Black>;</font>   bnr <font color="#b2590f">=</font> bn wnr<font color=Black>;</font>   hnr <font color="#b2590f">=</font> hn wnr<font color=Black>;</font>	
 <font color=Black>qnr</font> <font color="#b2590f">=</font> qn wnr<font color=Black>;</font>   enr <font color="#b2590f">=</font> en wnr<font color=Black>;</font>   snr <font color="#b2590f">=</font> sn wnr<font color=Black>;</font>	</pre>
-<h2 id="перевод-в-midi"><a href="#TOC">Перевод в midi</a></h2>
+<h2 id="перевод-в-midi"><a href="#перевод-в-midi">Перевод в midi</a></h2>
 <p>Теперь мы можем составить какую нибудь мелодию:</p>
 <pre><font color=Black>q</font> <font color="#b2590f">=</font> line <font color="#b2590f">[</font>c<font color=Black>,</font> c<font color=Black>,</font> hn e<font color=Black>,</font> hn d<font color=Black>,</font> bn e<font color=Black>,</font> chord <font color="#b2590f">[</font>c<font color=Black>,</font> e<font color="#b2590f">]</font><font color="#b2590f">]</font></pre>
 <p>Мы можем составлять мелодии, но пока мы не умеем их интерпретировать. Для этого нам нужно написать функцию:</p>
@@ -673,7 +661,7 @@
 <p>Сыграем канон. Канон это когда одна и та же мелодия ведётся в разных голосах с запаздыванием. Сыграем двухголосный канон:</p>
 <pre><font color=Black>*</font><font color=Green>Main</font><font color=Black>&gt;</font> out <font color=Black>$</font> instr <font color="#0000ee">80</font> <font color=Black>(</font>loop <font color="#0000ee">3</font> x<font color=Black>)</font> <font color=Black>=:=</font> delay <font color="#0000ee">2</font> <font color=Black>(</font>instr <font color="#0000ee">65</font> <font color=Black>$</font> low <font color=Black>$</font> loop <font color="#0000ee">3</font> x<font color=Black>)</font></pre>
 <p>Номера инструментов можно посмотреть по справке к протоколу General Midi. Это дополнение к протоколу midi определяет какие номера каким инструментам должны соответствовать. Звучит ужасно, но звучит!</p>
-<h2 id="пример"><a href="#TOC">Пример</a></h2>
+<h2 id="пример"><a href="#пример">Пример</a></h2>
 <p>Опираясь на примитивы композиции, которые мы определил в модуле <code><font color=Green>Score</font></code>, мы можем написать мелодию. Ниже приведён небольшой пример. Инструменты:</p>
 <pre><font color=Black>closedHiHat</font> <font color="#b2590f">=</font> drum <font color="#0000ee">42</font><font color=Black>;</font>		rideCymbal <font color="#b2590f">=</font> drum <font color="#0000ee">59</font><font color=Black>;</font> 	  cabasa <font color="#b2590f">=</font> drum <font color="#0000ee">69</font><font color=Black>;</font>
 <font color=Black>maracas</font>     <font color="#b2590f">=</font> drum <font color="#0000ee">70</font><font color=Black>;</font>		tom        <font color="#b2590f">=</font> drum <font color="#0000ee">45</font><font color=Black>;</font>
@@ -728,7 +716,7 @@
 
 <font color=Black>main</font> <font color="#b2590f">=</font> out res</pre>
 <p>В конце стоит фиктивный элемент <code><font color=Black>rest</font> <font color="#0000ee">0</font></code> для того чтобы было удобно глушить инструменты комментированием.</p>
-<h2 id="эффективное-представление-музыкальной-нотации"><a href="#TOC">Эффективное представление музыкальной нотации</a></h2>
+<h2 id="эффективное-представление-музыкальной-нотации"><a href="#эффективное-представление-музыкальной-нотации">Эффективное представление музыкальной нотации</a></h2>
 <p>Реализация, которую мы рассмотрели не эффективна, Мы могли бы определить тип <code><font color=Green>Track</font></code> и по-другому. Мы очень часто пользуемся операцией <code><font color=Black>delay</font></code> через операцию <code><font color=Black>line</font></code>. Так в выражении:</p>
 <pre><font color=Black>q</font> <font color="#b2590f">=</font> line <font color="#b2590f">[</font>s1<font color=Black>,</font> s2<font color=Black>,</font> line <font color="#b2590f">[</font>loop <font color="#0000ee">2</font> s3<font color=Black>,</font> s4<font color="#b2590f">]</font><font color=Black>,</font> s5<font color="#b2590f">]</font></pre>
 <p>Мы будем несколько раз обходить элемент <code><font color=Black>s3</font></code> для каждого применения <code><font color=Black>line</font></code>. К примеру сначала мы смести все элементы на 3, потом сместим на 5, потом на 10, но вместо этого мы могли бы сразу сместить все элементы на 18 за один проход. Для этого мы можем закодировать преобразования событий во времени в типе <code><font color=Green>Track</font></code>:</p>
@@ -749,10 +737,10 @@
 <p>Единственное, что нам нужно для того чтобы встроить этот вариант в библиотеку это написать функцию:</p>
 <pre><font color=Black>fromTList</font> <font color="#b2590f">::</font> <font color=Green>TList</font> t a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Event</font> t a<font color="#b2590f">]</font></pre>
 <p>И конечно переопределить все функции композиции. Но все сложные функции, которые отвечают за перевод из <code><font color=Green>Track</font></code> в <code><font color=Green>Midi</font></code> останутся прежними.</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>В этой главе мы построили секвенсор для создания midi-файлов. Мы воспользовались библиотекой <code><font color=Green>HCodecs</font></code> и создали над ней небольшую надстройку.</p>
 <p>В нашей библиотеке примитивными конструкциями были события, параллельная композиция (одновременное воспроизведение) и преобразование событий во времени (сдвиг и масштабирование). Все остальные операции выражались через эти простейшие операции. Отметим, что есть и другие подходы. Например в библиотеках <code><font color=Green>Haskore</font></code> и <code><font color=Green>Euterpea</font></code> примитивными конструкциями является единичное событие (без отметок во времени) и параллельная и последовательная композиции. Подход, который мы рассмотрели в более общем виде реализован в библиотеках <code><font color=Black>temporal</font><font color="#2149c1">-</font>music<font color="#2149c1">-</font>notation</code> и <code><font color=Black>temporal</font><font color="#2149c1">-</font>music<font color="#2149c1">-</font>notation<font color="#2149c1">-</font>demo</code>.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Попробуйте написать какую-нибудь мелодию.</p></li>
 <li><p>Подумайте каких операций не хватает. Например было бы удобно иметь возможность вырезать из мелодии куски. Так в примере у нас остались хвосты от ударной секции, определите операцию, которая позволяет убрать лишнее.</p></li>

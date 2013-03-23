@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
@@ -237,7 +238,7 @@
 </div></div>  
  </div> 
 
-<h1 id="редукция-выражений"><a href="#TOC">Редукция выражений</a></h1>
+<h1 id="редукция-выражений"><a href="#редукция-выражений">Редукция выражений</a></h1>
 <p>В этой главе мы поговорим о том как вычисляются программы. В самом начале мы говорили о том, что процесса вычисления значений нет. В том смысле, что у нас нет новых значений, у нас ничего не меняется, мы лишь расшифровываем синонимы значений.</p>
 <p>Вкратце вспомним то, что мы уже знаем о вычислениях. Сначала мы с помощью типов определяем множество всех возможных значений. Значения – это деревья в узлах которых записаны конструкторы, которые мы определяем в типах. Так например мы можем определить тип:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font></pre>
@@ -247,7 +248,6 @@
 <pre><font color=Black>zero</font>    <font color="#b2590f">=</font> <font color=Green>Zero</font>
 <font color=Black>one</font>     <font color="#b2590f">=</font> <font color=Green>Succ</font> zero
 <font color=Black>two</font>     <font color="#b2590f">=</font> <font color=Green>Succ</font> one</pre>
-
 <p>и функции (составные имена-синонимы):</p>
 <pre><font color=Black>foldNat</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> a
 <font color=Black>foldNat</font> z  s  <font color=Green>Zero</font>      <font color="#b2590f">=</font> z
@@ -260,7 +260,7 @@
 <p>Компилятор напомнит нам о том, что мы пытаемся подставить функцию <code><font color=Black>mul</font></code> на место обычного значения типа <code><font color=Green>Nat</font></code>. Тогда мы исправим выражение на:</p>
 <pre><font color=Black>add</font> <font color=Green>Zero</font> two</pre>
 <p>Компилятор согласится. И передаст выражение вычислителю. И тут мы говорили, что вычислитель начинает проводить расшифровку нашего описания. Он подставляет на место синонимов их определения, правые части из уравнений. Этот процесс мы называли <em>редукцией</em>. Вычислитель видит два синонима и одно значение. С какого синонима начать? С <code><font color=Black>add</font></code> или <code><font color=Black>two</font></code>?</p>
-<h2 id="стратегии-вычислений"><a href="#TOC">Стратегии вычислений</a></h2>
+<h2 id="стратегии-вычислений"><a href="#стратегии-вычислений">Стратегии вычислений</a></h2>
 <p>Этот вопрос приводит нас к понятию стратегии вычислений. Поскольку вычисляем мы только константы, то наше выражение также можно представить в виде дерева. Только теперь у нас в узлах записаны не только конструкторы, но и синонимы. Процесс редукции можно представить как процесс очистки такого дерева от синонимов. Посмотрим на дерево нашего значения:</p>
 <p>Оказывается у нас есть две возможности очистки синонимов.</p>
 <dl>
@@ -325,7 +325,7 @@
 <li><p>вычисление <em>по имени</em> (call by name), когда мы идём от корня к листьям.</p></li>
 </ul>
 <p>Отметим, что стратегию вычисления по значению также принято называть <em>энергичными вычислениями</em> (eqger evaluation) или <em>аппликативной</em> (applicative) стратегией редукции. Вычисление по имени также принято называть <em>нормальной</em> (normal) стратегией редукции.</p>
-<h3 id="преимущества-и-недостатки-стратегий"><a href="#TOC">Преимущества и недостатки стратегий</a></h3>
+<h3 id="преимущества-и-недостатки-стратегий"><a href="#преимущества-и-недостатки-стратегий">Преимущества и недостатки стратегий</a></h3>
 <p>В чём преимущества, той и другой стратегии.</p>
 <blockquote>
 <p>Если выражение вычисляется полностью, первая стратегия более эффективна по расходу памяти.</p>
@@ -383,7 +383,7 @@
 <li><p>Большая выразительность. Мы можем вычислить больше значений.</p></li>
 </ul>
 <p>Какую из них выбрать? В Haskell пошли по второму пути. Всё-таки преимущество выразительности языка оказалось самым существенным. Но для того чтобы избежать недостатков стратегии вычисления по имени оно было модифицировано. Давайте посмотрим как.</p>
-<h2 id="вычисление-по-необходимости"><a href="#TOC">Вычисление по необходимости</a></h2>
+<h2 id="вычисление-по-необходимости"><a href="#вычисление-по-необходимости">Вычисление по необходимости</a></h2>
 <p>  Вернёмся к выражению:</p>
 <pre><font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> add <font color=Black>(</font>add x x<font color=Black>)</font> x<font color=Black>)</font> <font color=Black>(</font>add <font color=Green>Zero</font> two<font color=Black>)</font></pre>
 <p>Нам нужно как-то рассказать функции о том, что имя <code><font color=Black>x</font></code> в её теле указывает на одно и то же значение. И если в одном из <code><font color=Black>x</font></code> значение будет вычислено переиспользовать эти результаты в других <code><font color=Black>x</font></code>. Вместо значения мы будем передавать в функцию <em>ссылку</em> на область памяти, которая содержит рецепт получения этого значения. Напомню, что мы по-прежнему вычисляем значение сверху вниз, сейчас мы просто хотим избавиться от проблемы дублирования. Вернитесь к примеру с вычислением по имени и просмотрите его ещё раз. Обратите внимание на то, что значения вычислялись лишь при сопоставлении с образцом. Мы вычисляем верхний конструктор аргумента лишь для того, чтобы понять какое уравнение для <code><font color=Black>foldNat</font></code> выбрать. Теперь мы будем хранить ссылку на <code><font color=Black>(</font>add <font color=Green>Zero</font> two<font color=Black>)</font></code> в памяти и как только, внешняя функция запросит верхний конструктор мы обновим значение в памяти новым вычисленным до корневого конструктора значением. Если в любом другом месте функции мы вновь обратимся к значению, мы не будем его перевычислять, а сразу вернём конструктор. Посмотрим как это происходит на примере:</p>
@@ -457,9 +457,9 @@
 <pre><font color=Black>sum</font> <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">..</font> <font color="#0000ee">1e9</font><font color="#b2590f">]</font>
 <font color=Black>&lt;</font>interactive<font color=Black>&gt;:</font> out <font color="#b2590f">of</font> memory <font color=Black>(</font>requested <font color="#0000ee">2097152</font> bytes<font color=Black>)</font></pre>
 <p>Интуитивно кажется, что для решения этой задачи нам нужно лишь две ячейки памяти. В одной мы будем постоянно прибавлять к значению единицу, пока не дойдём до миллиарда, так мы последовательно будем получать элементы списка, а в другой мы будем хранить значение суммы. Мы начнём с нуля и будем прибавлять значения первой ячейки. У ленивой стратегии другое мнение на этот счёт. Если вы вернётесь к примеру выше, то заметите, что <code><font color=Black>sum</font></code> копит отложенные выражения до самого последнего момента. Поскольку память ограничена, такой момент не наступает. Как нам быть? В Haskell по умолчанию все вычисления проводятся по необходимости, но предусмотрены и средства для имитации вычисления по значению. Давайте посмотрим на них.</p>
-<h2 id="аннотации-строгости"><a href="#TOC">Аннотации строгости</a></h2>
+<h2 id="аннотации-строгости"><a href="#аннотации-строгости">Аннотации строгости</a></h2>
 <p>Языки с ленивой стратегией вычислений называют не строгими (non-strict), а языки с энергичной стратегией вычислений соответственно~– строгими.</p>
-<h3 id="принуждение-к-сзнф-с-помощью-seq"><a href="#TOC">Принуждение к СЗНФ с помощью seq</a></h3>
+<h3 id="принуждение-к-сзнф-с-помощью-seq"><a href="#принуждение-к-сзнф-с-помощью-seq">Принуждение к СЗНФ с помощью seq</a></h3>
 <p>Мы говорили о том, что при вычислении по имени значения вычисляются только при сопоставлении с образцом или в <code><font color="#b2590f">case</font></code>-выражениях. Есть специальная функция <code><font color=Black>seq</font></code>, которая форсирует приведение к СЗНФ:</p>
 <pre><font color=Black>seq</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b</pre>
 <p>Она принимает два аргумента, при выполнении функции первый аргумент приводится к СЗНФ и <em>затем</em> возвращается второй. Вернёмся к примеру с <code><font color=Black>sum</font></code>. Привести к СЗНФ число – означает вычислить его полностью. Определим функцию <code><font color=Black>sum'</font></code>, которая перед рекурсивным вызовом вычисляет промежуточный результат:</p>
@@ -490,7 +490,7 @@
 <font color=Black>sum'</font> <font color="#b2590f">=</font> iter <font color="#0000ee">0</font> 
     <font color="#b2590f">where</font> iter res <font color=Green>[]</font>        <font color="#b2590f">=</font> res
           iter res <font color=Black>(</font>a<font color="#b2590f">:</font><font color="#b2590f">as</font><font color=Black>)</font>    <font color="#b2590f">=</font> flip iter <font color="#b2590f">as</font> <font color=Black>$!</font> res <font color=Black>+</font> a</pre>
-<h3 id="функции-с-хвостовой-рекурсией"><a href="#TOC">Функции с хвостовой рекурсией</a></h3>
+<h3 id="функции-с-хвостовой-рекурсией"><a href="#функции-с-хвостовой-рекурсией">Функции с хвостовой рекурсией</a></h3>
 <p>Определим функцию, которая не будет лениться при вычислении произведения чисел, мы назовём её <code><font color=Black>product'</font></code>:</p>
 <pre><font color=Black>product'</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> a
 <font color=Black>product'</font> <font color="#b2590f">=</font> iter <font color="#0000ee">1</font>
@@ -512,7 +512,7 @@
     <font color="#b2590f">where</font> iter res <font color=Green>[]</font>        <font color="#b2590f">=</font> res
           iter res <font color=Black>(</font>a<font color="#b2590f">:</font><font color="#b2590f">as</font><font color=Black>)</font>    <font color="#b2590f">=</font> iter <font color=Black>(</font>res <font color=Black>`op`</font> a<font color=Black>)</font> <font color="#b2590f">as</font> </pre>
 <p>Такая функция называется функцией с <em>хвостовой рекурсией</em> (tail-recursive function). Рекурсия хвостовая тогда, когда рекурсивный вызов функции является последним действием, которое выполняется в функции. Посмотрите на второе уравнение функции <code><font color=Black>iter</font></code>. Мы вызываем функцию <code><font color=Black>iter</font></code> рекурсивно последним делом. В языках с вычислением по значению часто хвостовая рекурсия имеет преимущество за счёт экономии памяти (тот момент который мы обсуждали в самом начале). Но как видно из этого раздела в ленивых языках это не так. Библиотечная функция <code><font color=Black>sum</font></code> будет накапливать выражения перед вычислением с риском исчерпать всю доступную память, потому что она определена через <code><font color=Black>foldl</font></code>.</p>
-<h3 id="тонкости-применения-seq"><a href="#TOC">Тонкости применения seq</a></h3>
+<h3 id="тонкости-применения-seq"><a href="#тонкости-применения-seq">Тонкости применения seq</a></h3>
 <p>Хочу подчеркнуть, что функция <code><font color=Black>seq</font></code> не вычисляет свой первый аргумент полностью. Первый аргумент не приводится к нормальной форме. Мы лишь просим вычислитель узнать какой конструктор находится в корне у данного выражения. Например в выражении <code><font color=Black>isZero</font> <font color=Black>$!</font> infinity</code> знак <code><font color=Black>$!</font></code> ничем не отличается от простого применения мы и так будем приводить аргумент <code><font color=Black>infinity</font></code> к СЗНФ, когда нам понадобится узнать какое из уравнений для <code><font color=Black>isZero</font></code> выбрать, ведь в аргументе функции есть сопоставление с образцом.</p>
 <p>Посмотрим на один типичный пример. Вычисление среднего для списка чисел. Среднее равно сумме всех элементов списка, разделённой на длину списка. Для того чтобы вычислить значение за один проход мы будем одновременно вычислять и сумму элементов и значение длины. Также мы понимаем, что нам не нужно откладывать вычисления, воспользуемся функцией <code><font color=Black>foldl'</font></code>:</p>
 <pre><font color=Black>mean</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Double</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Double</font>
@@ -548,7 +548,7 @@
 <font color="#0000ee">5000000.5</font>
 <font color=Black>(</font><font color="#0000ee">0.65</font> secs<font color=Black>,</font> <font color="#0000ee">1083157384</font> bytes<font color=Black>)</font></pre>
 <p>Получилось! Скорость чуть хуже чем у <code><font color=Black>sum'</font></code>, но не в сто раз.</p>
-<h3 id="энергичные-образцы"><a href="#TOC">Энергичные образцы</a></h3>
+<h3 id="энергичные-образцы"><a href="#энергичные-образцы">Энергичные образцы</a></h3>
 <p>В GHC предусмотрены специальные обозначения для принудительного приведения выражения к СЗНФ. Они не входят в стандарт языка Haskell, поэтому для того, чтобы воспользоваться ими, нам необходимо подключить их. Расширения подключаются с помощью специального комментария в самом начале модуля:</p>
 <pre><font color="#2149c1">{-# LANGUAGE BangPatterns #-}</font></pre>
 <p>Эта запись активирует расширение языка с именем <code><font color=Green>BangPatterns</font></code>. Ядро языка Haskell фиксировано стандартом, но каждый разработчик компилятора может вносить свои дополнения. Они подключаются через директиву <code><font color=Green>LANGUAGE</font></code>:</p>
@@ -578,7 +578,7 @@
 <font color="#0000ee">5000000.5</font>
 <font color=Black>(</font><font color="#0000ee">0.65</font> secs<font color=Black>,</font> <font color="#0000ee">1082640204</font> bytes<font color=Black>)</font></pre>
 <p>Функция работает чуть медленнее, чем исходная версия, но не сильно.</p>
-<h3 id="энергичные-типы-данных"><a href="#TOC">Энергичные типы данных</a></h3>
+<h3 id="энергичные-типы-данных"><a href="#энергичные-типы-данных">Энергичные типы данных</a></h3>
 <p>Расширение <code><font color=Green>BangPatterns</font></code> позволяет указывать какие значения привести к СЗНФ не только в образцах, но и в типах данных. Мы можем создать тип:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>P</font> a b <font color="#b2590f">=</font> <font color=Green>P</font> <font color=Black>!</font>a <font color=Black>!</font>b</pre>
 <p>Этот тип обозначает пару, элементы которой обязаны находиться в СЗНФ. Теперь мы можем написать ещё один вариант функции поиска среднего:</p>
@@ -586,7 +586,7 @@
 <font color=Black>mean'''</font> <font color="#b2590f">=</font> division <font color=Black>.</font> foldl' iter <font color=Black>(</font><font color=Green>P</font> <font color="#0000ee">0</font> <font color="#0000ee">0</font><font color=Black>)</font>
     <font color="#b2590f">where</font> iter <font color=Black>(</font><font color=Green>P</font> sum leng<font color=Black>)</font> a <font color="#b2590f">=</font> <font color=Green>P</font> <font color=Black>(</font>sum  <font color=Black>+</font> a<font color=Black>)</font> <font color=Black>(</font>leng <font color=Black>+</font> <font color="#0000ee">1</font><font color=Black>)</font>
           division <font color=Black>(</font><font color=Green>P</font> sum leng<font color=Black>)</font> <font color="#b2590f">=</font> sum <font color=Black>/</font> fromIntegral leng</pre>
-<h2 id="пример-ленивых-вычислений"><a href="#TOC">Пример ленивых вычислений</a></h2>
+<h2 id="пример-ленивых-вычислений"><a href="#пример-ленивых-вычислений">Пример ленивых вычислений</a></h2>
 <p>У вас может сложиться ошибочное представление, что ленивые вычисления созданы только для того, чтобы с ними бороться. Пока мы рассматривали лишь недостатки, вскользь упомянув о преимуществе выразительности. Ленивые вычисления могут и экономить память! Мы можем строить огромные промежуточные данные, обрабатывать их разными способами при условии, что в конце программы нам потребуется лишь часть этих данных или конечный алгоритм будет накапливать определённую статистику.</p>
 <p>Рассмотрим такое выражение:</p>
 <pre><font color="#b2590f">let</font> longList <font color="#b2590f">=</font> produce x
@@ -627,7 +627,7 @@
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> roots <font color="#0000ee">0.001</font> <font color="#0000ee">0.5</font> <font color=Black>(</font><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x<font color=Black>*</font>x<font color=Black>/</font><font color="#0000ee">2</font><font color=Black>)</font>
 <font color="#0000ee">3.0517578125e-5</font></pre>
 <p>Мы нашли решение, корень равен нулю. В этой записи <code><font color=Green>Ne</font><font color="#2149c1">-</font><font color="#0000ee">5</font></code> означает <span class="LaTeX">$N \cdot 10^{-5}$</span></p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>В этой главе мы узнали о том как происходят вычисления в Haskell. Мы узнали, что они ленивые. Всё вычисляется как можно позже и как можно меньше. Такие вычисления называются вычислениями по необходимости.</p>
 <p>Также мы узнали о вычислениях по значению и вычислениях по имени.</p>
 <ul>
@@ -643,7 +643,7 @@
 <p>Функция <code><font color=Black>seq</font></code>:</p>
 <pre><font color=Black>seq</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b</pre>
 <p>Сначала приводит к слабой заголовочной форме свой первый аргумент, а затем возвращает второй. Взрывные образцы выполняют те же функции, но они используются в декомпозиции аргументов или в объявлении типа.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Потренируйтесь в понимании того как происходят ленивые вычисления. Вычислите на бумаге следующие выражения (если это возможно):</p>
 <ul>

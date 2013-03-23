@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
@@ -15,9 +16,7 @@
 <li><a href="#логические-значения">Логические значения</a></li>
 <li><a href="#натуральные-числа">Натуральные числа</a></li>
 <li><a href="#maybe">Maybe</a></li>
-<li><a href="#списки">Списки</a><ul>
-<li><a href="#вычислительные-особенности-foldl-и-foldr">Вычислительные особенности foldl и foldr</a></li>
-</ul></li>
+<li><a href="#списки">Списки</a></li>
 <li><a href="#деревья">Деревья</a></li>
 </ul></li>
 <li><a href="#развёртка">Развёртка</a><ul>
@@ -38,11 +37,11 @@
 </div></div>  
  </div> 
 
-<h1 id="структурная-рекурсия"><a href="#TOC">Структурная рекурсия</a></h1>
+<h1 id="структурная-рекурсия"><a href="#структурная-рекурсия">Структурная рекурсия</a></h1>
 <p>Структурная рекурсия определяет способ построения и преобразования значений по виду типа (по составу его конструкторов). Функции, которые преобразуют значения мы будем называть <em>свёрткой</em> (fold), а функции которые строят значения – <em>развёрткой</em> (unfold). Эта рекурсия встречается очень часто, мы уже пользовались ею и не раз, но в этой главе мы остановимся на ней поподробнее.</p>
-<h2 id="свёртка"><a href="#TOC">Свёртка</a></h2>
+<h2 id="свёртка"><a href="#свёртка">Свёртка</a></h2>
 <p> Свёртку значения можно представить как процесс, который заменяет в дереве значения все конструкторы на подходящие по типу функции.</p>
-<h3 id="логические-значения"><a href="#TOC">Логические значения</a></h3>
+<h3 id="логические-значения"><a href="#логические-значения">Логические значения</a></h3>
 <p>Вспомним определение логических значений:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Bool</font> <font color="#b2590f">=</font> <font color=Green>True</font> <font color="#b2590f">|</font> <font color=Green>False</font></pre>
 <p>У нас есть два конструктора-константы. Любое значение типа <code><font color=Green>Bool</font></code> может состоять либо из одного конструктора <code><font color=Green>True</font></code>, либо из одного конструктора <code><font color=Green>False</font></code>. Функция свёртки в данном случае принимает две константы одинакового типа <code><font color=Black>a</font></code> и возвращает функцию, которая превращает значение типа <code><font color=Green>Bool</font></code> в значение , заменяя конструкторы на переданные значения:</p>
@@ -52,14 +51,14 @@
     <font color=Green>False</font>   <font color="#b2590f">-&gt;</font> false</pre>
 <p>Мы написали эту функцию в композиционном стиле для того, чтобы подчеркнуть, что функция преобразует значение типа <code><font color=Green>Bool</font></code>. Определим несколько знакомых функций через функцию свёртки, начнём с отрицания:</p>
 <pre><font color=Black>not</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
-<font color=Black>not</font> <font color="#b2590f">=</font> foldNat <font color=Green>False</font> <font color=Green>True</font></pre>
+<font color=Black>not</font> <font color="#b2590f">=</font> foldBool <font color=Green>False</font> <font color=Green>True</font></pre>
 <p>Мы поменяли конструкторы местами, если на вход поступит <code><font color=Green>True</font></code>, то мы вернём <code><font color=Green>False</font></code> и наоборот. Теперь посмотрим на “и” и “или”:</p>
 <pre><font color=Black>(</font><font color=Black>||</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color=Black>&amp;&amp;</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 
-<font color=Black>(</font><font color=Black>||</font><font color=Black>)</font> <font color="#b2590f">=</font> foldNat  <font color=Black>(</font>const <font color=Green>True</font><font color=Black>)</font>  id
-<font color=Black>(</font><font color=Black>&amp;&amp;</font><font color=Black>)</font> <font color="#b2590f">=</font> foldNat  id            <font color=Black>(</font>const <font color=Green>False</font><font color=Black>)</font></pre>
+<font color=Black>(</font><font color=Black>||</font><font color=Black>)</font> <font color="#b2590f">=</font> foldBool  <font color=Black>(</font>const <font color=Green>True</font><font color=Black>)</font>  id
+<font color=Black>(</font><font color=Black>&amp;&amp;</font><font color=Black>)</font> <font color="#b2590f">=</font> foldBool  id            <font color=Black>(</font>const <font color=Green>False</font><font color=Black>)</font></pre>
 <p>Определение функций “и” и “или” через свёртки подчёркивает, что они являются взаимно обратными. Смотрите, эти функции принимают значение типа <code><font color=Green>Bool</font></code> и возвращают функцию <code><font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>. Фактически функция свёртки для <code><font color=Green>Bool</font></code> является <code><font color="#b2590f">if</font></code>-выражением, только в этот раз мы пишем условие в конце.</p>
-<h3 id="натуральные-числа"><a href="#TOC">Натуральные числа</a></h3>
+<h3 id="натуральные-числа"><a href="#натуральные-числа">Натуральные числа</a></h3>
 <p>У нас был тип для натуральных чисел Пеано:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font></pre>
 <p>Помните мы когда-то записывали определения типов в стиле классов:</p>
@@ -97,7 +96,7 @@
 
 <font color=Black>add</font> a  <font color="#b2590f">=</font> foldNat a     <font color=Green>Succ</font>
 <font color=Black>mul</font> a  <font color="#b2590f">=</font> foldNat <font color=Green>Zero</font>  <font color=Black>(</font>add a<font color=Black>)</font></pre>
-<h3 id="maybe"><a href="#TOC">Maybe</a></h3>
+<h3 id="maybe"><a href="#maybe">Maybe</a></h3>
 <p>Вспомним определение типа для результата частично определённых функций:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Maybe</font> a <font color="#b2590f">=</font> <font color=Green>Nothing</font> <font color="#b2590f">|</font> <font color=Green>Just</font> a</pre>
 <p>Перепишем словно это класс:</p>
@@ -111,7 +110,7 @@
 <font color="#b2590f">instance</font> <font color=Green>Monad</font> <font color=Green>Maybe</font> <font color="#b2590f">where</font>
     return      <font color="#b2590f">=</font> <font color=Green>Just</font>
     ma <font color=Black>&gt;&gt;=</font> mf   <font color="#b2590f">=</font> maybe <font color=Green>Nothing</font> mf ma</pre>
-<h3 id="списки"><a href="#TOC">Списки</a></h3>
+<h3 id="списки"><a href="#списки">Списки</a></h3>
 <p>Функция свёртки для списков это функция <code><font color=Black>foldr</font></code>. Выведем её из определения типа:</p>
 <pre><font color="#b2590f">data</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">=</font> a <font color="#b2590f">:</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">|</font> <font color=Green>[]</font></pre>
 <p>Представим, что это класс:</p>
@@ -176,7 +175,7 @@
 <pre><font color=Black>foldl</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>b<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> a
 <font color=Black>foldl</font> f s xs <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color="#b2590f">\</font>a <font color="#b2590f">-&gt;</font> <font color=Black>(</font> <font color=Black>.</font> flip f a<font color=Black>)</font><font color=Black>)</font> id xs s</pre>
 <p>Кажется мы ошиблись в аргументах, ведь <code><font color=Black>foldr</font></code> принимает три аргумента. Дело в том, что в функции <code><font color=Black>foldr</font></code> мы сворачиваем списки в функции, последний аргумент предназначен как раз для результирующей функции. Отметим, что из определения можно исключить два последних аргумента с помощью функции <code><font color=Black>flip</font></code>.</p>
-<h4 id="вычислительные-особенности-foldl-и-foldr"><a href="#TOC">Вычислительные особенности foldl и foldr</a></h4>
+<h4 id="вычислительные-особенности-foldl-и-foldr"><a href="#вычислительные-особенности-foldl-и-foldr">Вычислительные особенности foldl и foldr</a></h4>
 <p>Если посмотреть на выражение, которое получается в результате вычисления <code><font color=Black>foldr</font></code> и <code><font color=Black>foldl</font></code> можно понять почему они так называются.</p>
 <p>В левой свёртке <code><font color=Black>foldl</font></code> скобки группируются влево, поэтому на конце <code><font color=Black>l</font></code> (left):</p>
 <pre><font color=Black>foldl</font> f s <font color="#b2590f">[</font>a1<font color=Black>,</font> a2<font color=Black>,</font> a3<font color=Black>,</font> a4<font color="#b2590f">]</font> <font color="#b2590f">=</font>
@@ -186,7 +185,6 @@
     a1 <font color=Black>`f`</font> <font color=Black>(</font>a2 <font color=Black>`f`</font> <font color=Black>(</font>a3 <font color=Black>`f`</font> <font color=Black>(</font>a4 <font color=Black>`f`</font> s<font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
 <p>Кажется, что если функция <code><font color=Black>f</font></code> ассоциативна</p>
 <pre><font color=Black>(</font>a <font color=Black>`f`</font> b<font color=Black>)</font> <font color=Black>`f`</font> c  <font color="#b2590f">=</font> a <font color=Black>`f`</font> <font color=Black>(</font>b <font color=Black>`f`</font> c<font color=Black>)</font></pre>
-
 <p>то нет разницы какую свёртку применять. Разницы нет по смыслу, но может быть существенная разница в скорости вычисления. Рассмотрим функцию <code><font color=Black>concat</font></code>, ниже два определения:</p>
 <pre><font color=Black>concat</font>  <font color="#b2590f">=</font> foldl <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font>
 <font color=Black>concat</font>  <font color="#b2590f">=</font> foldr <font color=Black>(</font><font color=Black>++</font><font color=Black>)</font> <font color=Green>[]</font></pre>
@@ -202,7 +200,7 @@
 <p>За счёт ленивых вычислений мы отбросили оставшуюся (бесконечную) часть списка. По этим примерам может показаться, что левая свёртка такая не нужна совсем, но не все операции ассоциативны. Иногда полезно собирать результат в обратном порядке, например так в <code><font color=Green>Prelude</font></code> определена функция <code><font color=Black>reverse</font></code>, которая переворачивает список:</p>
 <pre><font color=Black>reverse</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
 <font color=Black>reverse</font> <font color="#b2590f">=</font> foldl <font color=Black>(</font>flip <font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font><font color=Black>)</font> <font color=Green>[]</font></pre>
-<h3 id="деревья"><a href="#TOC">Деревья</a></h3>
+<h3 id="деревья"><a href="#деревья">Деревья</a></h3>
 <p>Мы можем определить свёртку и для деревьев. Вспомним тип:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Tree</font> a <font color="#b2590f">=</font> <font color=Green>Node</font> a <font color="#b2590f">[</font><font color=Green>Tree</font> a<font color="#b2590f">]</font></pre>
 <p>Запишем в виде класса:</p>
@@ -223,9 +221,9 @@
 <pre><font color=Black>depth</font> <font color="#b2590f">::</font> <font color=Green>Tree</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Int</font>
 <font color=Black>depth</font> <font color="#b2590f">=</font> foldTree <font color=Black>$</font> <font color="#b2590f">\</font>a bs <font color="#b2590f">-&gt;</font> <font color="#0000ee">1</font> <font color=Black>+</font> foldr max <font color="#0000ee">0</font> bs</pre>
 <p>В этой функции за каждый узел мы прибавляем к результату единицу, а в списке находим максимум среди всех поддеревьев.</p>
-<h2 id="развёртка"><a href="#TOC">Развёртка</a></h2>
+<h2 id="развёртка"><a href="#развёртка">Развёртка</a></h2>
 <p> С помощью развёртки мы постепенно извлекаем значение рекурсивного типа из значения какого-нибудь другого типа. Этот процесс очень похож на процесс вычисления по имени. Сначала у нас есть отложенное вычисление или thunk. Затем мы применяем к нему функцию редукции и у нас появляется корневой конструктор. А в аргументах конструктора снова сидят <code><font color=Black>thunk</font></code>’и. Мы применяем редукцию к ним. И так пока не “развернём” всё значение.</p>
-<h3 id="списки-1"><a href="#TOC">Списки</a></h3>
+<h3 id="списки-1"><a href="#списки-1">Списки</a></h3>
 <p>Для разворачивания списков в <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font></code> есть специальная функция <code><font color=Black>unfoldr</font></code>. Присмотримся сначала к её типу:</p>
 <pre><font color=Black>unfoldr</font> <font color="#b2590f">::</font> <font color=Black>(</font>b <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></pre>
 <p>Функция развёртки принимает стартовый элемент, а возвращает значение типа пары от <code><font color=Green>Maybe</font></code>. Типом <code><font color=Green>Maybe</font></code> мы кодируем конструкторы списка:</p>
@@ -251,7 +249,7 @@
     <font color=Black>(</font><font color="#b2590f">_</font>      <font color=Black>,</font><font color=Green>[]</font><font color=Black>)</font>     <font color="#b2590f">-&gt;</font> <font color=Green>Nothing</font>
     <font color=Black>(</font>a<font color="#b2590f">:</font><font color="#b2590f">as</font>   <font color=Black>,</font> b<font color="#b2590f">:</font>bs<font color=Black>)</font>  <font color="#b2590f">-&gt;</font> <font color=Green>Just</font> <font color=Black>(</font><font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#b2590f">as</font><font color=Black>,</font> bs<font color=Black>)</font><font color=Black>)</font> </pre>
 <p>Если один из списков обрывается, то прекращаем разворачивать. А если оба содержат голову и хвост, то мы помещаем в голову списка пару голов, а в следующий элемент для разворачивания пару хвостов.</p>
-<h3 id="потоки"><a href="#TOC">Потоки</a></h3>
+<h3 id="потоки"><a href="#потоки">Потоки</a></h3>
 <p>Для развёртки хорошо подходят типы у которых, всего один конструктор. Тогда нам не нужно кодировать альтернативы. Например рассмотрим потоки:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Stream</font> a <font color="#b2590f">=</font> a <font color="#b2590f">:&amp;</font> <font color=Green>Stream</font> a</pre>
 <p>Они такие же как и списки, только без конструктора пустого списка. Функция развёртки для потоков имеет вид:</p>
@@ -267,7 +265,7 @@
 
 <font color=Black>zip</font> <font color="#b2590f">::</font> <font color=Green>Stream</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> b <font color="#b2590f">-&gt;</font> <font color=Green>Stream</font> <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font>
 <font color=Black>zip</font> <font color="#b2590f">=</font> curry <font color=Black>$</font> unfoldStream <font color=Black>$</font> <font color="#b2590f">\</font><font color=Black>(</font>a <font color="#b2590f">:&amp;</font> <font color="#b2590f">as</font><font color=Black>,</font> b <font color="#b2590f">:&amp;</font> bs<font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#b2590f">as</font><font color=Black>,</font> bs<font color=Black>)</font><font color=Black>)</font></pre>
-<h3 id="натуральные-числа-1"><a href="#TOC">Натуральные числа</a></h3>
+<h3 id="натуральные-числа-1"><a href="#натуральные-числа-1">Натуральные числа</a></h3>
 <p>Если присмотреться к натуральным числам, то можно заметить, что они очень похожи на списки. Списки без элементов. Это отражается на функции развёртки. Для натуральных чисел мы будем возвращать не пару а просто следующий элемент для развёртки:</p>
 <pre><font color=Black>unfoldNat</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font>
 <font color=Black>unfoldNat</font> f <font color="#b2590f">=</font> maybe <font color=Green>Zero</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>.</font> unfoldNat f<font color=Black>)</font></pre>
@@ -279,7 +277,7 @@
             <font color="#b2590f">|</font> n <font color=Black>&gt;</font>  <font color="#0000ee">0</font>    <font color="#b2590f">=</font> <font color=Green>Just</font> <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font>
             <font color="#b2590f">|</font> otherwise <font color="#b2590f">=</font> error <font color=Black>"negative number"</font></pre>
 <p>Обратите внимание на то, что в этом определении не участвуют конструкторы для <code><font color=Green>Nat</font></code>, хотя мы и строим значение типа <code><font color=Green>Nat</font></code>. Конструкторы для <code><font color=Green>Nat</font></code> как и в случае списков кодируются типом <code><font color=Green>Maybe</font></code>. Развёртка используется гораздо реже свёртки. Возможно это объясняется необходимостью кодирования типа результата некоторым промежуточным типом. Определения теряют в наглядности. Смотрим на функцию, а там <code><font color=Green>Maybe</font></code> и не сразу понятно <em>что</em> мы строим: натуральные числа, списки или ещё что-то.</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>В этой главе мы познакомились с особым видом рекурсии. Мы познакомились со структурной рекурсией. Типы определяют не только значения, но и способы их обработки. Структурная рекурсия может быть выведена из определения типа. Есть языки программирования, в которых мы определяем тип и получаем функции структурной рекурсии в подарок. Есть языки, в которых структурная рекурсия является единственным возможным способом составления рекурсивных функций.</p>
 <p>Обратите внимание на то, что в этой главе мы определяли рекурсивные функции, но рекурсия встречалась лишь в определении для функции свёртки и развёртки. Все остальные функции не содержали рекурсии, более того почти все они определялись в бесточечном стиле. Структурная рекурсия это своего рода комбинатор неподвижной точки, но не общий, а специфический для данного рекурсивного типа.</p>
 <p>Структурная рекурсия бывает свёрткой и развёрткой.</p>
@@ -292,7 +290,7 @@
 </dd>
 </dl>
 <p>Мы узнали некоторые стандартные функции структурной рекурсии: <code><font color=Black>cond</font></code> или <code><font color="#b2590f">if</font></code>-выражения, <code><font color=Black>maybe</font></code>, <code><font color=Black>foldr</font></code>, <code><font color=Black>unfoldr</font></code>.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Определите развёртку для деревьев из модуля <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Tree</font></code>.</p></li>
 <li><p>Определите с помощью свёртки следующие функции:</p>

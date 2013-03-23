@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
@@ -217,12 +218,7 @@
 <li><a href="#интегрирование">Интегрирование</a></li>
 </ul></li>
 <li><a href="#степенные-ряды">Степенные ряды</a><ul>
-<li><a href="#арифметика-рядов">Арифметика рядов</a><ul>
-<li><a href="#сложение">Сложение</a></li>
-<li><a href="#умножение">Умножение</a></li>
-<li><a href="#класс-num">Класс Num</a></li>
-<li><a href="#деление">Деление</a></li>
-</ul></li>
+<li><a href="#арифметика-рядов">Арифметика рядов</a></li>
 <li><a href="#производная-и-интеграл">Производная и интеграл</a></li>
 <li><a href="#элементарные-функции">Элементарные функции</a></li>
 </ul></li>
@@ -241,16 +237,16 @@
 </div></div>  
  </div> 
 
-<h1 id="ленивые-чудеса"><a href="#TOC">Ленивые чудеса</a></h1>
+<h1 id="ленивые-чудеса"><a href="#ленивые-чудеса">Ленивые чудеса</a></h1>
 <p>В прошлой главе мы узнали, что такое ленивые вычисления. В этой главе мы посмотрим чем они хороши. С ними можно делать невозможные вещи. Обращаться к ещё не вычисленным значениям, работать с бесконечными данными.</p>
 <p>Мы пишем программу, чтобы решить какую-нибудь сложную задачу. Часто так бывает, что сложная задача оказывается сложной до тех пор пока её не удаётся разбить на отдельные независимые подзадачи. Мы решаем задачи по-меньше, потом собираем из них решения, из этих решений собираем другие решения и вот уже готова программа. Но мы решаем задачу не на листочке, нам необходимо объяснить её компьютеру. И тот язык, на котором мы пишем программу, оказывает сильное влияние на то как мы будем решать задачу. Мы не можем разбить программу на независимые подзадачи, если в том языке на котором мы собираемся объяснять задачу компьютеру нет средств для того, чтобы собрать эти решения вместе.</p>
 <p>Об этом говорит <em>Джон Хьюз</em> (John Huges) в статье “Why functional programming matters”. Он приводит такую метафору. Если мы делаем стул и у нас нет хорошего клея. Единственное что нам остаётся это вырезать из дерева стул целиком. Это невероятно трудная задача. Гораздо проще сделать отдельные части и потом собрать вместе. Функциональные языки программирования предоставляют два новых вида “клея”. Это функции высшего порядка и ленивые вычисления. В статье можно найти много примеров. Некоторые из них мы рассмотрим в этой главе.</p>
 <p>С функциями высших порядков мы уже знакомы, они позволяют склеивать небольшие решения. С их помощью мы можем параметризовать функцию другой функцией (поведением). Они дают нам возможность выделять сложные закономерности и собирать их в функции. Ленивые вычисления же предназначены для склеивания больших программ. Они синхронизируют выполнение подзадач, избавляя нас от необходимости выполнять это вручную.</p>
 <p>Эта идея разбиения программы на независимые части приводит нас к понятию модульности. Когда мы решаем задачу мы пытаемся разложить её на простейшие составляющие. При этом часто оказывается, что эти составляющие применимы не только для нашей задачи, но и для многих других. Мы получаем целый букет решений, там где искали одно.</p>
-<h2 id="численные-методы"><a href="#TOC">Численные методы</a></h2>
+<h2 id="численные-методы"><a href="#численные-методы">Численные методы</a></h2>
 <p>Рассмотрим несколько численных методов. Все эти методы построены на понятии сходимости. У нас есть последовательность решений и она сходится к одному решению, но мы не знаем когда. Мы только знаем, что промежуточные решения будут всё ближе и ближе к итоговому.</p>
 <p>Поскольку у нас ленивый язык мы сначала построим все возможные решения, а затем выберем итоговое. Так же как мы делали это в прошлой главе, когда искали корни уравнения методом неподвижной точки. Эти примеры взяты из статьи “Why functional programming matters” Джона Хьюза.</p>
-<h3 id="дифференцирование"><a href="#TOC">Дифференцирование</a></h3>
+<h3 id="дифференцирование"><a href="#дифференцирование">Дифференцирование</a></h3>
 <p>Найдём производную функции в точке. Посмотрим на математическое определение производной:</p>
 <p><span class="LaTeX">$$f^\prime(x)\ =\lim_{h\to0}\frac{f(x+h)-f(x)}{h}$$</span></p>
 <p>Производная это предел последовательности таких отношений, при <span class="LaTeX">$h$</span> стремящемся к нулю. Если предел сходится, то производная определена. Для того чтобы решить эту задачу мы начнём с небольшого значения <span class="LaTeX">$h$</span> и будем постепенно уменьшать его, вычисляя промежуточные значения производной. Как только они перестанут сильно изменяться мы будем считать, что мы нашли предел последовательности</p>
@@ -275,7 +271,7 @@
 <font color="#0000ee">1.4093421286887065e-5</font>
 <font color=Black>*</font><font color=Green>Numeric</font><font color=Black>&gt;</font> test <font color="#0000ee">5</font>
 <font color="#0000ee">1.767240203776055e-5</font></pre>
-<h3 id="интегрирование"><a href="#TOC">Интегрирование</a></h3>
+<h3 id="интегрирование"><a href="#интегрирование">Интегрирование</a></h3>
 <p>Теперь давайте поинтегрируем функции одного аргумента. Интеграл это площадь кривой под графиком функции. Если бы кривая была прямой, то мы могли бы вычислить интеграл по формуле трапеций:</p>
 <pre><font color=Black>easyintegrate</font> <font color="#b2590f">::</font> <font color=Green>Fractional</font> a <font color="#b2590f">=&gt;</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> a<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a
 <font color=Black>easyintegrate</font> f a b <font color="#b2590f">=</font> <font color=Black>(</font>f a <font color=Black>+</font> f b<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>b <font color="#2149c1">-</font> a<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font></pre>
@@ -310,7 +306,7 @@
 <font color=Black>*</font><font color=Green>Numeric</font><font color=Black>&gt;</font> test <font color="#0000ee">10</font>
 <font color="#0000ee">1.0683757864171639e-5</font></pre>
 <p>Алгоритм работает. В статье ещё рассмотрены методы повышения точности этих алгоритмов. Что интересно для улучшения точности не надо менять существующий код. Функция принимает последовательность промежуточных решений и преобразует её.</p>
-<h2 id="степенные-ряды"><a href="#TOC">Степенные ряды</a></h2>
+<h2 id="степенные-ряды"><a href="#степенные-ряды">Степенные ряды</a></h2>
 <p>Напишем модуль для вычисления степенных рядов. Этот пример взят из статьи Дугласа МакИлроя (Douglas McIlroy) “Power Series, Power Serious”. Степенной ряд представляет собой функцию, которая определяется списком коэффициентов:</p>
 <p><span class="LaTeX">$$F(x) = f_0 + f_1 x + f_2 x^2 + f_3 x^3 + f_4 x^4 + ...$$</span></p>
 <p>Степенной ряд содержит бесконечное число слагаемых. Для вычисления нам потребуются функции сложения и умножения. Ряд <span class="LaTeX">$F(x)$</span> можно записать и по-другому:</p>
@@ -349,14 +345,14 @@
 <font color=Black>eval</font> <font color="#0000ee">0</font> <font color="#b2590f">_</font>         <font color="#b2590f">_</font> <font color="#b2590f">=</font> <font color="#0000ee">0</font>
 <font color=Black>eval</font> n <font color=Black>(</font>a <font color="#b2590f">:+:</font> p<font color=Black>)</font> x <font color="#b2590f">=</font> a <font color=Black>+</font> x <font color=Black>*</font> eval <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font> p x</pre>
 <p>В первом случае мы хотим вычислить ноль степеней ряда, поэтому мы возвращаем ноль, а во втором случае значение ряда <span class="LaTeX">$a + x P$</span> складывается из числа <span class="LaTeX">$a$</span> и значения ряда <span class="LaTeX">$P$</span> умноженного на заданное значение.</p>
-<h3 id="арифметика-рядов"><a href="#TOC">Арифметика рядов</a></h3>
+<h3 id="арифметика-рядов"><a href="#арифметика-рядов">Арифметика рядов</a></h3>
 <p>В результате сложения и умножения рядов также получается ряд. Также мы можем создать ряд из числа. Эти операции говорят о том, что мы можем сделать степенной ряд экземпляром класса <code><font color=Green>Num</font></code>.</p>
-<h4 id="сложение"><a href="#TOC">Сложение</a></h4>
+<h4 id="сложение"><a href="#сложение">Сложение</a></h4>
 <p>Рекурсивное представление ряда <span class="LaTeX">$f + x F$</span> позволяет нам очень кратко выражать операции, которые мы хотим определить. Теперь у нас нет бесконечного набора коэффициентов, у нас всего лишь одно число и ещё один ряд. Операции существенно упрощаются. Так сложение двух бесконечных рядов имеет вид:</p>
 <p><span class="LaTeX">$$F + G = (f + x F_1) + (g + x G_1) = (f+g) + x (F_1 + G_1)$$</span></p>
 <p>Переведём на Haskell:</p>
 <pre><font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color=Black>+</font> <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>f <font color=Black>+</font> g<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>fs <font color=Black>+</font> gs<font color=Black>)</font></pre>
-<h4 id="умножение"><a href="#TOC">Умножение</a></h4>
+<h4 id="умножение"><a href="#умножение">Умножение</a></h4>
 <p>Умножим два ряда:</p>
 <p><span class="LaTeX">$$F*G = (f + x F_1) * (g + x G_1) = f g + x (f G_1 + F_1 * G)$$</span></p>
 <p>Переведём:</p>
@@ -365,7 +361,7 @@
 
 <font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>f <font color=Black>*</font> g<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>f <font color=Black>.*</font> gs <font color=Black>+</font> fs <font color=Black>*</font> <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font><font color=Black>)</font></pre>
 <p>Дополнительная операция <code><font color=Black>(</font><font color=Black>.*</font><font color=Black>)</font></code> выполняет умножение всех коэффициентов ряда на число.</p>
-<h4 id="класс-num"><a href="#TOC">Класс Num</a></h4>
+<h4 id="класс-num"><a href="#класс-num">Класс Num</a></h4>
 <p>Соберём определения для методов класса <code><font color=Green>Num</font></code> вместе:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Num</font> <font color=Black>(</font><font color=Green>Ps</font> a<font color=Black>)</font> <font color="#b2590f">where</font>
     <font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color=Black>+</font> <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>f <font color=Black>+</font> g<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>fs <font color=Black>+</font> gs<font color=Black>)</font>
@@ -377,7 +373,7 @@
 <font color=Black>(</font><font color=Black>.*</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Ps</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Ps</font> a
 <font color=Black>k</font> <font color=Black>.*</font> <font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>k <font color=Black>*</font> f<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>k <font color=Black>.*</font> fs<font color=Black>)</font>  </pre>
 <p>Методы <code><font color=Black>abs</font></code> и <code><font color=Black>signum</font></code> не определены для рядов. Обратите внимание на то, как рекурсивное определение рядов приводит к рекурсивным определениям функций для рядов. Этот приём очень характерен для Haskell. Поскольку наш ряд это число и ещё один ряд за счёт рекурсии мы можем воспользоваться операцией, которую мы определяем, на “хвостовом” ряде.</p>
-<h4 id="деление"><a href="#TOC">Деление</a></h4>
+<h4 id="деление"><a href="#деление">Деление</a></h4>
 <p>Результат деления <span class="LaTeX">$Q$</span> удовлетворяет соотношению:</p>
 <p><span class="LaTeX">$$F = Q * G$$</span></p>
 <p>Переписав <span class="LaTeX">$F$</span>, <span class="LaTeX">$G$</span> и <span class="LaTeX">$Q$</span> в нашем представлении, получим</p>
@@ -420,7 +416,7 @@
         <font color="#b2590f">where</font> q <font color="#b2590f">=</font> f<font color=Black>/</font>g
 
     fromRational x <font color="#b2590f">=</font> p0 <font color=Black>(</font>fromRational x<font color=Black>)</font></pre>
-<h3 id="производная-и-интеграл"><a href="#TOC">Производная и интеграл</a></h3>
+<h3 id="производная-и-интеграл"><a href="#производная-и-интеграл">Производная и интеграл</a></h3>
 <p>Производная одного члена ряда вычисляется так:</p>
 <p><span class="LaTeX">$$\frac{d}{dx} x^n = n x^{n-1}$$</span></p>
 <p>Из этого выражения по свойствам производной</p>
@@ -436,7 +432,7 @@
 <pre><font color=Black>int</font> <font color="#b2590f">::</font> <font color=Green>Fractional</font> a <font color="#b2590f">=&gt;</font> <font color=Green>Ps</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Ps</font> a
 <font color=Black>int</font> <font color=Black>(</font>f <font color="#b2590f">:+:</font> fs<font color=Black>)</font> <font color="#b2590f">=</font> <font color="#0000ee">0</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>int' <font color="#0000ee">1</font> fs<font color=Black>)</font> 
     <font color="#b2590f">where</font> int' n <font color=Black>(</font>g <font color="#b2590f">:+:</font> gs<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>g <font color=Black>/</font> n<font color=Black>)</font> <font color="#b2590f">:+:</font> <font color=Black>(</font>int' <font color=Black>(</font>n<font color=Black>+</font><font color="#0000ee">1</font><font color=Black>)</font> gs<font color=Black>)</font></pre>
-<h3 id="элементарные-функции"><a href="#TOC">Элементарные функции</a></h3>
+<h3 id="элементарные-функции"><a href="#элементарные-функции">Элементарные функции</a></h3>
 <p>Мы можем выразить элементарные функции через операции взятия производной и интегрирования. К примеру уравнение для <span class="LaTeX">$e^x$</span> выглядит так:</p>
 <p><span class="LaTeX">$$\frac{dy}{dx} = y$$</span></p>
 <p>Проинтегрируем с начальным условием <span class="LaTeX">$y(0) = 1$</span>:</p>
@@ -466,7 +462,7 @@
 <p>И это работает! Вычисление этих функций возможно за счёт того, что вне зависимости от аргумента функция <code><font color=Black>int</font></code> вернёт ряд, у которого первый коэффициент равен нулю. Это значение подхватывается и используется на следующем шаге рекурсивных вычислений.</p>
 <p>Через синус и косинус мы можем определить тангенс:</p>
 <pre><font color=Black>tanx</font> <font color="#b2590f">=</font> sinx <font color=Black>/</font> cosx</pre>
-<h2 id="водосборы"><a href="#TOC">Водосборы</a></h2>
+<h2 id="водосборы"><a href="#водосборы">Водосборы</a></h2>
 <p>В этом примере мы рассмотрим одну интересную технику рекурсивных вычислений, которая называется <em>мемоизацией</em> (memoization). Она заключается в том, что мы запоминаем все значения, с которыми вызывалась функция и, если с данным значением функция уже вычислялась, просто используем значение из памяти, а если значение ещё не вычислялось, вычисляем его и сохраняем.</p>
 <p>В ленивых языках программирования для мемоизации функций часто используется такой приём. Мы сохраняем все значения функции в некотором контейнере, а затем обращаемся к элементам. При этом значения сохраняются в контейнере и не перевычисляются. Это происходит за счёт ленивых вычислений. Что интересно вычисляются не все значения, а лишь те, которые нам действительно нужны, те которые мы извлекаем из контейнера хотя бы один раз.</p>
 <p>Посмотрим на такой классический пример. Вычисление чисел Фибоначчи. Каждое последующее число ряда Фибоначчи равно сумме двух предыдущих. Наивное определение выглядит так:</p>
@@ -540,7 +536,7 @@
 <pre><font color=Black>label</font> <font color="#b2590f">::</font> <font color=Green>SinkMap</font> <font color="#b2590f">-&gt;</font> <font color=Green>LabelMap</font>
 <font color=Black>label</font> a <font color="#b2590f">=</font> fmap <font color=Black>(</font>m <font color=Green>M</font><font color=Black>.!</font> <font color=Black>)</font> a 
     <font color="#b2590f">where</font> m <font color="#b2590f">=</font> <font color=Green>M</font><font color=Black>.</font>fromList <font color=Black>$</font> flip zip <font color="#b2590f">[</font><font color=Black>'a'</font> <font color="#b2590f">..</font> <font color="#b2590f">]</font> <font color=Black>$</font> nub <font color=Black>$</font> elems a</pre>
-<h2 id="ленивее-некуда"><a href="#TOC">Ленивее некуда</a></h2>
+<h2 id="ленивее-некуда"><a href="#ленивее-некуда">Ленивее некуда</a></h2>
 <p>Мы выяснили, что значение может редуцироваться только при сопоставлении с образцом и в специальной функции <code><font color=Black>seq</font></code>. Функцию <code><font color=Black>seq</font></code> мы можем применять, а можем и не применять. Но кажется, что в декомпозиции мы не можем уйти от необходимости проведения хотя бы одной редукции. Оказывается можем, в Haskell для этого предусмотрены специальные <em>ленивые образцы</em> (lazy patterns). Они обозначаются знаком тильда:</p>
 <pre><font color=Black>lazyHead</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> a
 <font color=Black>lazyHead</font> <font color="#b2590f">~</font><font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> x</pre>
@@ -673,7 +669,7 @@
 <font color=Black>*</font><font color=Green>Stream</font><font color=Black>&gt;</font> dist <font color="#0000ee">1000</font> <font color=Black>(</font>cos <font color=Black>&lt;$&gt;</font> time<font color=Black>)</font> cosx
 <font color="#0000ee">1.9088156807382827e-4</font></pre>
 <p>Так с помощью ленивых образцов нам удалось попасть в правую часть уравнения для функции <code><font color=Black>int</font></code>, не раскрывая до конца аргументы в левой части. С помощью этого мы могли ссылаться в сопоставлении с образцом на значение, которое ещё не было вычислено.</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>Ленивые вычисления повышают модульность программ. Мы можем в одной части программы создать все возможные решения, а в другой выбрать лучшие по какому-либо признаку. Также мы посмотрели на интересную технику написания рекурсивных функций, которая называется мемоизацией. Мемоизация означает, что мы не вычисляем повторно значения некоторой функции, а сохраняем их и используем в дальнейших вычислениях. Мы узнали новую синтаксическую конструкцию. Оказывается мы можем не только бороться с ленью, но и поощрять её. Лень поощряется ленивыми образцами. Они отменяют приведение к слабой заголовочной нормальной форме при декомпозиции аргументов. Они пишутся как обычные образцы, но со знаком тильда:</p>
 <pre><font color=Black>lazyHead</font> <font color="#b2590f">~</font><font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> x</pre>
 <p>Мы говорим вычислителю: поверь мне, это значение может иметь только такой вид, потом посмотришь так ли это, когда значения тебе понадобятся. Поэтому ленивые образцы проходят сопоставление с образцом в любом случае.</p>
@@ -684,7 +680,7 @@
 <font color=Black>lazyHead</font> a <font color="#b2590f">=</font> 
     <font color="#b2590f">let</font> <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> a
     <font color="#b2590f">in</font>  x</pre>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <p>Мы побывали на выставке ленивых программ. Присмотритесь ещё раз к решениям задач этой главы и подумайте какую роль сыграли ленивые вычисления в каждом из случаев, какие мотивы обыгрываются в этих примерах. Также подумайте каким было бы решение, если бы в Haskell использовалась стратегия вычисления по значению. Критически настроенные читатели могут с помощью профилирования проверить эффективность программ из этой главы.</p>
 <div id="footer">  
 <div id="nav">

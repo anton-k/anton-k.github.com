@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
@@ -17,13 +18,10 @@
 <li><a href="#строчная-запись-деревьев">Строчная запись деревьев</a></li>
 </ul></li>
 <li><a href="#структура-функций">Структура функций</a><ul>
-<li><a href="#композиция-и-частичное-применение">Композиция и частичное применение</a><ul>
-<li><a href="#связь-с-логикой">Связь с логикой</a></li>
-</ul></li>
+<li><a href="#композиция-и-частичное-применение">Композиция и частичное применение</a></li>
 <li><a href="#декомпозиция-и-сопоставление-с-образцом">Декомпозиция и сопоставление с образцом</a></li>
 </ul></li>
 <li><a href="#проверка-типов">Проверка типов</a><ul>
-<li><a href="#специализация-типов-при-подстановке">Специализация типов при подстановке</a></li>
 <li><a href="#проверка-типов-с-контекстом">Проверка типов с контекстом</a></li>
 <li><a href="#ограничение-мономорфизма">Ограничение мономорфизма</a></li>
 </ul></li>
@@ -41,7 +39,7 @@
 </div></div>  
  </div> 
 
-<h1 id="типы"><a href="#TOC">Типы</a></h1>
+<h1 id="типы"><a href="#типы">Типы</a></h1>
 <p>С помощью типов мы определяем все возможные значения в нашей программе. Мы определяем основные примитивы и способы их комбинирования. Например в типе <code><font color=Green>Nat</font></code>:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font></pre>
 <p>Один конструктор-примитив <code><font color=Green>Zero</font></code>, и один конструктор <code><font color=Green>Succ</font></code>, с помощью которого мы можем делать составные значения. Определив тип <code><font color=Green>Nat</font></code> таким образом, мы говорим, что значения типа <code><font color=Green>Nat</font></code> могут быть только такими:</p>
@@ -51,7 +49,7 @@
 <pre>    <font color=Green>Succ</font> <font color=Green>Zero</font> <font color=Green>Zero</font><font color=Black>,</font>  <font color=Green>Succ</font> <font color=Green>Succ</font><font color=Black>,</font> <font color=Green>True</font><font color=Black>,</font> <font color=Green>Zero</font> <font color=Black>(</font><font color=Green>Zero</font> <font color=Green>Succ</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>...</font></pre>
 <p>Недопустимых значений конечно гораздо больше. Такое проявляется и в естественном языке, бессмысленных комбинаций слов гораздо больше, чем осмысленных предложений. Обратите внимание на то, что мы говорим о значениях (не)допустимых для некоторого типа, например значение <code><font color=Green>True</font></code> допустимо для <code><font color=Green>Bool</font></code>, но недопустимо для <code><font color=Green>Nat</font></code>.</p>
 <p>Сами типы строятся не произвольным образом. Мы узнали, что при их построении используются две основные операции, это сумма и произведение типов. Это говорит о том, что в типах должны быть какие-то закономерности, которые распространяются на все значения. В этой главе мы посмотрим на эти закономерности.</p>
-<h2 id="структура-алгебраических-типов-данных"><a href="#TOC">Структура алгебраических типов данных</a></h2>
+<h2 id="структура-алгебраических-типов-данных"><a href="#структура-алгебраических-типов-данных">Структура алгебраических типов данных</a></h2>
 <p>Итак у нас лишь две операции: сумма и произведение. Давайте для начала рассмотрим два крайних случая.</p>
 <ul>
 <li><p>Только произведение типов</p>
@@ -79,9 +77,8 @@
 <pre><font color="#b2590f">data</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">where</font>
     <font color=Green>[]</font>   <font color="#b2590f">::</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font>
     <font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font>  <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> </pre>
-<p>Конструктор пустого списка <code><font color=Green>[]</font></code> является константой, а конструктор объединения элемента со списком <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></code>, является функцией. Когда я говорил, что типы определяют примитивы и методы составления из примитивов, я имел ввиду, что некоторые конструкторы по сути являются константами, а другие функциями.</p>
-<p>Эти “методы” определяют базовые значения типа, все другие значения будут комбинациями базовых. При этом сумма типов, определяет число методов “классе” типа, то есть число базовых значений, а произведение типов в каждой альтернативе определяет имя метода (именем конструктора) и состав аргументов (перечислением подтипов).</p>
-<h2 id="структура-констант"><a href="#TOC">Структура констант</a></h2>
+<p>Конструктор пустого списка <code><font color=Green>[]</font></code> является константой, а конструктор объединения элемента со списком <code><font color=Black>(</font><font color="#b2590f">:</font><font color=Black>)</font></code>, является функцией. Когда я говорил, что типы определяют примитивы и методы составления из примитивов, я имел ввиду, что некоторые конструкторы по сути являются константами, а другие функциями. Эти “методы” определяют базовые значения типа, все другие значения будут комбинациями базовых.</p>
+<h2 id="структура-констант"><a href="#структура-констант">Структура констант</a></h2>
 <p>Мы уже знаем, что значения могут быть функциями и константами. Объявляя константу, мы даём имя-синоним некоторой комбинации базовых конструкторов. В функции мы говорим как по одним значениям получить другие. В этом и следующем разделе мы посмотрим на то, как типы определяют структуру констант и функций.</p>
 <p>Давайте присмотримся к константам:</p>
 <pre><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font>
@@ -94,7 +91,7 @@
 <font color=Black>f</font> <font color=Black>(</font>f c <font color=Black>(</font>f c c<font color=Black>)</font><font color=Black>)</font>
 <font color=Black>f</font> c <font color=Black>(</font>f c <font color=Black>(</font>f c <font color=Black>(</font>f c c<font color=Black>)</font><font color=Black>)</font><font color=Black>)</font></pre>
 <p>Те кто знаком с теорией графов, возможно уже узнали в этой записи строчную запись дерева. Все значения в Haskell являются деревьями. Узел дерева содержит составной конструктор, а лист дерева содержит примитивный конструктор. Далее будет небольшой подраздел посвящённый терминологии теории графов, которая нам понадобится, будет много картинок, если вам это известно, то вы можете спокойно его пропустить.</p>
-<h3 id="несколько-слов-о-теории-графов"><a href="#TOC">Несколько слов о теории графов</a></h3>
+<h3 id="несколько-слов-о-теории-графов"><a href="#несколько-слов-о-теории-графов">Несколько слов о теории графов</a></h3>
 <p>Если вы не знакомы с теорией графов, то сейчас как раз самое время с ней познакомится, хотя бы на уровне основных терминов. Теория графов изучает дискретные объекты в терминах зависимостей между объектами или связей. При этом объекты и связи можно изобразить графически.</p>
 <p>Граф состоит из <em>узлов</em> и <em>рёбер</em>, которые соединяют узлы. Приведём пример графа:</p>
 <div class="figure">
@@ -122,10 +119,10 @@
 </div>
 <p>Стрелки перевёрнуты так, чтобы стрелки на картинке соответствовали стрелкам в типе конструктора. Например по виду узла <code><font color=Green>Succ</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font></code>, можно понять, что это функция от одного аргумента, в неё впадает одна стрелка-аргумент и вытекает одна стрелка-значение. В конструктор <code><font color=Green>Mul</font></code> впадает две стрелки, значит это конструктор-функция от двух аргументов.</p>
 <p>Константы похожи на деревья за счёт структуры операции произведения типов. В произведении типов мы пишем:</p>
-<pre><font color="#b2590f">data</font> <font color=Green>Tnew</font> <font color="#b2590f">=</font> <font color=Green>Name</font> <font color=Green>T1</font> <font color=Green>T2</font> <font color=Black>...</font> <font color=Green>Tn</font></pre>
+<pre><font color="#b2590f">data</font> <font color=Green>Tnew</font> <font color="#b2590f">=</font> <font color=Green>New</font> <font color=Green>T1</font> <font color=Green>T2</font> <font color=Black>...</font> <font color=Green>Tn</font></pre>
 <p>Так и получается, что у нашего узла <code><font color=Green>New</font></code> одна вытекающая стрелка, которая символизирует значение типа <code><font color=Green>Tnew</font></code> и несколько впадающих стрелок <code><font color=Green>T1</font></code>, <code><font color=Green>T2</font></code>, …, <code><font color=Green>Tn</font></code>, они символизируют аргументы конструктора.</p>
 <p>Потренируйтесь изображать константы в виде деревьев, вспомните константы из предыдущей главы, или придумайте какие-нибудь новые.</p>
-<h3 id="строчная-запись-деревьев"><a href="#TOC">Строчная запись деревьев</a></h3>
+<h3 id="строчная-запись-деревьев"><a href="#строчная-запись-деревьев">Строчная запись деревьев</a></h3>
 <p>Итак все константы в Haskell за счёт особой структуры построения типов являются деревьями, но мы программируем в текстовом редакторе, а не в редакторе векторной графики, поэтому нам нужен удобный способ строчной записи дерева. Мы им уже активно пользуемся, но сейчас давайте опишем его по-подробнее.</p>
 <p>Мы сидим на корне дерева и спускаемся по его вершинам. Нам могут встретиться вершины двух типов узлы и листья. Сначала мы пишем имя в текущем узле, затем через пробел имена в дочерних узлах, если нам встречается невырожденный узел мы заключаем его в скобки. Давайте последовательно запишем в строчной записи дерево из первого примера:</p>
 <div class="figure">
@@ -143,8 +140,8 @@
 <font color=Green>Mul</font> <font color=Black>(</font><font color=Green>Add</font> <font color=Green>One</font> <font color=Green>Ten</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Neg</font> <font color=Black>(</font><font color=Green>Mul</font> <font color=Green>Six</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font></pre>
 <p>За одним исключением, если конструктор бинарный, символьный (начинается с двоеточия), мы помещаем его между аргументов:</p>
 <pre><font color=Black>(</font><font color=Green>One</font> <font color="#b2590f">:+</font> <font color=Green>Ten</font><font color=Black>)</font> <font color="#b2590f">:*</font> <font color=Black>(</font><font color=Green>Neg</font> <font color=Black>(</font><font color=Green>Six</font> <font color="#b2590f">:*</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font></pre>
-<h2 id="структура-функций"><a href="#TOC">Структура функций</a></h2>
-<p>Функции описывают одни значения в терминах других. При этом важно понимать, что функция это лишь новое имя, пусть и составное. Мы можем написать <code><font color="#0000ee">5</font></code>, или <code><font color="#0000ee">2</font><font color=Black>+</font><font color="#0000ee">3</font></code>, это лишь два разных имени для одной константы. Теперь мы разобрались с тем, что константы это деревья. Значит функции строят одни деревья из других. Как они это делают? Для этого в Haskell есть две операции: это композиция и декомпозиция деревьев. С помощью <em>композиции</em> мы строим из простых деревьев сложные, а с помощью <em>декомпозиции</em> разбиваем составные деревья на простейшие.</p>
+<h2 id="структура-функций"><a href="#структура-функций">Структура функций</a></h2>
+<p>Теперь мы разобрались с тем, что константы это деревья. Значит функции строят одни деревья из других. Как они это делают? Для этого в Haskell есть две операции: это композиция и декомпозиция деревьев. С помощью <em>композиции</em> мы строим из простых деревьев сложные, а с помощью <em>декомпозиции</em> разбиваем составные деревья на простейшие.</p>
 <p>Композиция и декомпозиция объединены в одной операции, с которой мы уже встречались, это операция определения синонима. Давайте вспомним какое-нибудь объявление функции:</p>
 <pre><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a  <font color=Green>Zero</font>      <font color="#b2590f">=</font> a
 <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a  <font color=Black>(</font><font color=Green>Succ</font> b<font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Green>Succ</font> <font color=Black>(</font>a <font color=Black>+</font> b<font color=Black>)</font></pre>
@@ -153,8 +150,8 @@
 <p>Слева от знака равно мы также выделили из составного дерева <code><font color=Black>(</font><font color=Green>Time</font> h m s<font color=Black>)</font></code> три его дочерних для корня узла и связали их с переменными <code><font color=Black>h</font></code>, <code><font color=Black>m</font></code> и <code><font color=Black>s</font></code>. А справа от знака равно мы составили из этих переменных новое выражение.</p>
 <p>Итак операцию объявления синонима можно представить в таком виде:</p>
 <pre><font color=Black>name</font>    декомпозиция    <font color="#b2590f">=</font>  композиция </pre>
-<p>В каждом уравнении у нас три части: новое имя, декомпозиция, поступающих на вход аргументов, и композиция нового значения. Теперь давайте остановимся поподробнее на каждой из этих операций.</p>
-<h3 id="композиция-и-частичное-применение"><a href="#TOC">Композиция и частичное применение</a></h3>
+<p>В каждом уравнении у нас три части: новое имя, декомпозиция, поступающих на вход аргументов, и композиция нового значения. Остановимся поподробнее на каждой из этих операций.</p>
+<h3 id="композиция-и-частичное-применение"><a href="#композиция-и-частичное-применение">Композиция и частичное применение</a></h3>
 <p>Композиция строится по очень простому правилу, если у нас есть значение <code><font color=Black>f</font></code> типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code> и значение <code><font color=Black>x</font></code> типа <code><font color=Black>a</font></code>, мы можем получить новое значение <code><font color=Black>(</font>f x<font color=Black>)</font></code> типа <code><font color=Black>b</font></code>. Это основное правило построения новых значений, поэтому давайте запишем его отдельно:</p>
 <pre>                    f <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b<font color=Black>,</font>       x <font color="#b2590f">::</font> a
                     <font color="#2149c1">--------------------------</font>
@@ -245,13 +242,13 @@
 <p>Так если мы хотим на лету получить новую функцию, связав в функции второй аргумент мы можем написать:</p>
 <pre><font color=Black>...</font> <font color="#b2590f">=</font> <font color=Black>...</font> <font color=Black>(</font> <font color=Black>`fun`</font> x<font color=Black>)</font> <font color=Black>...</font></pre>
 <p>Частичное применение для функций в инфиксной форме записи называют <em>сечением</em> (section), они бывают соответственно левыми и правыми.</p>
-<h4 id="связь-с-логикой"><a href="#TOC">Связь с логикой</a></h4>
+<h4 id="связь-с-логикой"><a href="#связь-с-логикой">Связь с логикой</a></h4>
 <p>Отметим связь основного правила применения с Modus Ponens, известным правилом вывода в логике:</p>
 <pre>                    a <font color="#b2590f">-&gt;</font> b<font color=Black>,</font>    a
                     <font color="#2149c1">-------------</font>
                           b</pre>
 <p>Оно говорит о том, что если у нас есть выражение из <code><font color=Black>a</font></code> следует <code><font color=Black>b</font></code> и мы знаем, что <code><font color=Black>a</font></code> истинно, мы смело можем утверждать, что <code><font color=Black>b</font></code> тоже истинно. Если перевести это правило на Haskell, то мы получим: Если у нас определена функция типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> b</code> и у нас есть значение типа <code><font color=Black>a</font></code>, то мы можем получить значение типа <code><font color=Black>b</font></code>.</p>
-<h3 id="декомпозиция-и-сопоставление-с-образцом"><a href="#TOC">Декомпозиция и сопоставление с образцом</a></h3>
+<h3 id="декомпозиция-и-сопоставление-с-образцом"><a href="#декомпозиция-и-сопоставление-с-образцом">Декомпозиция и сопоставление с образцом</a></h3>
 <p>Декомпозиция применяется слева от знака равно, при этом наша задача состоит в том, чтобы опознать дерево определённого вида и выделить из него некоторые поддеревья. Мы уже пользовались декомпозицией много раз в предыдущих главах, давайте выпишем примеры декомпозиции:</p>
 <pre><font color=Black>not</font> <font color="#b2590f">::</font> <font color=Green>Bool</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>not</font> <font color=Green>True</font>   <font color="#b2590f">=</font> <font color=Black>...</font>
@@ -261,7 +258,6 @@
 <font color=Black>xor</font> a b <font color="#b2590f">=</font> <font color=Black>...</font>
 
 <font color=Black>show</font> <font color="#b2590f">::</font> <font color=Green>Show</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>String</font>
-
 <font color=Black>show</font> <font color=Black>(</font><font color=Green>Time</font> h m s<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>...</font>
 
 <font color=Black>addZero</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>String</font>
@@ -273,14 +269,12 @@
 <p>Декомпозицию можно проводить в аргументах функции. Там мы видим строчную запись дерева, в узлах стоят конструкторы (начинаются с большой буквы), переменные (с маленькой буквы) или символ безразличной переменой (подчёркивание).</p>
 <p>С помощью конструкторов, мы указываем те части, которые обязательно должны быть в дереве для данного уравнения. Так уравнение</p>
 <pre><font color=Black>not</font> <font color=Green>True</font>   <font color="#b2590f">=</font> <font color=Black>...</font></pre>
-
 <p>сработает, только если на вход функции поступит значение <code><font color=Green>True</font></code>. Мы можем углубляться в дерево значения настолько, насколько нам позволят типы, так мы можем определить функцию:</p>
 <pre><font color=Black>is7</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>is7</font>  <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Green>True</font>
 <font color=Black>is7</font>  <font color="#b2590f">_</font>                                                      <font color="#b2590f">=</font> <font color=Green>False</font></pre>
 <p>С помощью переменных мы даём синонимы поддеревьям. Этими синонимами мы можем пользоваться в правой части функции. Так в уравнении</p>
 <pre><font color=Black>addZero</font> <font color=Black>(</font>a<font color="#b2590f">:</font><font color=Green>[]</font><font color=Black>)</font></pre>
-
 <p>мы извлекаем первый элемент из списка, и одновременно говорим о том, что список может содержать только один элемент. Отметим, что если мы хотим дать синоним всему дереву а не какой-то части, мы просто пишем на месте аргумента переменную, как в случае функции <code><font color=Black>xor</font></code>:</p>
 <pre><font color=Black>xor</font> a b <font color="#b2590f">=</font> <font color=Black>...</font></pre>
 <p>С помощью безразличной переменной говорим, что нам не важно, что находится у дерева в этом узле. Уравнения в определении синонима обходятся сверху вниз, поэтому часто безразличной переменной пользуются в смысле “а во всех остальных случаях”, как в:</p>
@@ -305,7 +299,7 @@
 <pre><font color=Black>name</font>  <font color=Black>(</font>add <font color=Green>Zero</font> <font color=Green>Zero</font><font color=Black>)</font>      <font color="#b2590f">=</font> <font color=Black>...</font>
 <font color=Black>name</font>  <font color=Black>(</font>or <font color=Black>(</font>xor a b<font color=Black>)</font> <font color=Green>True</font><font color=Black>)</font>  <font color="#b2590f">=</font> <font color=Black>...</font></pre>
 <p>В Haskell декомпозицию принято называть <em>сопоставлением с образцом</em> (pattern matching). Термин намекает на то, что в аргументе мы выписываем шаблон (или заготовку) для целого набора значений. Наборы значений могут получиться, если мы пользуемся переменными. Конструкторы дают нам возможность зафиксировать вид ожидаемого на вход дерева.</p>
-<h2 id="проверка-типов"><a href="#TOC">Проверка типов</a></h2>
+<h2 id="проверка-типов"><a href="#проверка-типов">Проверка типов</a></h2>
 <p>В этом разделе мы поговорим об ошибках проверки типов. Почти все ошибки, которые происходят в Haskell, связаны с проверкой типов. Проверка типов происходит согласно правилам применения, которые встретились нам в разделе о композиции значений. Мы остановимся лишь на случае для префиксной формы записи, правила для сечений работают аналогично. Давайте вспомним основное правило:</p>
 <pre>                    f <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> b<font color=Black>,</font>       x <font color="#b2590f">::</font> a
                     <font color="#2149c1">--------------------------</font>
@@ -315,7 +309,7 @@
 <li><p>Тип <code><font color=Black>f</font></code> не содержит стрелок, или <code><font color=Black>f</font></code> не является функцией.</p></li>
 <li><p>Типы <code><font color=Black>x</font></code> и аргумента для <code><font color=Black>f</font></code> не совпадают.</p></li>
 </ul>
-<p>Вот и все ошибки. Универсальное представление всех функций в виде функций одного аргумента, значительно сокращает число различных видов ошибок. Итак мы можем ошибиться применяя значение к константе и передав в функцию не то, что она ожидает.</p>
+<p>Вот и все ошибки. Универсальное представление всех функций в виде функций одного аргумента, значительно сокращает число различных видов ошибок. Итак мы можем ошибиться, применяя значение к константе и передав в функцию не то, что она ожидает.</p>
 <p>Потренируемся в интерпретаторе, сначала попытаемся создать ошибку первого типа:</p>
 <pre><font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font> <font color=Green>Zero</font> <font color=Green>Zero</font>
 
@@ -334,16 +328,7 @@
     <font color=Green>В</font> выражении<font color="#b2590f">:</font> <font color=Green>Zero</font> <font color=Green>Zero</font>
     <font color=Green>В</font> уравнении для <font color=Black>`</font>it'<font color="#b2590f">:</font> it <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color=Green>Zero</font></pre>
 <p>Компилятор увидел применение функции <code><font color=Black>f</font> x</code>, далее он посмотрел, что <code><font color=Black>x</font> <font color="#b2590f">=</font> <font color=Green>Zero</font></code>, из этого на основе правила применения он сделал вывод о том, что <code><font color=Black>f</font></code> имеет тип <code><font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> t</code>, тогда он заглянул в <code><font color=Black>f</font></code> и нашёл там <code><font color=Green>Zero</font> <font color="#b2590f">::</font> <font color=Green>Nat</font></code>, что и привело к несовпадению типов.</p>
-<p>Составим ещё одно выражение с такой же ошибкой:</p>
-<pre><font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font> <font color=Green>True</font> <font color=Green>Succ</font>
-
-<font color=Black>&lt;</font>interactive<font color=Black>&gt;:</font><font color="#0000ee">6</font><font color="#b2590f">:</font><font color="#0000ee">1</font><font color="#b2590f">:</font>
-    <font color=Green>The</font> function <font color=Black>`</font><font color=Green>True'</font> is applied to one argument<font color=Black>,</font>
-    but its <font color="#b2590f">type</font> <font color=Black>`</font><font color=Green>Bool'</font> has none
-    <font color=Green>In</font> the expression<font color="#b2590f">:</font> <font color=Green>True</font> <font color=Green>Succ</font>
-    <font color=Green>In</font> an equation for <font color=Black>`</font>it'<font color="#b2590f">:</font> it <font color="#b2590f">=</font> <font color=Green>True</font> <font color=Green>Succ</font></pre>
-<p>В этом выражении аргумент <code><font color=Green>Succ</font></code> имеет тип <code><font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font></code>, значит по правилу вывода тип <code><font color=Green>True</font></code> равен <code><font color=Black>(</font><font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> t</code>, где <code><font color=Black>t</font></code> некоторый произвольный тип, но мы знаем, что <code><font color=Green>True</font></code> имеет тип <code><font color=Green>Bool</font></code>.</p>
-<p>Теперь перейдём к ошибкам второго типа. Попробуем вызывать функции с неправильными аргументами:</p>
+<p>Перейдём к ошибкам второго типа. Попробуем вызывать функции с неправильными аргументами:</p>
 <pre><font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>m <font color=Black>+</font><font color=Green>Prelude</font>
 <font color=Black>*</font><font color=Green>Nat</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> not <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font>
 
@@ -376,12 +361,12 @@
 	<font color=Green>В</font> первом аргументе <font color=Black>`</font>not'<font color=Black>,</font> а именно <font color=Black>`</font><font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font><font color=Black>'</font>
     <font color=Green>В</font> выражении<font color="#b2590f">:</font> not <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font>	</pre>
 <p>Потренируйтесь в составлении неправильных выражений и посмотрите почему они не правильные. Мысленно сверьтесь с правилом применения в каждом из слагаемых.</p>
-<h4 id="специализация-типов-при-подстановке"><a href="#TOC">Специализация типов при подстановке</a></h4>
+<h4 id="специализация-типов-при-подстановке"><a href="#специализация-типов-при-подстановке">Специализация типов при подстановке</a></h4>
 <p>Мы говорили о том, что тип аргумента функции и тип подставляемого значения должны совпадать, но на самом деле есть и другая возможность. Тип аргумента или тип значения могут быть полиморфными. В этом случае происходит специализация общего типа. Например, при выполнении выражения:</p>
 <pre><font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font> <font color=Green>Succ</font> <font color=Green>Zero</font> <font color=Black>+</font> <font color=Green>Zero</font>
 <font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font></pre>
 <p>Происходит специализация общей функции <code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> a</code> до функции <code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font></code>, которая определена в экземпляре <code><font color=Green>Num</font></code> для <code><font color=Green>Nat</font></code>.</p>
-<h3 id="проверка-типов-с-контекстом"><a href="#TOC">Проверка типов с контекстом</a></h3>
+<h3 id="проверка-типов-с-контекстом"><a href="#проверка-типов-с-контекстом">Проверка типов с контекстом</a></h3>
 <p>Предположим, что у функции <code><font color=Black>f</font></code> есть контекст, который говорит о том, что первый аргумент принадлежит некоторому классу <code><font color=Black>f</font> <font color="#b2590f">::</font> <font color=Green>C</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> b</code>, тогда значение, которое мы подставляем в функцию, должно быть экземпляром класса <code><font color=Green>C</font></code>.</p>
 <p>Для иллюстрации давайте попробуем сложить логические значения:</p>
 <pre><font color=Black>*</font><font color=Green>Nat</font> <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color=Green>True</font> <font color=Black>+</font> <font color=Green>False</font>
@@ -416,7 +401,7 @@
 <p>Умолчания определены только для класса <code><font color=Green>Num</font></code>. Для этого есть специальное ключевое слово <code><font color="#b2590f">default</font></code>. В рамках модуля мы можем указать какие типы считаются числами по умолчанию. Например, так (такое умолчание действует в каждом модуле, но мы можем переопределить его):</p>
 <pre><font color="#b2590f">default</font> <font color=Black>(</font><font color=Green>Integer</font><font color=Black>,</font> <font color=Green>Double</font><font color=Black>)</font></pre>
 <p>Работает правило: если произошла неопределённость и один из участвующих классов является <code><font color=Green>Num</font></code>, а все остальные классы – это стандартные классы, определённые в <code><font color=Green>Prelude</font></code>, то компилятор начинает последовательно пробовать все типы, перечисленные за ключевым словом <code><font color="#b2590f">default</font></code>, пока один из них не подойдёт. Если такого типа не окажется, компилятор скажет об ошибке.</p>
-<h3 id="ограничение-мономорфизма"><a href="#TOC">Ограничение мономорфизма</a></h3>
+<h3 id="ограничение-мономорфизма"><a href="#ограничение-мономорфизма">Ограничение мономорфизма</a></h3>
 <p>С выводом типов в классах связана одна тонкость. Мы говорили, что не обязательно выписывать типы выражений, компилятор может вывести их самостоятельно. Например, мы постоянно пользуемся этим в интерпретаторе. Также когда мы говорили о частичном применении, мы сказали об очень полезном умолчании в типах функций. О том, что за счёт частичного применения, все функции являются функциями одного аргумента. Эта особенность позволяет записывать выражения очень кратко. Но иногда они получаются чересчур краткими, и вводят компилятор в заблуждение. Зайдём в интерпретатор:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> add <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font>
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>t add
@@ -430,7 +415,6 @@
 
 <font color=Black>add</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font>
 <font color=Black>eq</font>  <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font></pre>
-
 <p>то получим:</p>
 <pre><font color=Black>*</font><font color=Green>MR</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>l <font color=Green>MR</font>
 <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">1</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>MR</font>               <font color=Black>(</font> <font color=Green>MR</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
@@ -469,7 +453,6 @@
 <p>Запишите эти выражения в модуле без типов и попробуйте загрузить. Почему так происходит? По смыслу определения</p>
 <pre><font color=Black>add</font> a b <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a b
 <font color=Black>add</font>     <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font></pre>
-
 <p>ничем не отличаются друг от друга, но второе сбивает компилятор столку. Компилятор путается из-за того, что второй вариант похож на определение константы. Мы с вами знаем, что выражение справа от знака равно является функцией, но компилятор, посчитав аргументы слева от знака равно, думает, что это возможно константа, потому что она выглядит как константа. У таких возможно-констант есть специальное имя, они называются константными аппликативными формами (constant applicative form или сокращённо CAF). Константы можно вычислять один раз, на то они и константы. Но если тип константы перегружен, и мы не знаем что это за тип (если пользователь не подсказал нам об этом в объявлении типа), то нам приходится вычислять его каждый раз заново. Посмотрим на пример:</p>
 <pre><font color=Black>res</font> <font color="#b2590f">=</font> s <font color=Black>+</font> s
 
@@ -493,11 +476,10 @@
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">let</font> eq <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font>
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>t eq
 <font color=Black>eq</font> <font color="#b2590f">::</font> <font color=Green>Eq</font> a <font color="#b2590f">=&gt;</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></pre>
-
 <p>или в самом начале модуля написать:</p>
 <pre><font color="#2149c1">{-# Language NoMonomorphismRestriction #-}</font></pre>
 <p>Расширение будет действовать только в рамках данного модуля.</p>
-<h2 id="рекурсивные-типы"><a href="#TOC">Рекурсивные типы</a></h2>
+<h2 id="рекурсивные-типы"><a href="#рекурсивные-типы">Рекурсивные типы</a></h2>
 <p>Обсудим ещё одну особенность системы типов Haskell. Типы могут быть рекурсивными, то есть одним из подтипов в определении типа может быть сам определяемый тип. Мы уже пользовались этим в определении для <code><font color=Green>Nat</font></code></p>
 <pre><font color="#b2590f">data</font> <font color=Green>Nat</font> <font color="#b2590f">=</font> <font color=Green>Zero</font> <font color="#b2590f">|</font> <font color=Green>Succ</font> <font color=Green>Nat</font></pre>
 <p>Видите, во второй альтернативе участвует сам тип <code><font color=Green>Nat</font></code>. Это приводит к бесконечному числу значений. Таким простым и коротким определением мы описываем все положительные числа. Рекурсивные определения типов приводят к рекурсивным функциям. Помните, мы определяли сложение и умножение:</p>
@@ -556,7 +538,7 @@
 <font color="#0000ee">120</font>
 <font color=Green>Prelude</font><font color=Black>&gt;</font> foldr max <font color=Black>(</font>head xs<font color=Black>)</font> xs
 <font color="#0000ee">5</font></pre>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>В этой главе мы присмотрелись к типам и узнали как ограничения, общие для всех типов, сказываются на структуре значений. Мы узнали, что константы в Haskell очень похожи на деревья, а запись констант – на строчную запись дерева. Также мы присмотрелись к функциям и узнали, что операция определения синонима состоит из композиции и декомпозиции значений.</p>
 <pre><font color=Black>name</font>   декомпозиция   <font color="#b2590f">=</font>   композиция</pre>
 <p>Существует несколько правил для построения композиций:</p>
@@ -581,7 +563,7 @@
 <div class="figure">
 <img src="../pic/3/vis1.png" alt="Конструкторы и синонимы" /><p class="caption">Конструкторы и синонимы</p>
 </div>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Составьте в интерпретаторе как можно больше неправильных выражений и посмотрите на сообщения об ошибках. Разберитесь почему выражение оказалось неправильным. Для этого проверьте типы с помощью правил применения. Составьте несколько выражений, ведущих к ошибке из-за ограничения мономорфизма.</p></li>
 <li><p>Потренируйтесь в интерпретаторе с функциями <code><font color=Black>map</font></code>, <code><font color=Black>filter</font></code> и <code><font color=Black>foldr</font></code>. Попробуйте их с самыми разными функциями. Воспользуйтесь и теми функциями, что были определены в прошлой главе в тексте или в упражнениях.</p></li>

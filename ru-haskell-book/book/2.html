@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
@@ -222,26 +223,12 @@
 <li><a href="#автоматический-вывод-экземпляров-классов-типов">Автоматический вывод экземпляров классов типов</a></li>
 <li><a href="#арифметика">Арифметика</a><ul>
 <li><a href="#класс-eq.-сравнение-на-равенство">Класс Eq. Сравнение на равенство</a></li>
-<li><a href="#класс-num.-сложение-и-умножение">Класс Num. Сложение и умножение</a><ul>
-<li><a href="#сложение">Сложение</a></li>
-<li><a href="#вычитание">Вычитание</a></li>
-<li><a href="#умножение">Умножение</a></li>
-<li><a href="#операции-abs-и-signum">Операции abs и signum</a></li>
-<li><a href="#перегрузка-чисел">Перегрузка чисел</a></li>
-</ul></li>
+<li><a href="#класс-num.-сложение-и-умножение">Класс Num. Сложение и умножение</a></li>
 <li><a href="#класс-fractional.-деление">Класс Fractional. Деление</a></li>
-<li><a href="#стандартные-числа">Стандартные числа</a><ul>
-<li><a href="#целые-числа">Целые числа</a></li>
-<li><a href="#действительные-числа">Действительные числа</a></li>
-<li><a href="#преобразование-численных-типов">Преобразование численных типов</a></li>
-</ul></li>
+<li><a href="#стандартные-числа">Стандартные числа</a></li>
 </ul></li>
 <li><a href="#документация">Документация</a></li>
-<li><a href="#краткое-содержание">Краткое содержание</a><ul>
-<li><a href="#типы">Типы</a></li>
-<li><a href="#классы">Классы</a></li>
-<li><a href="#особенности-синтаксиса">Особенности синтаксиса</a></li>
-</ul></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
 <li><a href="#упражнения">Упражнения</a></li>
 </ul></li>
 </ul>
@@ -254,9 +241,9 @@
 </div></div>  
  </div> 
 
-<h1 id="первая-программа"><a href="#TOC">Первая программа</a></h1>
+<h1 id="первая-программа"><a href="#первая-программа">Первая программа</a></h1>
 <p>Я вот говорю-говорю, а вдруг я вас обманываю, и ничего этого нет. В этой главе мы перейдём к программированию и запустим нашу первую программу в Haskell. Будет много примеров, на которых мы закрепим наши знания.</p>
-<h2 id="интерпретатор"><a href="#TOC">Интерпретатор</a></h2>
+<h2 id="интерпретатор"><a href="#интерпретатор">Интерпретатор</a></h2>
 <p>Для запуска кода мы будем пользоваться приложением GHC (Glorious Glasgow Haskell Compiler) наиболее развитой системой интерпретации Haskell программ. В GHC есть компилятор <code><font color=Black>ghc</font></code> и интерпретатор <code><font color=Black>ghci</font></code>. Пока мы будем пользоваться лишь интерпретатором. Если вы не знаете как установить <code><font color=Black>ghc</font></code> загляните в приложение. Также нам понадобится текстовый редактор с подсветкой синтаксиса. Подсветка синтаксиса для Haskell по умолчанию есть в редакторах Vim, Emacs, gedit, geany, yi. Есть IDE для Haskell Leksah. Мы будем писать модули в файлах и загружать их в интерпретатор. Если вы не знаете продвинутых текстовых редакторов вроде Vim или Emacs, лучше всего будет начать с gedit.</p>
 <p>Интерпретатор позволяет загружать модуль с определениями и набирать значения в командной строке. Мы набираем значение, а интерпретатор редуцирует его и показывает нам ответ. Интерпретатор запускается командой <code><font color=Black>ghci</font></code> в терминале. Определения из модуля могут быть загружены в интерпретатор двумя способами, либо при запуске интерпретатора командой <code><font color=Black>ghci</font> <font color=Green>ИмяМодуля</font><font color=Black>.</font>hs</code> либо в самом интерпретаторе командой <code><font color="#b2590f">:</font>l <font color=Green>ИмяМодуля</font><font color=Black>.</font>hs</code>.</p>
 <p>Рассмотрим некоторые полезные команды интерпретатора:</p>
@@ -286,7 +273,7 @@
 <dd><p>Выход из интерпретатора.</p>
 </dd>
 </dl>
-<h2 id="у-вей"><a href="#TOC">У-вей</a></h2>
+<h2 id="у-вей"><a href="#у-вей">У-вей</a></h2>
 <p>Согласно даосам основной принцип жизни заключается в недеянии (у-вей). Всё происходит естественно и словно само собой. Давайте создадим модуль который ничего не делает. Создадим пустой модуль и загрузим его в интерпретатор.</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Empty</font> <font color="#b2590f">where</font>
 
@@ -331,7 +318,7 @@ Ok, modules loaded: Empty.
 <pre><font color="#b2590f">module</font> <font color=Green>Empty</font> <font color="#b2590f">where</font>
 
 <font color="#b2590f">import</font> <font color=Green>Sub1</font><font color=Black>.</font><font color=Green>Sub2</font><font color=Black>.</font><font color=Green>Sub3</font><font color=Black>.</font><font color=Green>Sub4</font><font color=Black>.</font><font color=Green>Empty</font></pre>
-<h2 id="логические-значения"><a href="#TOC">Логические значения</a></h2>
+<h2 id="логические-значения"><a href="#логические-значения">Логические значения</a></h2>
 <p>Пустой модуль это хорошо, но слишком скучно. Давайте перепишем объявленные в этой главе определения в модуль, загрузим его в интерпретатор и понабираем значения.</p>
 <p>Начнём с логических операций. Давайте не будем переопределять <code><font color=Green>Bool</font></code>, <code><font color=Green>Show</font></code> и <code><font color=Green>Eq</font></code>, а просто возьмём их из <code><font color=Green>Prelude</font></code>:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Logic</font> <font color="#b2590f">where</font>
@@ -430,11 +417,11 @@ Ok, modules loaded: Empty.
 <p>Мы можем записать это определение более наглядно, совсем как в редакторе, если воспользуемся многострочным вводом. Для этого просто наберите команду <code><font color="#b2590f">:</font><font color=Black>{</font></code>. Для выхода воспользуйтесь командой <code><font color="#b2590f">:</font><font color=Black>}</font></code>. Отметим, что точкой с запятой можно пользоваться и в обычном коде. Например в том случае если у нас много кратких определений и мы хотим записать их покомпактней, мы можем сделать это так:</p>
 <pre><font color=Black>a1</font> <font color="#b2590f">=</font> <font color="#0000ee">1</font><font color=Black>;</font>   a2 <font color="#b2590f">=</font> <font color="#0000ee">2</font><font color=Black>;</font>   a3 <font color="#b2590f">=</font> <font color="#0000ee">3</font>
 <font color=Black>a4</font> <font color="#b2590f">=</font> <font color="#0000ee">4</font><font color=Black>;</font>   a5 <font color="#b2590f">=</font> <font color="#0000ee">5</font><font color=Black>;</font>   a6 <font color="#b2590f">=</font> <font color="#0000ee">6</font></pre>
-<h2 id="класс-show.-строки-и-символы"><a href="#TOC">Класс Show. Строки и символы</a></h2>
+<h2 id="класс-show.-строки-и-символы"><a href="#класс-show.-строки-и-символы">Класс Show. Строки и символы</a></h2>
 <p>Мы набираем в интерпретаторе какое-нибудь сложное выражение, или составной синоним, интерпретатор проводит редукцию и выводит ответ на экран. Откуда интерпретатор знает как отображать значения типа <code><font color=Green>Bool</font></code>? Внутри интерпретатора вызывается метод класса <code><font color=Green>Show</font></code>, который переводит значение в строку. И затем мы видим на экране ответ.<br />Для типа <code><font color=Green>Bool</font></code> экземпляр класса <code><font color=Green>Show</font></code> уже определён, поэтому интерпретатор знает как его отображать.</p>
 <p>Обратите внимание на эту особенность языка, вид значения определяется пользователем, в экземпляре класса <code><font color=Green>Show</font></code>. Из соображений наглядности вид значения может сильно отличаться от его внутреннего представления.</p>
 <p>В этом разделе мы рассмотрим несколько примеров с классом <code><font color=Green>Show</font></code>, но перед этим мы поговорим о строках и символах в языке Haskell.</p>
-<h3 id="строки-и-символы"><a href="#TOC">Строки и символы</a></h3>
+<h3 id="строки-и-символы"><a href="#строки-и-символы">Строки и символы</a></h3>
 <p>Посмотрим в интерпретаторе на определение строк (тип <code><font color=Green>String</font></code>), для этого мы воспользуемся командой <code><font color="#b2590f">:</font>i</code> (сокращение от <code><font color="#b2590f">:</font>info</code>):</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Green>String</font>
 <font color="#b2590f">type</font> <font color=Green>String</font> <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color=Green>Char</font><font color="#b2590f">]</font> 	<font color="#2149c1">-- Defined in `GHC.Base'</font></pre>
@@ -458,7 +445,7 @@ Ok, modules loaded: Empty.
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color=Black>"Hello"</font> <font color=Black>++</font> <font color="#b2590f">[</font><font color=Black>' '</font><font color="#b2590f">]</font> <font color=Black>++</font> <font color=Black>"World"</font>
 <font color=Black>"Hello World"</font>
 <font color=Black>it</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Char</font><font color="#b2590f">]</font></pre>
-<h3 id="пример-отображение-дат-и-времени"><a href="#TOC">Пример: Отображение дат и времени</a></h3>
+<h3 id="пример-отображение-дат-и-времени"><a href="#пример-отображение-дат-и-времени">Пример: Отображение дат и времени</a></h3>
 <p>Приведём, пример в котором отображаемое значение не совпадает с видом значения в коде. Мы отобразим значения из мира календаря. Для начала давайте сохраним определения в отдельном модуле:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Calendar</font> <font color="#b2590f">where</font>
 
@@ -538,12 +525,12 @@ Ok, modules loaded: Empty.
 <pre><font color=Black>*</font><font color=Green>Calendar</font><font color=Black>&gt;</font> <font color=Green>Time</font> <font color=Black>(</font><font color=Green>Hour</font> <font color="#0000ee">13</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Minute</font> <font color="#0000ee">25</font><font color=Black>)</font> <font color=Black>(</font><font color=Green>Second</font> <font color="#0000ee">2</font><font color=Black>)</font>
 <font color="#0000ee">13</font><font color="#b2590f">:</font><font color="#0000ee">25</font><font color="#b2590f">:</font><font color="#0000ee">02</font>
 <font color=Black>it</font> <font color="#b2590f">::</font> <font color=Green>Time</font></pre>
-<h2 id="автоматический-вывод-экземпляров-классов-типов"><a href="#TOC">Автоматический вывод экземпляров классов типов</a></h2>
+<h2 id="автоматический-вывод-экземпляров-классов-типов"><a href="#автоматический-вывод-экземпляров-классов-типов">Автоматический вывод экземпляров классов типов</a></h2>
 <p>Для некоторых стандартных классов экземпляры классов типов могут быть выведены автоматически. Это делается с помощью директивы <code><font color="#b2590f">deriving</font></code>. Она пишется сразу после объявления типа. Например так мы можем определить тип и экземпляры для классов <code><font color=Green>Show</font></code> и <code><font color=Green>Eq</font></code>:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A</font> <font color="#b2590f">|</font> <font color=Green>B</font> <font color="#b2590f">|</font> <font color=Green>C</font>
     <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font></pre>
 <p>Отступ за <code><font color="#b2590f">deriving</font></code> обязателен, после ключевого слова в скобках указываются классы, которые мы хотим вывести.</p>
-<h2 id="арифметика"><a href="#TOC">Арифметика</a></h2>
+<h2 id="арифметика"><a href="#арифметика">Арифметика</a></h2>
 <p>В этом разделе мы обсудим основные арифметические операции. В Haskell много стандартных классов, которые группируют различные типы операций, есть класс для сравнения на равенство, отдельный класс для сравнения на больше/меньше, класс для умножения, класс для деления, класс для упорядоченных чисел, и много других. Зачем такое изобилие классов?</p>
 <p>Каждый из классов отвечает независимой группе операций. Есть много объектов, которые можно только складывать, но нельзя умножать или делить. Есть объекты, для которых сравнение на равенство имеет смысл, а сравнение на больше/меньше – нет.</p>
 <p>Для иллюстрации мы воспользуемся числами Пеано, у них компактное определение, всего два конструктора, которых тем не менее достаточно для описания множества натуральных чисел:</p>
@@ -565,7 +552,7 @@ Ok, modules loaded: Empty.
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Green>Ordering</font>
 <font color="#b2590f">data</font> <font color=Green>Ordering</font> <font color="#b2590f">=</font> <font color=Green>LT</font> <font color="#b2590f">|</font> <font color=Green>EQ</font> <font color="#b2590f">|</font> <font color=Green>GT</font> 	<font color="#2149c1">-- Defined in GHC.Ordering</font></pre>
 <p>Он содержит конструкторы, соответствующие таким понятиям как меньше, равно и больше.</p>
-<h3 id="класс-eq.-сравнение-на-равенство"><a href="#TOC">Класс Eq. Сравнение на равенство</a></h3>
+<h3 id="класс-eq.-сравнение-на-равенство"><a href="#класс-eq.-сравнение-на-равенство">Класс Eq. Сравнение на равенство</a></h3>
 <p>Вспомним определение класса <code><font color=Green>Eq</font></code>:</p>
 <pre><font color="#b2590f">class</font> <font color=Green>Eq</font> a <font color="#b2590f">where</font>
     <font color=Black>(</font><font color=Black>==</font><font color=Black>)</font> <font color="#b2590f">::</font> a <font color="#b2590f">-&gt;</font> a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
@@ -592,7 +579,7 @@ Ok, modules loaded: Empty.
 <font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font> <font color=Green>Zero</font> <font color=Black>/=</font> <font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Green>Zero</font><font color=Black>)</font>
 <font color=Green>True</font>
 <font color=Black>it</font> <font color="#b2590f">::</font> <font color=Green>Bool</font></pre>
-<h3 id="класс-num.-сложение-и-умножение"><a href="#TOC">Класс Num. Сложение и умножение</a></h3>
+<h3 id="класс-num.-сложение-и-умножение"><a href="#класс-num.-сложение-и-умножение">Класс Num. Сложение и умножение</a></h3>
 <p>Сложение и умножение определены в классе <code><font color=Green>Num</font></code>. Посмотрим на его определение:</p>
 <pre><font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Green>Num</font>
 <font color="#b2590f">class</font> <font color=Black>(</font><font color=Green>Eq</font> a<font color=Black>,</font> <font color=Green>Show</font> a<font color=Black>)</font> <font color="#b2590f">=&gt;</font> <font color=Green>Num</font> a <font color="#b2590f">where</font>
@@ -609,7 +596,7 @@ Ok, modules loaded: Empty.
 <p>Метод <code><font color=Black>abs</font></code> является модулем числа, а метод <code><font color=Black>signum</font></code> возвращает знак числа, метод <code><font color=Black>fromInteger</font></code> позволяет создавать значения данного типа из стандартных целых чисел <code><font color=Green>Integer</font></code>.</p>
 <p>Этот класс устарел, было бы лучше сделать отельный класс для сложения и вычитания и отдельный класс для умножения. Также контекст класса, часто становится помехой. Есть объекты, которые нет смысла печатать но, есть смысл определить на них сложение и умножение. Но пока в целях совместимости с уже написанным кодом, класс <code><font color=Green>Num</font></code> остаётся прежним.</p>
 <p>Определим экземпляр для чисел Пеано, но давайте сначала разберём функции по частям.</p>
-<h4 id="сложение"><a href="#TOC">Сложение</a></h4>
+<h4 id="сложение"><a href="#сложение">Сложение</a></h4>
 <p>Начнём со сложения:</p>
 <pre><font color="#b2590f">instance</font> <font color=Green>Num</font> <font color=Green>Nat</font> <font color="#b2590f">where</font>
     <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a <font color=Green>Zero</font>     <font color="#b2590f">=</font> a
@@ -617,11 +604,11 @@ Ok, modules loaded: Empty.
 <p>Первое уравнение говорит о том, что, если второй аргумент равен нулю, то мы вернём первый аргумент в качестве результата. Во втором уравнении мы “перекидываем” конструктор <code><font color=Green>Succ</font></code> из второго аргумента за пределы суммы. Схематически вычисление суммы можно представить так:</p>
 <p><span class="LaTeX">$$\textbf{3+2} \rightarrow 1+\textbf{(3+1)} \rightarrow 1+(1+\textbf{(3+0)})$$</span></p>
 <p><span class="LaTeX">$$1+(1+\textbf{3}) \rightarrow 1+(1+(1+(1+(1+0)))) \rightarrow 5$$</span></p>
-<p>Все наши числа имеют вид <span class="LaTeX">$0$</span> или <span class="LaTeX">$1+n$</span>, мы принимаем на вход два числа в таком виде и хотим в результате составить число в этом же виде, для этого мы последовательно перекидываем $<span class="LaTeX">$(1+)$</span> в начало выражения из второго аргумента.</p>
-<h4 id="вычитание"><a href="#TOC">Вычитание</a></h4>
+<p>Все наши числа имеют вид <span class="LaTeX">$0$</span> или <span class="LaTeX">$1+n$</span>, мы принимаем на вход два числа в таком виде и хотим в результате составить число в этом же виде, для этого мы последовательно перекидываем <span class="LaTeX">$$(1+)$</span> в начало выражения из второго аргумента.</p>
+<h4 id="вычитание"><a href="#вычитание">Вычитание</a></h4>
 <p>Операция отрицания не имеет смысла, поэтому мы воспользуемся специальной функцией <code><font color=Black>error</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> a</code>, она принимает строку с сообщением об ошибке, при её вычислении программа остановится с ошибкой и сообщение будет выведено на экран.</p>
 <pre>    negate <font color="#b2590f">_</font> <font color="#b2590f">=</font> error <font color=Black>"negate is undefined for Nat"</font></pre>
-<h4 id="умножение"><a href="#TOC">Умножение</a></h4>
+<h4 id="умножение"><a href="#умножение">Умножение</a></h4>
 <p>Теперь посмотрим на умножение:</p>
 <pre>    <font color=Black>(</font><font color=Black>*</font><font color=Black>)</font> a <font color=Green>Zero</font>     <font color="#b2590f">=</font> <font color=Green>Zero</font>
     <font color=Black>(</font><font color=Black>*</font><font color=Black>)</font> a <font color=Black>(</font><font color=Green>Succ</font> b<font color=Black>)</font> <font color="#b2590f">=</font> a <font color=Black>+</font> <font color=Black>(</font>a <font color=Black>*</font> b<font color=Black>)</font>     </pre>
@@ -632,12 +619,12 @@ Ok, modules loaded: Empty.
 <p><span class="LaTeX">$$1+\textbf{(3+2)} \rightarrow 1+(1+\textbf{(3+1)}) \rightarrow
     1+(1+(1+\textbf{(3+0)})) \rightarrow$$</span></p>
 <p><span class="LaTeX">$$1+(1+1+\textbf{3}) \rightarrow 1+(1+(1+(1+(1+(1+0))))) \rightarrow 6$$</span></p>
-<h4 id="операции-abs-и-signum"><a href="#TOC">Операции abs и signum</a></h4>
+<h4 id="операции-abs-и-signum"><a href="#операции-abs-и-signum">Операции abs и signum</a></h4>
 <p>Поскольку числа у нас положительные, то методы <code><font color=Black>abs</font></code> и <code><font color=Black>signum</font></code> почти ничего не делают:</p>
 <pre>    abs    x    <font color="#b2590f">=</font> x 
     signum <font color=Green>Zero</font> <font color="#b2590f">=</font> <font color=Green>Zero</font>
     signum <font color="#b2590f">_</font>    <font color="#b2590f">=</font> <font color=Green>Succ</font> <font color=Green>Zero</font></pre>
-<h4 id="перегрузка-чисел"><a href="#TOC">Перегрузка чисел</a></h4>
+<h4 id="перегрузка-чисел"><a href="#перегрузка-чисел">Перегрузка чисел</a></h4>
 <p>Остался последний метод <code><font color=Black>fromInteger</font></code>. Он конструирует значение нашего типа из стандартного:</p>
 <pre>    fromInteger <font color="#0000ee">0</font> <font color="#b2590f">=</font> <font color=Green>Zero</font>
     fromInteger n <font color="#b2590f">=</font> <font color=Green>Succ</font> <font color=Black>(</font>fromInteger <font color=Black>(</font>n<font color="#2149c1">-</font><font color="#0000ee">1</font><font color=Black>)</font><font color=Black>)</font></pre>
@@ -681,7 +668,7 @@ Ok, modules loaded: Empty.
     signum <font color="#b2590f">_</font>    <font color="#b2590f">=</font> <font color=Green>Succ</font> <font color=Green>Zero</font>
 
     negate <font color="#b2590f">_</font> <font color="#b2590f">=</font> error <font color=Black>"negate is undefined for Nat"</font></pre>
-<h3 id="класс-fractional.-деление"><a href="#TOC">Класс Fractional. Деление</a></h3>
+<h3 id="класс-fractional.-деление"><a href="#класс-fractional.-деление">Класс Fractional. Деление</a></h3>
 <p>Деление определено в классе <code><font color=Green>Fractional</font></code>:</p>
 <pre><font color=Black>*</font><font color=Green>Nat</font><font color=Black>&gt;:</font>m <font color=Green>Prelude</font>
 <font color=Green>Prelude</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>i <font color=Green>Fractional</font>
@@ -693,13 +680,13 @@ Ok, modules loaded: Empty.
 <font color="#b2590f">instance</font> <font color=Green>Fractional</font> <font color=Green>Float</font> <font color="#2149c1">-- Defined in `GHC.Float'</font>
 <font color="#b2590f">instance</font> <font color=Green>Fractional</font> <font color=Green>Double</font> <font color="#2149c1">-- Defined in `GHC.Float'</font></pre>
 <p>Функция <code><font color=Black>recip</font></code>, это аналог <code><font color=Black>negate</font></code> для <code><font color=Green>Num</font></code>. Она делит единицу на данное число. Функция <code><font color=Black>fromRational</font></code> строит число данного типа из дробного числа. Если мы пишем <code><font color="#0000ee">2</font></code>, то к нему подспудно будет применена функция <code><font color=Black>fromInteger</font></code>, а если <code><font color="#0000ee">2.0</font></code>, то будет применена функция <code><font color=Black>fromRational</font></code>.</p>
-<h3 id="стандартные-числа"><a href="#TOC">Стандартные числа</a></h3>
+<h3 id="стандартные-числа"><a href="#стандартные-числа">Стандартные числа</a></h3>
 <p>В этом подразделе мы рассмотрим несколько стандартных типов для чисел в Haskell. Все эти числа являются экземплярами основных численных классов. Тех, которые мы рассмотрели, и многих-многих других.</p>
-<h4 id="целые-числа"><a href="#TOC">Целые числа</a></h4>
+<h4 id="целые-числа"><a href="#целые-числа">Целые числа</a></h4>
 <p>В Haskell предусмотрено два типа для целых чисел. Это <code><font color=Green>Integer</font></code> и <code><font color=Green>Int</font></code>. Чем они отличаются? Значения типа <code><font color=Green>Integer</font></code> не ограничены, мы можем проводить вычисления с очень-очень-очень большими числами, если памяти на нашем компьютере хватит. Числа из типа <code><font color=Green>Int</font></code> ограничены. Каждое число занимает определённый размер в памяти компьютера. Диапазон значений для <code><font color=Green>Int</font></code> составляет от <span class="LaTeX">$-2^{29}$</span> до <span class="LaTeX">$2^{29}-1$</span>. Вычисления с <code><font color=Green>Int</font></code> более эффективны.</p>
-<h4 id="действительные-числа"><a href="#TOC">Действительные числа</a></h4>
+<h4 id="действительные-числа"><a href="#действительные-числа">Действительные числа</a></h4>
 <p> Действительные числа бывают дробными (тип <code><font color=Green>Rational</font></code>), с ординарной точностью <code><font color=Green>Float</font></code> и с двойной точностью <code><font color=Green>Double</font></code>. Числа из типа <code><font color=Green>Float</font></code> занимают меньше места, но они не такие точные как <code><font color=Green>Double</font></code>. Если вы сомневаетесь, чем пользоваться, выбирайте <code><font color=Green>Double</font></code>, обычно <code><font color=Green>Float</font></code> используется только там, где необходимо хранить огромные массивы чисел. В этом случае мы экономим много памяти.</p>
-<h4 id="преобразование-численных-типов"><a href="#TOC">Преобразование численных типов</a></h4>
+<h4 id="преобразование-численных-типов"><a href="#преобразование-численных-типов">Преобразование численных типов</a></h4>
 <p>Во многих языках программирования при сложении или умножении чисел разных типов проводится автоматическое приведение типов. Обычно целые числа становятся действительными, <code><font color=Green>Float</font></code> превращается в <code><font color=Green>Double</font></code> и так далее. Это противоречит строгой типизации, поэтому в Haskell этого нет:</p>
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> <font color=Black>(</font><font color="#0000ee">1</font><font color="#b2590f">::</font><font color=Green>Int</font><font color=Black>)</font> <font color=Black>+</font> <font color=Black>(</font><font color="#0000ee">1</font><font color="#b2590f">::</font><font color=Green>Double</font><font color=Black>)</font>
 
@@ -764,17 +751,17 @@ Ok, modules loaded: Empty.
 <font color=Black>float2Double</font> <font color="#b2590f">::</font> <font color=Green>Float</font> <font color="#b2590f">-&gt;</font> <font color=Green>Double</font>
 <font color=Green>Prelude</font> <font color=Green>GHC</font><font color=Black>.</font><font color=Green>Float</font><font color=Black>&gt;</font> <font color="#b2590f">:</font>t double2float
 <font color=Black>double2Float</font> <font color="#b2590f">::</font> <font color=Green>Double</font> <font color="#b2590f">-&gt;</font> <font color=Green>Float</font></pre>
-<h2 id="документация"><a href="#TOC">Документация</a></h2>
+<h2 id="документация"><a href="#документация">Документация</a></h2>
 <p>К этой главе мы уже рассмотрели основные конструкции языка и базовые типы. Если у вас есть какая-то задача, вы уже можете начать её решать. Для этого сначала нужно будет описать в типах проблему, затем выразить с помощью функций её решение.</p>
 <p>Но не стоит писать все функции самостоятельно, если функция достаточно общая её наверняка кто-нибудь уже написал. Самые полезные функции и классы определены в модуле <code><font color=Green>Prelude</font></code> и основных стандартных библиотечных модулях. Было бы излишним описывать каждую функцию, книга превратилась бы в справочник. Вместо этого давайте научимся искать функции в документации. Нам понадобится умение составлять типы функций и небольшое знание английского языка.</p>
 <p>Для начала о том, где находится документация к стандартным модулям. Если вы установили <code><font color=Black>ghc</font></code> вместе с <code><font color=Green>Haskell</font> <font color=Green>Platform</font></code> под Windows скорее всего во вкладке <code><font color=Green>Пуск</font></code>, там где иконка <code><font color=Black>ghc</font></code> там же находится и документация. В Linux необходимо найти директорию с документацией, скорее всего она в директории <code><font color=Black>/</font>usr<font color=Black>/</font>local<font color=Black>/</font>share<font color=Black>/</font>doc<font color=Black>/</font>ghc<font color=Black>/</font>libraries</code>. Также документацию можно найти в интернете, наберите в поисковике Haskell Hierarchical Libraries. На главной странице документации вы найдёте огромное количество модулей. Нас пока интересуют разделы <code><font color=Green>Data</font></code> и <code><font color=Green>Prelude</font></code>. Разделы расположены по алфавиту. То что вы видите это стандартный вид документации в Haskell. Документация делается с помощью специального приложения <code><font color=Green>Haddock</font></code>, мы тоже научимся такие делать, но позже, пока мы попробуем разобраться с тем как искать в документации функции.</p>
 <p>Предположим нам нужно вычислить длину списка. Нам нужна функция, которая принимает список и возвращает целое число, скорее всего её тип <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font></code>, обычно во всех библиотечных функциях для целых чисел используется тип <code><font color=Green>Int</font></code>, также на месте параметра используются буквы <code><font color=Black>a</font></code>, <code><font color=Black>b</font></code>, <code><font color=Black>c</font></code>. Мы можем открыть документацию к <code><font color=Green>Prelude</font></code> набрать в строке поиска тип <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font></code>. Или поискать такую функцию в разделе функций для списков <code><font color=Green>List</font> <font color=Green>Operations</font></code>. Тогда мы увидим единственную функцию с таким типом, под говорящим именем <code><font color=Black>length</font></code>. Так мы нашли то, что искали.</p>
 <p>Или мы ищем функцию, которая переворачивает список, нам нужна функция с типом <code><font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></code>. Таких функций в <code><font color=Green>Prelude</font></code> несколько, но имя <code><font color=Black>reverse</font></code> одной из них может намекнуть на её смысл.</p>
 <p>Но одной <code><font color=Green>Prelude</font></code> мир стандартных функций Haskell не ограничивается, если вы не нашли необходимую вам функцию в <code><font color=Green>Prelude</font></code> её стоит поискать в других библиотечных модулях. Обычно функции разделяются по тому на каких типах они определены. Так например функция <code><font color=Black>sort</font> <font color="#b2590f">::</font> <font color=Green>Ord</font> a <font color="#b2590f">=&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font></code> определена не в <code><font color=Green>Prelude</font></code>, а в отдельном библиотечном модуле для списков он называется <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>List</font></code>. Так же есть много других модулей для разных типов, таких как <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Bool</font></code>, <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Char</font></code>, <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Function</font></code>, <code><font color=Green>Data</font><font color=Black>.</font><font color=Green>Maybe</font></code> и многие другие. Не пугайтесь изобилия модулей постепенно они станут вашей опорой.</p>
-<p>Для поиска в стандартных библиотеках есть замечательный интернет-сервис Hoogle (<a href="http://www.haskell.org/hoogle/"><code class="url">http://www.haskell.org/hoogle/</code></a>). Hoogle может искать значения не только по имени, но и по типам. Например мы хотим узнать целочисленный код символа. Поиск по типу <code><font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font></code> выдаёт искомую функцию <code><font color=Black>digitToInt</font></code>.</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<p>Для поиска в стандартных библиотеках есть замечательный интернет-сервис Hoogle (<a href="http://www.haskell.org/hoogle/">http://www.haskell.org/hoogle/</a>). Hoogle может искать значения не только по имени, но и по типам. Например мы хотим узнать целочисленный код символа. Поиск по типу <code><font color=Green>Char</font> <font color="#b2590f">-&gt;</font> <font color=Green>Int</font></code> выдаёт искомую функцию <code><font color=Black>digitToInt</font></code>.</p>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>В этой главе мы познакомились с интерпретатором <code><font color=Black>ghci</font></code> и основными типами. Рассмотрели много примеров.</p>
-<h4 id="типы"><a href="#TOC">Типы</a></h4>
+<h4 id="типы"><a href="#типы">Типы</a></h4>
 <!-- Switch arguments separator to ? instead of | -->
 
 
@@ -829,7 +816,7 @@ Ok, modules loaded: Empty.
 <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>,</font> c<font color=Black>)</font>
 <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>,</font> c<font color=Black>,</font> d<font color=Black>)</font>
 <font color=Black>...</font></pre>
-<h4 id="классы"><a href="#TOC">Классы</a></h4>
+<h4 id="классы"><a href="#классы">Классы</a></h4>
 <table>
 <tbody>
 <tr class="odd">
@@ -850,7 +837,7 @@ Ok, modules loaded: Empty.
 </tr>
 </tbody>
 </table>
-<h4 id="особенности-синтаксиса"><a href="#TOC">Особенности синтаксиса</a></h4>
+<h4 id="особенности-синтаксиса"><a href="#особенности-синтаксиса">Особенности синтаксиса</a></h4>
 <p>Запись применения функции:</p>
 <table>
 <col width="21%" />
@@ -863,17 +850,17 @@ Ok, modules loaded: Empty.
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left"><code><font color=Black>add</font> a b</code></td>
-<td align="left"><code><font color=Black>a</font> <font color=Black>`add`</font> b</code></td>
+<td align="left"><p><code><font color=Black>add</font> a b</code></p></td>
+<td align="left"><p><code><font color=Black>a</font> <font color=Black>`add`</font> b</code></p></td>
 </tr>
 <tr class="even">
-<td align="left"><code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a b</code></td>
-<td align="left"><code><font color=Black>a</font> <font color=Black>+</font> b</code></td>
+<td align="left"><p><code><font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a b</code></p></td>
+<td align="left"><p><code><font color=Black>a</font> <font color=Black>+</font> b</code></p></td>
 </tr>
 </tbody>
 </table>
 <p>Также мы научились приводить одни численные типы к другим и пользоваться документацией.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Напишите функцию <code><font color=Black>beside</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>, которая будет возвращать <code><font color=Green>True</font></code> только в том случае, если два аргумента находятся рядом, то есть один из них можно получить через другой операцией <code><font color=Green>Succ</font></code>.</p></li>
 <li><p>Напишите функцию <code><font color=Black>beside2</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>, которая будет возвращать <code><font color=Green>True</font></code> только если аргументы являются соседями через некоторое другое число.</p></li>

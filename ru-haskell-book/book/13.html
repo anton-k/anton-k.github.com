@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
 </head>
 <body>
@@ -18,24 +19,11 @@
 <li><a href="#ленивое-программирование">Ленивое программирование</a></li>
 </ul></li>
 <li><a href="#пятнашки">Пятнашки</a><ul>
-<li><a href="#цикл-игры">Цикл игры</a><ul>
-<li><a href="#отображение-позиции">Отображение позиции</a></li>
-<li><a href="#реакция-на-реплики-пользователя">Реакция на реплики пользователя</a></li>
-<li><a href="#слушаем-игрока">Слушаем игрока</a></li>
-</ul></li>
-<li><a href="#приведём-код-в-порядок">Приведём код в порядок</a><ul>
-<li><a href="#основные-функции">Основные функции</a></li>
-<li><a href="#запросы-от-пользователя">Запросы от пользователя (<code><font color=Black>getLine</font></code>)</a></li>
-<li><a href="#ответы-пользователю">Ответы пользователю (<code><font color=Black>putStrLn</font></code>)</a></li>
-</ul></li>
+<li><a href="#цикл-игры">Цикл игры</a></li>
+<li><a href="#приведём-код-в-порядок">Приведём код в порядок</a></li>
 <li><a href="#формат-запросов">Формат запросов</a></li>
 <li><a href="#последние-штрихи">Последние штрихи</a></li>
-<li><a href="#правила-игры">Правила игры</a><ul>
-<li><a href="#начальное-состояние">Начальное состояние</a></li>
-<li><a href="#делаем-ход">Делаем ход</a></li>
-<li><a href="#перемешиваем-фишки">Перемешиваем фишки</a></li>
-<li><a href="#отображение-положения">Отображение положения</a></li>
-</ul></li>
+<li><a href="#правила-игры">Правила игры</a></li>
 </ul></li>
 <li><a href="#упражнения">Упражнения</a></li>
 </ul></li>
@@ -49,21 +37,21 @@
 </div></div>  
  </div> 
 
-<h1 id="поиграем"><a href="#TOC">Поиграем</a></h1>
+<h1 id="поиграем"><a href="#поиграем">Поиграем</a></h1>
 <p>Вот и закончилась первая часть книги. Мы узнали основные конструкции языка Haskell. В этой главе мы напишем законченную программу для игры в пятнашки. Ну или почти законченную, глава венчается упражнениями.</p>
-<h2 id="стратегия-написания-программ"><a href="#TOC">Стратегия написания программ</a></h2>
-<h3 id="описание-задачи"><a href="#TOC">Описание задачи</a></h3>
+<h2 id="стратегия-написания-программ"><a href="#стратегия-написания-программ">Стратегия написания программ</a></h2>
+<h3 id="описание-задачи"><a href="#описание-задачи">Описание задачи</a></h3>
 <p>Решение задачи начинается с описания проблемы и наброска решения. Мы хотим создать программу, в которой можно будет играть в пятнашки. Если вам не знакома это игра, то взгляните на рисунок. Игра начинается с позиции, в которой все фишки перемешаны. Необходимо, переставляя фишки, вернуться в исходное положение. Каждым ходом мы двигаем одну фишку на пустое поле. В исходном положении фишки идут по порядку.</p>
 <div class="figure">
 <img src="../pic/13/15.png" alt="Случайное и конечное состояние игры пятнашки" /><p class="caption">Случайное и конечное состояние игры пятнашки</p>
 </div>
 <p>Программа будет перемешивать фишки и отображать поле для игры. Она будет спрашивать следующий ход и обновлять поле после хода. Если мы расставим все фишки по порядку, программа сообщит нам об этом и предложит начать новую игру. В каждый момент мы можем не только сделать ход, но и покинуть игру или начать всё заново. Известно, что не из любого положения можно расставить фишки по порядку. Поэтому наш алгоритм перемешивания должен генерировать только такие позиции, для которых решение возможно.</p>
-<h3 id="набросок-решения"><a href="#TOC">Набросок решения</a></h3>
+<h3 id="набросок-решения"><a href="#набросок-решения">Набросок решения</a></h3>
 <p>Программа, которую мы хотим написать, будет вести диалог с пользователем. Она показывает поле для игры и спрашивает следующий ход. Потом она распознаёт ход, и показывает обновлённое поле. И так далее. Нам нужно как-то организовать этот диалог.</p>
 <p>При этом в программе можно выделить две независимые части. Одна отвечает за сам диалог. Она принимает реплики пользователя и отображает поле для игры. А другая часть отвечает за правила игры пятнашки: как ходы влияют на поле, какое положение является победным, как перемешивать фишки.</p>
 <p>У нас будет два отдельных модуля: один для описания игры, назовём его <code><font color=Green>Game</font></code>, а другой для описания диалога с пользователем. Мы назовём его <code><font color=Green>Loop</font></code> (петля или цикл), поскольку диалог это зацикленная процедура получения реплики и реакции на реплику.</p>
 <p>Такой вот набросок-ориентир. После этого можно приступать к реализации. Но с чего начать?</p>
-<h3 id="каркас.-типы-и-классы"><a href="#TOC">Каркас. Типы и классы</a></h3>
+<h3 id="каркас.-типы-и-классы"><a href="#каркас.-типы-и-классы">Каркас. Типы и классы</a></h3>
 <p>В Haskell программы обычно начинают строить с каркаса – с типов и классов. Нам нужно выделить основные сущности и подумать какие типы подходят для их описания лучше всего.</p>
 <p>В нашей задаче есть поле с фишками и ходы. Мы делаем ходы и фишки двигаются. Поле – это матрица или двумерный массив. У нас есть два индекса, которые пробегают значения от нуля до трёх. В каждой ячейке массива хранятся фишки. Фишки обозначаются целыми числами:</p>
 <pre><font color="#b2590f">type</font> <font color=Green>Pos</font>    <font color="#b2590f">=</font> <font color=Black>(</font><font color=Green>Int</font><font color=Black>,</font> <font color=Green>Int</font><font color=Black>)</font>
@@ -93,7 +81,6 @@
 <font color="#b2590f">import</font> <font color=Green>Game</font>
 
 <font color="#b2590f">data</font> <font color=Green>Query</font> <font color="#b2590f">=</font> <font color=Green>Quit</font> <font color="#b2590f">|</font> <font color=Green>NewGame</font> <font color=Green>Int</font> <font color="#b2590f">|</font> <font color=Green>Play</font> <font color=Green>Move</font></pre>
-
 <p>И модуль <code><font color=Green>Game</font></code>:</p>
 <pre><font color="#b2590f">module</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
 
@@ -111,7 +98,7 @@
 <font color="#b2590f">data</font> <font color=Green>Game</font> <font color="#b2590f">=</font> <font color=Green>Game</font> <font color=Black>{</font>
         emptyField  <font color="#b2590f">::</font> <font color=Green>Pos</font><font color=Black>,</font>
         gameBoard   <font color="#b2590f">::</font> <font color=Green>Board</font> <font color=Black>}</font></pre>
-<h3 id="ленивое-программирование"><a href="#TOC">Ленивое программирование</a></h3>
+<h3 id="ленивое-программирование"><a href="#ленивое-программирование">Ленивое программирование</a></h3>
 <p>Мы уже знаем как происходят ленивые вычисления. Мы принимаем выражение и начинаем очищать его от синонимов от корня к листьям или сверху вниз. Оказывается таким способом можно писать программы. Более того в функциональном программировании это очень распространённый подход. Мы начинаем со спецификации задачи (неформального описания) и потихоньку вытягиваем из него выражения языка Haskell. Начинаем мы с корня, с самой верхней функции. Эта функция будет состоять из подвыражений. Когда мы напишем верхнюю функцию, мы перейдём к подвыражениям. И так мы будем спускаться пока не напишем всю программу.</p>
 <p>Кажется, что такой подход очень не надёжен. Ведь мы сможем запустить программу только когда напишем её целиком. На каждом промежуточном шаге у нас есть неопределённые подвыражения. Получается, что очень долгое время мы будем писать программу, не зная работает она или нет.</p>
 <p>Оказывается, что в Haskell есть решение этой проблемы. Нам поможет значение <code><font color=Black>undefined</font></code>. Мы будем писать только тип функции (и мысленно будем говорить, пусть она делает то-то), а вместо определения будем писать <code><font color=Black>undefined</font></code>. При этом конечно мы не сможем выполнять программу, вычислитель подорвётся на первом же значении, но мы сможем узнать осмысленна ли наша программа с точки зрения компилятора, проходит ли она проверку типов. В Haskell это большой плюс. Если программа прошла проверку типов, то скорее всего она будет работать.</p>
@@ -172,8 +159,8 @@
 <font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font>
 <font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> </pre>
 <p>Работает! Можно спускаться по дереву выражения ниже. Сейчас нам предстоит написать одну из самых сложных функций, это функция <code><font color=Black>gameLoop</font></code>.</p>
-<h2 id="пятнашки"><a href="#TOC">Пятнашки</a></h2>
-<h3 id="цикл-игры"><a href="#TOC">Цикл игры</a></h3>
+<h2 id="пятнашки"><a href="#пятнашки">Пятнашки</a></h2>
+<h3 id="цикл-игры"><a href="#цикл-игры">Цикл игры</a></h3>
 <p>Функция цикла игры принимает текущую позицию. При этом у нас два варианта. Возможно игра пришла в конечное положение (<code><font color=Black>isGameOver</font></code>) и мы можем сообщить игроку о том, что он победил (<code><font color=Black>showResults</font></code>), если это не так, то мы покажем текущее положение (<code><font color=Black>showGame</font></code>), спросим ход (<code><font color=Black>askForMove</font></code>) и среагируем на ход (<code><font color=Black>reactOnMove</font></code>).</p>
 <pre><font color="#2149c1">-- в модуль Loop</font>
 
@@ -201,7 +188,7 @@
 <font color=Black>isGameOver</font> <font color="#b2590f">=</font> un</pre>
 <p>Как определить закончилась игра или нет это скорее дело модуля <code><font color=Green>Game</font></code>. Все остальные функции принадлежат модулю <code><font color=Green>Loop</font></code>. Функция <code><font color=Black>askForMove</font></code> возвращает реплику пользователя и тут же направляет её в функцию <code><font color=Black>reactOnMove</font></code>. Функции <code><font color=Black>showGame</font></code> и <code><font color=Black>showResults</font></code> ничего не возвращают, они только меняют состояния экрана. После того как игра закончится мы предложим игроку начать новую.</p>
 <p>Обратите внимание на то, как даже не дав определение функции, мы всё же очерчиваем её смысл в объявлении типа. Так посмотрев на функцию <code><font color=Black>askForMove</font></code> и сопоставив тип с именем, мы можем понять, что эта функция предназначена для запроса значения типа <code><font color=Green>Query</font></code>, для запроса реплики пользователя. А по типу функции <code><font color=Black>showGame</font></code> мы можем понять, что она проводит какой-то побочный эффект, судя по имени что-то показывает, из типа видно что показывает значение типа <code><font color=Green>Game</font></code> или текущую позицию.</p>
-<h4 id="отображение-позиции"><a href="#TOC">Отображение позиции</a></h4>
+<h4 id="отображение-позиции"><a href="#отображение-позиции">Отображение позиции</a></h4>
 <p>Определим функции отображения результата и позиции. Когда игра закончится мы покажем итоговое положение и объявим результат.</p>
 <pre><font color=Black>showResults</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>showResults</font> g <font color="#b2590f">=</font> showGame g <font color=Black>&gt;&gt;</font> putStrLn <font color=Black>"Игра окончена."</font></pre>
@@ -215,7 +202,7 @@
 
 <font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
     show <font color="#b2590f">=</font> un</pre>
-<h4 id="реакция-на-реплики-пользователя"><a href="#TOC">Реакция на реплики пользователя</a></h4>
+<h4 id="реакция-на-реплики-пользователя"><a href="#реакция-на-реплики-пользователя">Реакция на реплики пользователя</a></h4>
 <p>Теперь нужно определить функции <code><font color=Black>askForMove</font></code> и <code><font color=Black>reactOnMove</font></code>. Первая функция требует установить протокол реплик пользователя, в каком виде он будет набирать значения типа <code><font color=Green>Query</font></code>. Нам пока лень об этом думать и мы перейдём к функции <code><font color=Black>reactOnMove</font></code>. Вспомним её тип:</p>
 <pre><font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font></pre>
 <p>Функция принимает текущее положение и запрос пользователя. И ничего не возвращает, она продолжает игру. В любом случае в этой функции будет сопоставление с образцом по запросам пользователя так что можно написать:</p>
@@ -246,7 +233,7 @@
     <font color=Green>Quit</font>        <font color="#b2590f">-&gt;</font> quit
     <font color=Green>NewGame</font> n   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>=&lt;&lt;</font> shuffle n
     <font color=Green>Play</font>    m   <font color="#b2590f">-&gt;</font> gameLoop <font color=Black>$</font> move m game</pre>
-<h4 id="слушаем-игрока"><a href="#TOC">Слушаем игрока</a></h4>
+<h4 id="слушаем-игрока"><a href="#слушаем-игрока">Слушаем игрока</a></h4>
 <p>Теперь всё же вернёмся к функции <code><font color=Black>askForMove</font></code>, научимся слушать пользователя. Сначала мы скажем какую-нибудь вводную фразу, предложение ходить (<code><font color=Black>showAsk</font></code>) затем запросим строку стандартной функцией <code><font color=Black>getLine</font></code>, потом нам нужно будет распознать (<code><font color=Black>parseQuery</font></code>) в строке значение типа <code><font color=Green>Query</font></code>. Если распознать его нам не удастся, мы напомним пользователю как с нами общаться (<code><font color=Black>remindMoves</font></code>) и попросим сходить вновь:</p>
 <pre><font color=Black>askForMove</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>Query</font>
 <font color=Black>askForMove</font> <font color="#b2590f">=</font> showAsk <font color=Black>&gt;&gt;</font>
@@ -271,9 +258,9 @@
 <font color="#b2590f">[</font><font color="#0000ee">1</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Game</font>             <font color=Black>(</font> <font color=Green>Game</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
 <font color="#b2590f">[</font><font color="#0000ee">2</font> <font color="#b2590f">of</font> <font color="#0000ee">2</font><font color="#b2590f">]</font> <font color=Green>Compiling</font> <font color=Green>Loop</font>             <font color=Black>(</font> <font color=Green>Loop</font><font color=Black>.</font>hs<font color=Black>,</font> interpreted <font color=Black>)</font>
 <font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font></pre>
-<h3 id="приведём-код-в-порядок"><a href="#TOC">Приведём код в порядок</a></h3>
+<h3 id="приведём-код-в-порядок"><a href="#приведём-код-в-порядок">Приведём код в порядок</a></h3>
 <p>Нам осталось дописать функции распознавания запросов и несколько маленьких функций с фразами и модуль <code><font color=Green>Loop</font></code> будет готов. Но перед тем как сделать это давайте упорядочим функции. Видно, что у нас выделилось несколько задач по типу общения с пользователем. У нас есть задачи, в которых мы что-то показываем пользователю, меняем состояние экрана и есть задачи, в которых мы просим от пользователя какие-то данные, ожидаем запросы функцией <code><font color=Black>getLine</font></code>. Также в самом верху выражения программы у нас расположены функции, которые координируют действия остальных, это третья группа. Сгруппируем функции по этому принципу.</p>
-<h4 id="основные-функции"><a href="#TOC">Основные функции</a></h4>
+<h4 id="основные-функции"><a href="#основные-функции">Основные функции</a></h4>
 <pre><font color=Black>play</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>play</font> <font color="#b2590f">=</font> greetings <font color=Black>&gt;&gt;</font> setup <font color=Black>&gt;&gt;=</font> gameLoop
 
@@ -286,7 +273,7 @@
 <font color=Black>setup</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"Начнём новую игру?"</font> <font color=Black>&gt;&gt;</font>
     putStrLn <font color=Black>"Укажите сложность (положительное целое число): "</font> <font color=Black>&gt;&gt;</font>
     getLine <font color=Black>&gt;&gt;=</font> maybe setup shuffle <font color=Black>.</font> readInt </pre>
-<h4 id="запросы-от-пользователя"><a href="#TOC">Запросы от пользователя (<code><font color=Black>getLine</font></code>)</a></h4>
+<h4 id="запросы-от-пользователя-getline"><a href="#запросы-от-пользователя-getline">Запросы от пользователя (<code><font color=Black>getLine</font></code>)</a></h4>
 <pre><font color=Black>reactOnMove</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Query</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>reactOnMove</font> game query <font color="#b2590f">=</font> <font color="#b2590f">case</font> query <font color="#b2590f">of</font>
     <font color=Green>Quit</font>        <font color="#b2590f">-&gt;</font> quit
@@ -303,7 +290,7 @@
 
 <font color=Black>readInt</font> <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font>
 <font color=Black>readInt</font> <font color="#b2590f">=</font> un</pre>
-<h4 id="ответы-пользователю"><a href="#TOC">Ответы пользователю (<code><font color=Black>putStrLn</font></code>)</a></h4>
+<h4 id="ответы-пользователю-putstrln"><a href="#ответы-пользователю-putstrln">Ответы пользователю (<code><font color=Black>putStrLn</font></code>)</a></h4>
 <pre><font color=Black>greetings</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>greetings</font> <font color="#b2590f">=</font> un
 
@@ -319,7 +306,7 @@
 <font color=Black>quit</font> <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>quit</font> <font color="#b2590f">=</font> putStrLn <font color=Black>"До встречи."</font> <font color=Black>&gt;&gt;</font> return <font color=Green>()</font></pre>
 <p>По этим функциям видно, что нам немного осталось. Теперь вернёмся к запросам пользователя.</p>
-<h3 id="формат-запросов"><a href="#TOC">Формат запросов</a></h3>
+<h3 id="формат-запросов"><a href="#формат-запросов">Формат запросов</a></h3>
 <p>Можно вывести с помощью <code><font color="#b2590f">deriving</font></code> экземпляр класса <code><font color=Green>Read</font></code> для типа <code><font color=Green>Query</font></code> и читать их функцией <code><font color=Black>read</font></code>. Но это плохая идея, потому что пользователь нашей программы может и не знать Haskell. Лучше введём сокращённые имена для всех значений. Например такие:</p>
 <pre><font color=Black>left</font>        <font color="#2149c1">-- Play Left</font>
 <font color=Black>right</font>       <font color="#2149c1">-- Play Rigth</font>
@@ -386,7 +373,7 @@
 <font color=Green>Ok</font><font color=Black>,</font> modules loaded<font color="#b2590f">:</font> <font color=Green>Game</font><font color=Black>,</font> <font color=Green>Loop</font><font color=Black>.</font>
 <font color=Black>*</font><font color=Green>Loop</font><font color=Black>&gt;</font> </pre>
 <p>Всё работает, можно двигаться дальше.</p>
-<h3 id="последние-штрихи"><a href="#TOC">Последние штрихи</a></h3>
+<h3 id="последние-штрихи"><a href="#последние-штрихи">Последние штрихи</a></h3>
 <p>В модуле <code><font color=Green>Loop</font></code> нам осталось определить несколько маленьких функций. Поиск по слову <code><font color=Black>un</font></code> говорит нам о том, что осталось определить функции ``</p>
 <pre><font color=Black>greetings</font>   <font color="#b2590f">::</font> <font color=Green>IO</font> <font color=Green>()</font>
 <font color=Black>readInt</font>     <font color="#b2590f">::</font> <font color=Green>String</font> <font color="#b2590f">-&gt;</font> <font color=Green>Maybe</font> <font color=Green>Int</font>
@@ -416,7 +403,7 @@
 <font color=Black>initGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font>
 <font color=Black>initGame</font> <font color="#b2590f">=</font> un</pre>
 <p>Сначала мы приветствуем игрока, затем показываем состояние (<code><font color=Black>initGame</font></code>), к которому ему нужно стремиться, и напоминаем как делаются ходы. На этом определении мы раскрыли все выражения в модуле <code><font color=Green>Loop</font></code>, нам остался лишь модуль <code><font color=Green>Game</font></code>.</p>
-<h3 id="правила-игры"><a href="#TOC">Правила игры</a></h3>
+<h3 id="правила-игры"><a href="#правила-игры">Правила игры</a></h3>
 <p>Определим модуль <code><font color=Green>Game</font></code>, но мы будем определять его не с чистого листа. Те функции, которые нам нужны уже определились в ходе описания диалога с пользователем. Нам нужно уметь составлять начальное состояние <code><font color=Black>initGame</font></code>, уметь составлять перемешанное состояние игры <code><font color=Black>shuffle</font></code>, нам нужно уметь реагировать на ходы <code><font color=Black>move</font></code>, определять какая позиция является выигрышной <code><font color=Black>isGameOver</font></code> и уметь показывать фишки в красивом виде. Приступим!</p>
 <pre><font color=Black>initGame</font>    <font color="#b2590f">::</font> <font color=Green>Game</font>
 <font color=Black>shuffle</font>     <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Game</font>
@@ -426,7 +413,7 @@
 <font color="#b2590f">instance</font> <font color=Green>Show</font> <font color=Green>Game</font> <font color="#b2590f">where</font>
     show <font color="#b2590f">=</font> un</pre>
 <p>Таков наш план.</p>
-<h4 id="начальное-состояние"><a href="#TOC">Начальное состояние</a></h4>
+<h4 id="начальное-состояние"><a href="#начальное-состояние">Начальное состояние</a></h4>
 <p>Начнём с самой простой функции, составим начальное состояние:</p>
 <pre><font color=Black>initGame</font> <font color="#b2590f">::</font> <font color=Green>Game</font>
 <font color=Black>initGame</font> <font color="#b2590f">=</font> <font color=Green>Game</font> <font color=Black>(</font><font color="#0000ee">3</font><font color=Black>,</font> <font color="#0000ee">3</font><font color=Black>)</font> <font color=Black>$</font> listArray <font color=Black>(</font><font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> <font color="#0000ee">0</font><font color=Black>)</font><font color=Black>,</font> <font color=Black>(</font><font color="#0000ee">3</font><font color=Black>,</font> <font color="#0000ee">3</font><font color=Black>)</font><font color=Black>)</font> <font color=Black>$</font> <font color="#b2590f">[</font><font color="#0000ee">0</font> <font color="#b2590f">..</font> <font color="#0000ee">15</font><font color="#b2590f">]</font></pre>
@@ -434,7 +421,7 @@
 <p>С этим значением мы можем легко определить функцию определения конца игры. Нам нужно только добавить <code><font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Eq</font><font color=Black>)</font></code> к типу <code><font color=Green>Game</font></code>. Тогда функция <code><font color=Black>isGameOver</font></code> примет вид:</p>
 <pre><font color=Black>isGameOver</font> <font color="#b2590f">::</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>isGameOver</font> <font color="#b2590f">=</font> <font color=Black>(</font> <font color=Black>==</font> initGame<font color=Black>)</font></pre>
-<h4 id="делаем-ход"><a href="#TOC">Делаем ход</a></h4>
+<h4 id="делаем-ход"><a href="#делаем-ход">Делаем ход</a></h4>
 <p>Напишем функцию:</p>
 <pre><font color=Black>move</font> <font color="#b2590f">::</font> <font color=Green>Move</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font> <font color="#b2590f">-&gt;</font> <font color=Green>Game</font></pre>
 <p>Она обновляет позицию после хода. В пятнашках не во всех позициях доступны все ходы. Если пустышка находится на краю, мы не можем вывести её за пределы доски. Это необходимо как-то учесть. Каждый ход задаёт направление обмена фишками. Если у нас есть текущее положение пустышки и ход, то по ходу мы можем узнать направление, а по направлению ту фишку, которая займёт место пустышки после хода. При этом нам необходимо проверять находится ли та фишка, которую мы хотим поместить на пустое место в пределах доски. Например если пустышка расположена в самом верху и мы хотим сделать ход <code><font color=Green>Up</font></code> (передвинуть её ещё выше), то положение игры не должно измениться.</p>
@@ -474,7 +461,7 @@
 <p>Мы обновляем массив, который описывает доску с помощью специальной функции <code><font color=Black>//</font></code>. Посмотрим на её тип:</p>
 <pre><font color=Black>(</font><font color=Black>//</font><font color=Black>)</font> <font color="#b2590f">::</font> <font color=Green>Ix</font> i <font color="#b2590f">=&gt;</font> <font color=Green>Array</font> i a <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Black>(</font>i<font color=Black>,</font> a<font color=Black>)</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Array</font> i a</pre>
 <p>Она принимает массив и список обновлений в этом массиве. Обновления представлены в виде пары индекс-значение. В охранном выражении мы проверяем, если индекс перемещаемой фишки в пределах доски, то мы возвращаем новое положение, в котором пустышка уже находится в положении <code><font color=Black>id'</font></code> и массив обновлён. Мы составляем список обновлений <code><font color=Black>updates</font></code> bз двух элементов, это перемещения фишки и пустышки. Если же фишка за пределами доски, то мы возвращаем исходное положение.</p>
-<h4 id="перемешиваем-фишки"><a href="#TOC">Перемешиваем фишки</a></h4>
+<h4 id="перемешиваем-фишки"><a href="#перемешиваем-фишки">Перемешиваем фишки</a></h4>
 <p>Игра начинается с такого положения, в котором все фишки перемешаны. Но перемешивать фишки произвольным образом было бы не честно, поскольку известно, что в пятнашках половина расстановок не приводит к выигрышу. Поэтому мы будем перемешивать так: мы стартуем из начального положения и делаем несколько ходов произвольным образом. Количество ходов определяет сложность игры:</p>
 <pre><font color=Black>shuffle</font> <font color="#b2590f">::</font> <font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>IO</font> <font color=Green>Game</font>
 <font color=Black>shuffle</font> n <font color="#b2590f">=</font> <font color=Black>(</font>iterate <font color=Black>(</font>shuffle1 <font color=Black>=&lt;&lt;</font><font color=Black>)</font> <font color=Black>$</font> pure initGame<font color=Black>)</font> <font color=Black>!!</font> n
@@ -504,7 +491,7 @@
     <font color="#b2590f">where</font> moveEmptyTo v <font color="#b2590f">=</font> shift v <font color=Black>(</font>emtyField g<font color=Black>)</font>
           allMoves <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color=Green>Up</font><font color=Black>,</font> <font color=Green>Down</font><font color=Black>,</font> <font color=Green>Left</font><font color=Black>,</font> <font color=Green>Right</font><font color="#b2590f">]</font></pre>
 <p>Мы выполняем схожие операции с теми, что были в функции <code><font color=Black>move</font></code>. Мы фильтруем из списка всех ходов те, что выводят пустую фишку за пределы доски.</p>
-<h4 id="отображение-положения"><a href="#TOC">Отображение положения</a></h4>
+<h4 id="отображение-положения"><a href="#отображение-положения">Отображение положения</a></h4>
 <p>Я немного поторопился, нам осталась ещё одна функция. Это отображение позиции. Я не буду подробно останавливаться на теле функции, скажу лишь то, что она составляет строку так как это показано в комментарии к функции.</p>
 <pre><font color="#2149c1">--  +----+----+----+----+</font>
 <font color="#2149c1">--  |  1 |  2 |  3 |  4 |</font>
@@ -611,7 +598,7 @@
 <p>Самые неприятные ошибки происходят, когда в середине выясняется, что мы ошиблись с типами. Типы, которые мы выбрали не могут описать явление, возможно мы не можем делать какие-то операции, которые нам, как неожиданно выяснилось, очень нужны. Это значит, что нужно менять каркас. Менять каркас, это значит сносить весь дом и строить новый. Возможно разрушения окажутся локальными, мы строим не дом, а город. И сносить придётся не всё, а несколько кварталов. Но это тоже большие перемены. Поэтому шаг определения типов очень важен. Впрочем сносить кварталы в Haskell одно удовольствие, поскольку стоит нам изменить какой-нибудь тип, например убрать какой-нибудь тип или изменить имя, компилятор тут же подскажет нам какие функции стали бессмысленными. Более коварные изменения связаны с добавлением конструктора-альтернативы. Например нам вдруг не понравился тип <code><font color=Green>Bool</font></code> и мы решили сделать его более человечным. Мы решили добавить ещё одно значение:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Bool</font> <font color="#b2590f">=</font> <font color=Green>True</font> <font color="#b2590f">|</font> <font color=Green>False</font> <font color="#b2590f">|</font> <font color=Green>IDonTKnow</font></pre>
 <p>Это может привести к неполному рассмотрению альтернатив в <code><font color="#b2590f">case</font></code>-выражениях и сопоставлениях с образцом в аргументах функции. Такие ошибки крайне неприятны, поскольку они происходят на этапе выполнения программы, когда новое значение <code><font color=Green>IDonTKnow</font></code> дойдёт до <code><font color="#b2590f">case</font></code>. В этом случае нам на выручку может прийти функция свёртки, если мы вместе с типом изменим и функцию свёртки, это скажется на всех функциях, которые были определены через неё. Чем больше таких функций, тем больше ошибок мы поймаем.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>Измените диалог с пользователем. Сделайте так чтобы у игры было главное меню, в котором игрок выбирает разные побочные функции, вроде выхода, начать новую игру, подсказка и игровое меню, в котором игрок только передвигает фишки. Когда игрок собирает игру он попадает в главное меню.</p></li>
 <li><p>Добавьте в игру подсчёт статистики. Если игрок дошёл до победной позиции он узнаёт за сколько ходов ему удалось решить задачу. Также ведётся история предыдущих попыток, по которой пользователь может следить как изменяются его результаты.</p></li>

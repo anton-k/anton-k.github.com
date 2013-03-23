@@ -5,6 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
   <link rel="stylesheet" href="./style.css" type="text/css" />
   <script type="text/javascript">/*<![CDATA[*/
   /*
@@ -229,9 +230,7 @@
 <li><a href="#безымянные-функции">Безымянные функции</a></li>
 </ul></li>
 <li><a href="#какой-стиль-лучше">Какой стиль лучше?</a></li>
-<li><a href="#краткое-содержание">Краткое содержание</a><ul>
-<li><a href="#особенности-синтаксиса">Особенности синтаксиса</a></li>
-</ul></li>
+<li><a href="#краткое-содержание">Краткое содержание</a></li>
 <li><a href="#упражнения">Упражнения</a></li>
 </ul></li>
 </ul>
@@ -244,11 +243,11 @@
 </div></div>  
  </div> 
 
-<h1 id="декларативный-и-композиционный-стиль"><a href="#TOC">Декларативный и композиционный стиль</a></h1>
+<h1 id="декларативный-и-композиционный-стиль"><a href="#декларативный-и-композиционный-стиль">Декларативный и композиционный стиль</a></h1>
 <p>В Haskell существует несколько встроенных выражений, которые облегчают построение функций и делают код более наглядным. Их можно разделить на два вида: выражения, которые поддерживают <em>декларативный стиль</em> (declarative style) определения функций, и выражения которые поддерживают <em>композиционный стиль</em> (expression style).</p>
 <p>Что это за стили? В декларативном стиле определения функций больше похожи на математическую нотацию, словно это предложения языка. В композиционном стиле мы строим из маленьких выражений более сложные, применяем к этим выражениям другие выражения и строим ещё большие.</p>
 <p>В Haskell есть полноценная поддержка и того и другого стиля, поэтому конструкции которые мы рассмотрим в этой главе будут по смыслу дублировать друг друга. Выбор стиля скорее дело вкуса, существуют приверженцы и того и другого стиля, поэтому разработчики Haskell не хотели никого ограничивать.</p>
-<h2 id="локальные-переменные"><a href="#TOC">Локальные переменные</a></h2>
+<h2 id="локальные-переменные"><a href="#локальные-переменные">Локальные переменные</a></h2>
 <p>Вспомним формулу вычисления площади треугольника по трём сторонам:</p>
 <p><span class="LaTeX">$$S = \sqrt{p \cdot (p - a) \cdot (p - b) \cdot (p - c)}$$</span></p>
 <p>Где <span class="LaTeX">$a$</span>, <span class="LaTeX">$b$</span> и <span class="LaTeX">$c$</span> – длины сторон треугольника, а <span class="LaTeX">$p$</span> это полупериметр.</p>
@@ -263,7 +262,7 @@
 
 <font color=Black>p</font> <font color="#b2590f">=</font> <font color=Black>(</font>a <font color=Black>+</font> b <font color=Black>+</font> c<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font></pre>
 <p>Нам нужно, чтобы <code><font color=Black>p</font></code> знало, что <code><font color=Black>a</font></code>, <code><font color=Black>b</font></code> и <code><font color=Black>c</font></code> берутся из аргументов функции <code><font color=Black>square</font></code>. В этом нам помогут локальные переменные.</p>
-<h3 id="where-выражения"><a href="#TOC">where-выражения</a></h3>
+<h3 id="where-выражения"><a href="#where-выражения">where-выражения</a></h3>
 <p>В декларативном стиле для этого предусмотрены  <code><font color="#b2590f">where</font></code>-выражения. Они пишутся так:</p>
 <pre><font color=Black>square</font> a b c <font color="#b2590f">=</font> sqrt <font color=Black>(</font>p <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> a<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> b<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> c<font color=Black>)</font><font color=Black>)</font>
     <font color="#b2590f">where</font> p <font color="#b2590f">=</font> <font color=Black>(</font>a <font color=Black>+</font> b <font color=Black>+</font> c<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font></pre>
@@ -309,7 +308,7 @@
     <font color="#b2590f">where</font> <font color=Black>(</font><font color=Green>Succ</font> <font color=Black>(</font><font color=Green>Succ</font> res<font color=Black>)</font><font color=Black>)</font> <font color="#b2590f">=</font> x</pre>
 <p>Конечно в этом примере <code><font color="#b2590f">where</font></code> не нужны, но здесь они приведены для иллюстрации привязки <code><font color="#b2590f">where</font></code>-выражения к данному уравнению. Мы определили три локальных переменных с одним и тем же именем.</p>
 <p><code><font color="#b2590f">where</font></code>-выражения могут быть и у значений, которые определяются внутри <code><font color="#b2590f">where</font></code>-выражений. Но лучше избегать сильно вложенных выражений.</p>
-<h3 id="let-выражения"><a href="#TOC">let-выражения</a></h3>
+<h3 id="let-выражения"><a href="#let-выражения">let-выражения</a></h3>
 <p>В композиционном стиле функция вычисления площади треугольника будет выглядеть так:</p>
 <pre><font color=Black>square</font> a b c <font color="#b2590f">=</font> <font color="#b2590f">let</font> p <font color="#b2590f">=</font> <font color=Black>(</font>a <font color=Black>+</font> b <font color=Black>+</font> c<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font>
                <font color="#b2590f">in</font>  sqrt <font color=Black>(</font>p <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> a<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> b<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> c<font color=Black>)</font><font color=Black>)</font> </pre>
@@ -330,20 +329,20 @@
 <font color=Black>filter</font>  p  <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> 
     <font color="#b2590f">let</font> rest <font color="#b2590f">=</font> filter p xs
     <font color="#b2590f">in</font>  <font color="#b2590f">if</font> p x <font color="#b2590f">then</font> x <font color="#b2590f">:</font> rest <font color="#b2590f">else</font> rest</pre>
-<h2 id="декомпозиция"><a href="#TOC">Декомпозиция</a></h2>
+<h2 id="декомпозиция"><a href="#декомпозиция">Декомпозиция</a></h2>
 <p>Декомпозиция или сопоставление с образцом позволяет выделять из составных значений, простейшие значения с помощью которых они были построены</p>
 <pre><font color=Black>pred</font> <font color=Black>(</font><font color=Green>Succ</font> x<font color=Black>)</font> <font color="#b2590f">=</font> x</pre>
 <p>и организовывать условные вычисления которые зависят от вида поступающих на вход функции значений</p>
 <pre><font color=Black>not</font> <font color=Green>True</font>  <font color="#b2590f">=</font> <font color=Green>False</font>
 <font color=Black>not</font> <font color=Green>False</font> <font color="#b2590f">=</font> <font color=Green>True</font></pre>
-<h3 id="сопоставление-с-образцом"><a href="#TOC">Сопоставление с образцом</a></h3>
+<h3 id="сопоставление-с-образцом"><a href="#сопоставление-с-образцом">Сопоставление с образцом</a></h3>
 <p>Декомпозицию в декларативном стиле мы уже изучили, это обычный случай разбора значений в аргументах функции. Рассмотрим одну полезную возможность при декомпозиции. Иногда нам хочется провести декомпозицию и дать псевдоним всему значению. Это можно сделать с помощью специального символа <code><font color="#b2590f">@</font></code>.</p>
 <p>Например определим функцию, которая возвращает соседние числа для данного числа Пеано:</p>
 <pre><font color=Black>beside</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Nat</font><font color=Black>,</font> <font color=Green>Nat</font><font color=Black>)</font>
 <font color=Black>beside</font>  <font color=Green>Zero</font>       <font color="#b2590f">=</font> error <font color=Black>"undefined"</font>
 <font color=Black>beside</font>  x<font color="#b2590f">@</font><font color=Black>(</font><font color=Green>Succ</font> y<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>y<font color=Black>,</font> <font color=Green>Succ</font> x<font color=Black>)</font></pre>
 <p>В выражении <code><font color=Black>x</font><font color="#b2590f">@</font><font color=Black>`</font><font color=Black>`</font><font color=Black>(</font><font color=Green>Succ</font> y<font color=Black>)</font></code> мы одновременно проводим разбор и даём имя всему значению.</p>
-<h3 id="case-выражения"><a href="#TOC">case-выражения</a></h3>
+<h3 id="case-выражения"><a href="#case-выражения">case-выражения</a></h3>
 <p>Оказывается декомпозицию можно проводить в любом выражении, для этого существуют  <code><font color="#b2590f">case</font></code>-выражения:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>AnotherNat</font> <font color="#b2590f">=</font> <font color=Green>None</font> <font color="#b2590f">|</font> <font color=Green>One</font> <font color="#b2590f">|</font> <font color=Green>Two</font> <font color="#b2590f">|</font> <font color=Green>Many</font>
     <font color="#b2590f">deriving</font> <font color=Black>(</font><font color=Green>Show</font><font color=Black>,</font> <font color=Green>Eq</font><font color=Black>)</font>
@@ -379,13 +378,13 @@
                     <font color="#b2590f">in</font>  <font color="#b2590f">if</font> <font color=Black>(</font>p x<font color=Black>)</font> 
                         <font color="#b2590f">then</font> <font color=Black>(</font>x<font color="#b2590f">:</font>rest<font color=Black>)</font>
                         <font color="#b2590f">else</font> rest</pre>
-<h2 id="условные-выражения"><a href="#TOC">Условные выражения</a></h2>
+<h2 id="условные-выражения"><a href="#условные-выражения">Условные выражения</a></h2>
 <p>С условными выражениями мы уже сталкивались в сопоставлении с образцом. Например в определении функции <code><font color=Black>not</font></code>:</p>
 <pre><font color=Black>not</font> <font color=Green>True</font>  <font color="#b2590f">=</font> <font color=Green>False</font>
 <font color=Black>not</font> <font color=Green>False</font> <font color="#b2590f">=</font> <font color=Green>True</font></pre>
 <p>В зависимости от поступающего значения мы выбираем одну из двух альтернатив. Условные выражении в сопоставлении с образцом позволяют реагировать лишь на частичное (с учётом переменных) совпадение дерева значения в аргументах функции.</p>
 <p>Часто нам хочется определить более сложные условия для альтернатив. Например, если значение на входе функции больше 2, но меньше 10, верни <code><font color=Green>A</font></code>, а если больше 10, верни <code><font color=Green>B</font></code>, а во всех остальных случаях верни <code><font color=Green>C</font></code>. Или если на вход поступила строка состоящая только из букв латинского алфавита, верни <code><font color=Green>A</font></code>, а в противном случае верни <code><font color=Green>B</font></code>. Нам бы хотелось реагировать лишь в том случае, если значение некоторого типа <code><font color=Black>a</font></code> удовлетворяет некоторому предикату. Предикатами обычно называют функции типа <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>. Мы говорим, что значение удовлетворяет предикату, если предикат для этого значения возвращает <code><font color=Green>True</font></code>.</p>
-<h3 id="охранные-выражения"><a href="#TOC">Охранные выражения</a></h3>
+<h3 id="охранные-выражения"><a href="#охранные-выражения">Охранные выражения</a></h3>
 <p>В декларативном стиле условные выражения представлены <em>охранными выражениями</em> (guards). Предположим у нас есть тип:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>HowMany</font> <font color="#b2590f">=</font> <font color=Green>Little</font> <font color="#b2590f">|</font> <font color=Green>Enough</font> <font color="#b2590f">|</font> <font color=Green>Many</font></pre>
 <p>И мы хотим написать функцию, которая принимает число людей, которые хотят посетить выставку, а возвращает значение типа <code><font color=Green>HowMany</font></code>. Эта функция оценивает вместительность выставочного зала. С помощью охранных выражений мы можем написать её так:</p>
@@ -429,7 +428,7 @@
 <p>Или даже так:</p>
 <pre><font color="#b2590f">import</font> <font color=Green>Prelude</font><font color=Black>(</font>all<font color=Black>)</font></pre>
 <p>Функция <code><font color=Black>null</font></code> определена в <code><font color=Green>Prelude</font></code> она возвращает <code><font color=Green>True</font></code> только если список пуст.</p>
-<h3 id="if-выражения"><a href="#TOC">if-выражения</a></h3>
+<h3 id="if-выражения"><a href="#if-выражения">if-выражения</a></h3>
 <p>В композиционном стиле в качестве условных выражений используются уже знакомые нам <code><font color="#b2590f">if</font></code>-выражения. Вспомним как они выглядят:</p>
 <pre><font color=Black>a</font> <font color="#b2590f">=</font> <font color="#b2590f">if</font> bool 
     <font color="#b2590f">then</font> x1
@@ -447,9 +446,9 @@
 <font color=Black>all</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font>
 <font color=Black>all</font> p <font color=Green>[]</font>     <font color="#b2590f">=</font> <font color=Green>True</font>
 <font color=Black>all</font> p <font color=Black>(</font>x<font color="#b2590f">:</font>xs<font color=Black>)</font> <font color="#b2590f">=</font> <font color="#b2590f">if</font> <font color=Black>(</font>p x<font color=Black>)</font> <font color="#b2590f">then</font> all p xs <font color="#b2590f">else</font> <font color=Green>False</font></pre>
-<h2 id="определение-функций"><a href="#TOC">Определение функций</a></h2>
+<h2 id="определение-функций"><a href="#определение-функций">Определение функций</a></h2>
 <p>Под функцией мы понимаем составной синоним, который принимает аргументы, возможно разбирает их на части и составляет из этих частей новые выражения. Теперь посмотрим как такие синонимы определяются в каждом из стилей.</p>
-<h3 id="уравнения"><a href="#TOC">Уравнения</a></h3>
+<h3 id="уравнения"><a href="#уравнения">Уравнения</a></h3>
 <p>В декларативном стиле функции определяются с помощью уравнений. Пока мы видели лишь этот способ определения функций, примерами могут служить все предыдущие примеры. Вкратце напомним, что функция определяется набором уравнений вида:</p>
 <pre><font color=Black>name</font> декомпозиция1 <font color="#b2590f">=</font> композиция1
 <font color=Black>name</font> декомпозиция2 <font color="#b2590f">=</font> композиция2
@@ -463,7 +462,7 @@
 <pre><font color=Green>Prelude</font><font color=Black>&gt;</font> notT <font color=Green>False</font>
 <font color=Black>***</font> <font color=Green>Exception</font><font color="#b2590f">:</font> <font color=Black>&lt;</font>interactive<font color=Black>&gt;:</font><font color="#0000ee">1</font><font color="#b2590f">:</font><font color="#0000ee">4</font><font color="#2149c1">-</font><font color="#0000ee">20</font><font color="#b2590f">:</font> <font color=Green>Non</font><font color="#2149c1">-</font>exhaustive patterns <font color="#b2590f">in</font> function notT</pre>
 <p>Интерпретатор сообщил нам о том, что он не нашёл уравнения для переданного в функцию значения.</p>
-<h3 id="безымянные-функции"><a href="#TOC">Безымянные функции</a></h3>
+<h3 id="безымянные-функции"><a href="#безымянные-функции">Безымянные функции</a></h3>
 <p>В композиционном стиле функции определяются по-другому. Это необычный метод, он пришёл в Haskell из лямбда-исчисления. Функции строятся с помощью специальных конструкций, которые называются лямбда-функциями. По сути лямбда-функции являются безымянными функциями. Давайте посмотрим на лямбда функцию, которая прибавляет к аргументу единицу:</p>
 <pre><font color="#b2590f">\</font>x <font color="#b2590f">-&gt;</font> x <font color=Black>+</font> <font color="#0000ee">1</font></pre>
 <p>Для того, чтобы превратить лямбда-функцию в обычную функцию мысленно замените знак <code><font color="#b2590f">\</font></code> на имя <code><font color=Black>noName</font></code>, а стрелку на знак равно:</p>
@@ -484,11 +483,9 @@
 <p>После применения параметр <code><font color=Black>a</font></code> связывается с типом <code><font color=Green>Int</font></code>, поскольку при применении происходит сопоставление более общего предиката <code><font color=Black>a</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code> из функции <code><font color=Black>filter</font></code> с тем, который мы передали первым аргументом <code><font color=Green>Int</font> <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font></code>. После этого мы получаем тип <code><font color=Black>(</font>f x<font color=Black>)</font> <font color="#b2590f">::</font> <font color="#b2590f">[</font><font color=Green>Int</font><font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font><font color=Green>Int</font><font color="#b2590f">]</font></code> это как раз тип функции, которая принимает список целых чисел и возвращает список целых чисел. Частичное применение позволяет нам не писать в таких выражениях:</p>
 <pre><font color=Black>f</font> xs <font color="#b2590f">=</font> filter p xs
     <font color="#b2590f">where</font> p x <font color="#b2590f">=</font> <font color=Black>...</font></pre>
-
 <p>последний аргумент <code><font color=Black>xs</font></code>.</p>
 <p>К примеру вместо</p>
 <pre><font color=Black>add</font> a b <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font> a b</pre>
-
 <p>мы можем просто написать:</p>
 <pre><font color=Black>add</font> <font color="#b2590f">=</font> <font color=Black>(</font><font color=Black>+</font><font color=Black>)</font></pre>
 <p>Такой стиль определения функций называют <em>бесточечным</em> (point-free).</p>
@@ -505,7 +502,6 @@
 <pre><font color=Black>filter</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> <font color=Green>Bool</font><font color=Black>)</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color="#b2590f">[</font>a<font color="#b2590f">]</font> <font color="#b2590f">-&gt;</font> <font color="#b2590f">[</font>a<font color="#b2590f">]</font><font color=Black>)</font>
 <font color=Black>filter</font> <font color="#b2590f">=</font> <font color="#b2590f">\</font>p xs <font color="#b2590f">-&gt;</font> <font color="#b2590f">case</font> xs <font color="#b2590f">of</font>
     <font color=Black>...</font></pre>
-
 <p>но это лишь синтаксический сахар, который разворачивается в предыдущую запись.</p>
 <p>Для тренировки определим несколько стандартных функций для работы с кортежами с помощью лямбда-функций (все они определены в <code><font color=Green>Prelude</font></code>):</p>
 <pre><font color=Black>fst</font> <font color="#b2590f">::</font> <font color=Black>(</font>a<font color=Black>,</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> a
@@ -535,7 +531,7 @@
     <font color=Black>(</font><font color="#b2590f">\</font>p <font color="#b2590f">-&gt;</font> sqrt <font color=Black>(</font>p <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> a<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> b<font color=Black>)</font> <font color=Black>*</font> <font color=Black>(</font>p <font color="#2149c1">-</font> c<font color=Black>)</font><font color=Black>)</font><font color=Black>)</font> 
     <font color=Black>(</font><font color=Black>(</font>a <font color=Black>+</font> b <font color=Black>+</font> c<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font><font color=Black>)</font></pre>
 <p>Смотрите мы определили функцию, которая принимает параметром полупериметр <code><font color=Black>p</font></code> и передали в неё значение <code><font color=Black>(</font><font color=Black>(</font>a <font color=Black>+</font> b <font color=Black>+</font> c<font color=Black>)</font> <font color=Black>/</font> <font color="#0000ee">2</font><font color=Black>)</font></code>. Если в нашей функции несколько локальных переменных, то мы можем составить лямбда-функцию от нескольких переменных и подставить в неё нужные значения.</p>
-<h2 id="какой-стиль-лучше"><a href="#TOC">Какой стиль лучше?</a></h2>
+<h2 id="какой-стиль-лучше"><a href="#какой-стиль-лучше">Какой стиль лучше?</a></h2>
 <p>Основной критерий выбора заключается в том, сделает ли этот элемент код более <em>ясным</em>. Наглядность кода станет залогом успешной поддержки. Его будет легче понять и улучшить при необходимости.</p>
 <p>Далее мы рассмотрим несколько примеров определений из <code><font color=Green>Prelude</font></code> и подумаем, почему был выбран тот или иной стиль. Начнём с класса <code><font color=Green>Ord</font></code> и посмотрим на определения по умолчанию:</p>
 <pre><font color="#2149c1">-- Тип упорядочивания</font>
@@ -651,7 +647,7 @@
                       s' <font color="#b2590f">-&gt;</font> w <font color="#b2590f">:</font> words s''
                             <font color="#b2590f">where</font> <font color=Black>(</font>w<font color=Black>,</font> s''<font color=Black>)</font> <font color="#b2590f">=</font> break <font color=Green>Char</font><font color=Black>.</font>isSpace s'</pre>
 <p>Если строка пуста, то делать больше нечего. Если – нет, мы также как и в предыдущей функции применяем функцию <code><font color=Black>break</font></code> для того, чтобы выделить все элементы кроме пробела, а затем рекурсивно вызываем функцию <code><font color=Black>words</font></code> на оставшейся части списка.</p>
-<h2 id="краткое-содержание"><a href="#TOC">Краткое содержание</a></h2>
+<h2 id="краткое-содержание"><a href="#краткое-содержание">Краткое содержание</a></h2>
 <p>В этой главе мы узнали очень много новых синтаксических конструкций для определения функций. Они появлялись парами. Сведём их в таблицу:</p>
 <table>
 <col width="28%" />
@@ -666,34 +662,34 @@
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Локальные переменные</td>
-<td align="left"><code><font color="#b2590f">where</font></code>-выражения</td>
-<td align="left"><code><font color="#b2590f">let</font></code>-выражения</td>
+<td align="left"><p>Локальные переменные</p></td>
+<td align="left"><p><code><font color="#b2590f">where</font></code>-выражения</p></td>
+<td align="left"><p><code><font color="#b2590f">let</font></code>-выражения</p></td>
 </tr>
 <tr class="even">
-<td align="left">Декомпозиция</td>
-<td align="left">Сопоставление с образцом</td>
-<td align="left"><code><font color="#b2590f">case</font></code>-выражения</td>
+<td align="left"><p>Декомпозиция</p></td>
+<td align="left"><p>Сопоставление с образцом</p></td>
+<td align="left"><p><code><font color="#b2590f">case</font></code>-выражения</p></td>
 </tr>
 <tr class="odd">
-<td align="left">Условные выражения</td>
-<td align="left">Охранные выражения</td>
-<td align="left"><code><font color="#b2590f">if</font></code>-выражения</td>
+<td align="left"><p>Условные выражения</p></td>
+<td align="left"><p>Охранные выражения</p></td>
+<td align="left"><p><code><font color="#b2590f">if</font></code>-выражения</p></td>
 </tr>
 <tr class="even">
-<td align="left">Определение функций</td>
-<td align="left">Уравнения</td>
-<td align="left">лямбда-функции</td>
+<td align="left"><p>Определение функций</p></td>
+<td align="left"><p>Уравнения</p></td>
+<td align="left"><p>лямбда-функции</p></td>
 </tr>
 </tbody>
 </table>
-<h4 id="особенности-синтаксиса"><a href="#TOC">Особенности синтаксиса</a></h4>
+<h4 id="особенности-синтаксиса"><a href="#особенности-синтаксиса">Особенности синтаксиса</a></h4>
 <p>Нам встретилась новая конструкция в сопоставлении с образцом:</p>
 <pre><font color=Black>beside</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Nat</font><font color=Black>,</font> <font color=Green>Nat</font><font color=Black>)</font>
 <font color=Black>beside</font>  <font color=Green>Zero</font>       <font color="#b2590f">=</font> error <font color=Black>"undefined"</font>
 <font color=Black>beside</font>  x<font color="#b2590f">@</font><font color=Black>(</font><font color=Green>Succ</font> y<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>y<font color=Black>,</font> <font color=Green>Succ</font> x<font color=Black>)</font></pre>
 <p>Она позволяет проводить декомпозицию и давать имя всему значению одновременно. Такие выражения <code><font color=Black>x</font><font color="#b2590f">@</font><font color=Black>(</font><font color=Black>...</font><font color=Black>)</font></code> в англоязычной литературе принято называть as-patterns.</p>
-<h2 id="упражнения"><a href="#TOC">Упражнения</a></h2>
+<h2 id="упражнения"><a href="#упражнения">Упражнения</a></h2>
 <ul>
 <li><p>В этой главе нам встретилось много полезных стандартных функций, потренируйтесь с ними в интерпретаторе. Вызывайте их с различными значениями, экспериментируйте.</p></li>
 <li><p>Попробуйте определить функции из предыдущих глав в чисто композиционном стиле.</p></li>
