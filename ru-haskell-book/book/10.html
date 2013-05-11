@@ -854,7 +854,9 @@ break: break.hs:(4,1)-(5,30): Non-exhaustive patterns in function addEvens</pre>
 <pre>$ ghc --make -O Rules.hs 
 $ ./Rules
 Rules: Prelude.undefined</pre>
-<p>Что-то не так. Дело в том, что GHC слишком поторопился и заменил простую функцию <code><font color=Black>mapL</font></code> на её определение. Функция <code><font color=Black>$</font></code> также очень короткая, если бы нам удалось задержать встраивание <code><font color=Black>mapL</font></code>, тогда <code><font color=Black>$</font></code> превратилось бы в обычное применение и наши правила сработали бы.</p>
+<p>Что-то не так. Дело в том, что GHC проводит встраивание простых функций. GHC слишком поторопился и заменил <code><font color=Black>mapL</font></code> на её определение. Также обратим внимание на то, что выражение не соответствует левой части правила. У нас:</p>
+<pre><font color=Black>mapL</font> f xs     <font color=Black>=/=</font>   mapL f <font color=Black>$</font> xs</pre>
+<p>Функция <code><font color=Black>$</font></code> также является простой и GHC встраивает её. Для умпешной замены нам необходимо, чтобы <code><font color=Black>$</font></code> встроился раньше <code><font color=Black>mapL</font></code> и чтобы наше правило сработало раньше встраивания <code><font color=Black>mapL</font></code>.</p>
 <h4 id="фазы-компиляции"><a href="#фазы-компиляции">Фазы компиляции</a></h4>
 <p>Для решения этой проблемы в прагмы <code><font color=Green>RULES</font></code> и <code><font color=Green>INLINE</font></code> были введены ссылки на фазы компиляции. С помощью них мы можем указать GHC в каком порядке реагировать на эти прагмы. Фазы пишутся в квадратных скобках:</p>
 <pre><font color="#2149c1">{-# INLINE [2] someFun #-}</font>
@@ -863,7 +865,8 @@ Rules: Prelude.undefined</pre>
 "fun" [1] forall ... 
 "fun" [~1] forall ... 
   #-}</font></pre>
-<p>Компиляция выполняется в несколько фаз. Фазы следуют от некоторого заданного целого числа, например трёх, до нуля. Мы можем сослаться на фазу двумя способами: просто номером и номером с тильдой. Ссылка без тильды говорит: попытайся применить это правило как можно раньше до тех пор пока не наступит данная фаза, далее не применяй. Ссылка с тильдой говорит: подожди до наступления этой фазы. В нашем примере мы задержим встраивание для <code><font color=Black>mapL</font></code> и <code><font color=Black>foldrL</font></code> так:</p>
+<p>Компиляция выполняется в несколько фаз. Фазы следуют от некоторого заданного целого числа, например трёх, до нуля. Мы можем сослаться на фазу двумя способами: просто номером и номером с тильдой. Ссылка без тильды говорит: не применяй правило до наступления данной фазы, далее – применяй. Ссылка c тильдой говорит: попытайся применить это правило как можно раньше – до наступления данной фазы, далее – не применяй.</p>
+<p>В нашем примере мы задержим встраивание для <code><font color=Black>mapL</font></code> и <code><font color=Black>foldrL</font></code> так:</p>
 <pre><font color="#2149c1">{-# INLINE [1] foldrL #-}</font>
 <font color=Black>foldrL</font> <font color="#b2590f">::</font> <font color=Black>(</font>a <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> b<font color=Black>)</font> <font color="#b2590f">-&gt;</font> b <font color="#b2590f">-&gt;</font> <font color=Green>List</font> a <font color="#b2590f">-&gt;</font> b
 
@@ -878,7 +881,7 @@ Rule fired: Class op show
 ...
 $ ./Rules 
 Cons 101 (Cons 102 (Cons 103 Nil))</pre>
-<p>Среди прочих правил, определённых в стандартных библиотеках, сработало и наше. Составим правила, которые будут проводить оптимизацию слияние для наших списков, они будут заменять последовательное применение <code><font color=Black>mapL</font></code> на один <code><font color=Black>mapL</font></code> c композицией функций, также промежуточный список будет устранён в связке <code><font color=Black>foldrL</font><font color=Black>/</font>mapL</code>.</p>
+<p>Среди прочих правил, определённых в стандартных библиотеках, сработало и наше.</p>
 <h3 id="прагма-unpack"><a href="#прагма-unpack">Прагма UNPACK</a></h3>
 <p>Наш основной враг на этапе оптимизации программы это лишние объекты кучи. Чем меньше объектов мы создаём на пути к результату, тем эффективнее наша программа. С помощью прагмы <code><font color=Green>INLINE</font></code> мы можем избавиться от многих объектов, связанных с вызовом функции, это объекты типа <code><font color=Green>FUN</font></code>. Прагма <code><font color=Green>UNPACK</font></code> позволяет нам бороться с лишними объектами типа <code><font color=Green>CON</font></code>. В прошлой главе мы говорили о том, что значения в Haskell содержат дополнительную служебную информацию, которая необходима на этапе вычисления, например значение сначала было отложенным, потом мы до него добрались и вычислили, возможно оно оказалось не определённым значением (<code><font color=Black>undefined</font></code>). Такие значения называются запакованными (boxed). Незапакованное значение, это примитивное значение, как оно представлено в памяти компьютера. Вспомним определение целых чисел:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Int</font> <font color="#b2590f">=</font> <font color=Green>I</font><font color=Black><em>#</em></font> <font color=Green>Int</font><font color=Black><em>#</em></font></pre>
