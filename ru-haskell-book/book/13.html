@@ -488,7 +488,7 @@
 <font color=Black>randomElem</font> xs <font color="#b2590f">=</font> <font color=Black>(</font>xs <font color=Black>!!</font> <font color=Black>)</font> <font color=Black>&lt;$&gt;</font> randomRIO <font color=Black>(</font><font color="#0000ee">0</font><font color=Black>,</font> length xs <font color="#2149c1">-</font> <font color="#0000ee">1</font><font color=Black>)</font></pre>
 <p>Мы генерируем случайное число в диапазоне индексов списка и затем извлекаем элемент. Теперь функция определения ходов в текущем положении:</p>
 <pre><font color=Black>nextMoves</font> g <font color="#b2590f">=</font> filter <font color=Black>(</font>within <font color=Black>.</font> moveEmptyTo <font color=Black>.</font> orient<font color=Black>)</font> allMoves
-    <font color="#b2590f">where</font> moveEmptyTo v <font color="#b2590f">=</font> shift v <font color=Black>(</font>emtyField g<font color=Black>)</font>
+    <font color="#b2590f">where</font> moveEmptyTo v <font color="#b2590f">=</font> shift v <font color=Black>(</font>emptyField g<font color=Black>)</font>
           allMoves <font color="#b2590f">=</font> <font color="#b2590f">[</font><font color=Green>Up</font><font color=Black>,</font> <font color=Green>Down</font><font color=Black>,</font> <font color=Green>Left</font><font color=Black>,</font> <font color=Green>Right</font><font color="#b2590f">]</font></pre>
 <p>Мы выполняем схожие операции с теми, что были в функции <code><font color=Black>move</font></code>. Мы фильтруем из списка всех ходов те, что выводят пустую фишку за пределы доски.</p>
 <h4 id="отображение-положения"><a href="#отображение-положения">Отображение положения</a></h4>
