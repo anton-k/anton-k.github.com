@@ -505,7 +505,8 @@
 <p>Как и в случае логических значений числа кодируются функциями двух аргументов. Число определяется по терму, подсчётом цепочки первых аргументов <span class="LaTeX">$s$</span>. Например так выглядит число два:</p>
 <p><span class="LaTeX">$$Succ\ (Succ\ Zero) \Rightarrow(\lambda nsz .s(nsz)) (Succ\ Zero) 
     \Rightarrow\lambda sz .s((Succ\ Zero) sz) \Rightarrow$$</span></p>
-<p><span class="LaTeX">$$\lambda sz .s((\lambda nsz .s(nsz))\ Zero)sz \Rightarrow\lambda sz .s (s(Zero\ s\ z)) \Rightarrow\lambda sz .s(sz)$$</span></p>
+<p><span class="LaTeX">$$\lambda sz .s(((\lambda ns&#39;z&#39; .s&#39;(ns&#39;z&#39;))\ Zero)sz) \Rightarrow\lambda sz .s((\lambda s&#39;z&#39; .s&#39;(Zero\ s&#39;z&#39;))\ sz) \Rightarrow$$</span></p>
+<p><span class="LaTeX">$$\lambda sz .s((\lambda s&#39;z&#39; .s&#39;z&#39;)\ sz) \Rightarrow\lambda sz .s(sz)$$</span></p>
 <p>И мы получили два вхождения первого аргумента в теле функции. Определим сложение и умножение. Сложение принимает две функции двух аргументов и возвращает функцию двух аргументов.</p>
 <p><span class="LaTeX">$$Add = \lambda\ m\ n\ s\ z .m\ s\ (n\ s\ z)$$</span></p>
 <p>В этой функции мы применяем <span class="LaTeX">$m$</span> раз аргумент <span class="LaTeX">$s$</span> к значению, в котором аргумент <span class="LaTeX">$s$</span> применён <span class="LaTeX">$n$</span> раз, так мы и получаем <span class="LaTeX">$m+n$</span> применений аргумента <span class="LaTeX">$s$</span>. Сложим 3 и 2:</p>
