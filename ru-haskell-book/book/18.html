@@ -293,23 +293,23 @@
 </ul>
 <p>Например, пакет может пользоваться библиотеками, которые есть только в одной из операционных систем, но не в нашей. Такие дела, остаётся только поменять ОС или поискать другой пакет.</p>
 <h2 id="создание-документации-с-помощью-haddock"><a href="#создание-документации-с-помощью-haddock">Создание документации с помощью Haddock</a></h2>
-<p>Если мы зайдём на Hackage, то там мы увидим длинный список пакетов, отсортированных по категориям. К какой категории какой пакет относится мы указываем в <code><font color=Black>.</font>cabal</code>-файле в атрибуте <code><font color=Green>Category</font></code>. Далее рядом с именем пакета мы видим краткое описание, оно берётся из атрибута <code><font color=Green>Synopsis</font></code>. Если мы зайдём на страницу одного из пакетов, то там мы увидим страницу в таком же формате, что и документация к стандартным библиотекам. Мы видим описание пакета и ниже иерархию модулей. Мы можем зайти в заинтересовавший нас модуль и посмотреть на объявленные функции, типы и классы. В самом низу страницы находится ссылка к исходникам пакета.</p>
-<p>“Домашняя страница” пакета была создана с помощью приложения <code><font color=Green>Haddock</font></code>. Оно генерирует документацию в формате <code><font color=Black>html</font></code> по специальным комментариям. <code><font color=Green>Haddock</font></code> встроен в <code><font color=Black>cabal</font></code>, например мы можем сделать документацию к нашему пакету <code><font color=Black>hello</font></code>. Для этого нужно переключиться на корневую директорию пакета и вызвать:</p>
+<p>Если мы зайдём на Hackage, то там мы увидим длинный список пакетов, отсортированных по категориям. К какой категории какой пакет относится мы указываем в <code><font color=Black>.</font>cabal</code>-файле в атрибуте <code><font color=Green>Category</font></code>. Далее рядом с именем пакета мы видим краткое описание, которое берётся из атрибута <code><font color=Green>Synopsis</font></code>. Если мы зайдём на страницу одного из пакетов, то там мы увидим страницу в таком же формате, что и документация к стандартным библиотекам. Мы видим описание пакета и ниже иерархию модулей. Мы можем зайти в заинтересовавший нас модуль и посмотреть на объявленные функции, типы и классы. В самом низу страницы находится ссылка к исходникам пакета.</p>
+<p>“Домашняя страница” пакета была создана с помощью приложения <code><font color=Green>Haddock</font></code>. Оно генерирует документацию в формате <code><font color=Black>html</font></code> по специальным комментариям. <code><font color=Green>Haddock</font></code> встроен в <code><font color=Black>cabal</font></code>, например, мы можем сделать документацию к нашему пакету <code><font color=Black>hello</font></code>. Для этого нужно переключиться на корневую директорию пакета и вызвать:</p>
 <pre><font color=Black>cabal</font> haddock</pre>
-<p>После этого в директории <code><font color=Black>dist</font></code> появится директория <code><font color=Black>doc</font></code>, в которой внутри директории <code><font color=Black>html</font></code> находится созданная документация. Мы можем открыть файл <code><font color=Black>index</font><font color=Black>.</font>html</code> и там мы увидим “иерархию нашего” модуля. В модуле пока нет ни одной функции, так получилось потому, что <code><font color=Green>Haddock</font></code> помещает в документацию лишь те функции, у которых есть объявление типа. Если мы добавим в модуле <code><font color=Green>Hello</font><font color=Black>.</font>hs</code>: к единственной функции объявление типа:</p>
+<p>После этого в директории <code><font color=Black>dist</font></code> появится директория <code><font color=Black>doc</font></code>, в которой внутри директории <code><font color=Black>html</font></code> находится созданная документация. Мы можем открыть файл <code><font color=Black>index</font><font color=Black>.</font>html</code>, и там мы увидим “иерархию нашего” модуля. В модуле пока нет ни одной функции: так получилось потому, что <code><font color=Green>Haddock</font></code> помещает в документацию лишь те функции, у которых есть объявление типа. Если мы добавим в модуле <code><font color=Green>Hello</font><font color=Black>.</font>hs</code> к единственной функции объявление типа:</p>
 <pre><font color=Black>helloWorld</font> <font color="#b2590f">::</font> <font color=Green>String</font>
 <font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font></pre>
-<p>И теперь перезапустим <code><font color=Black>haddock</font></code>. То мы увидим, что в модуле <code><font color=Green>Hello</font></code> появилась одна запись.</p>
+<p>И теперь перезапустим <code><font color=Black>haddock</font></code>, то мы увидим, что в модуле <code><font color=Green>Hello</font></code> появилась одна запись.</p>
 <h3 id="комментарии-к-определениям"><a href="#комментарии-к-определениям">Комментарии к определениям</a></h3>
 <p>Прокомментировать любое определение можно с помощью комментария следующего вида:</p>
 <pre><font color="#2149c1">-- | Here is the comment</font>
 <font color=Black>helloWorld</font> <font color="#b2590f">::</font> <font color=Green>String</font>
 <font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font></pre>
-<p>Обратите внимание на значок “или”, сразу после комментариев. Этот комментарий будет включен в документацию. Также можно писать комментарии после определения для этого к комментарию добавляется значок степени:</p>
+<p>Обратите внимание на значок “или” сразу после комментариев. Этот комментарий будет включен в документацию. Также можно писать комментарии после определения: для этого к комментарию добавляется значок степени:</p>
 <pre><font color=Black>helloWorld</font> <font color="#b2590f">::</font> <font color=Green>String</font>
 <font color=Black>helloWorld</font> <font color="#b2590f">=</font> hello <font color=Black>++</font> <font color=Black>", "</font> <font color=Black>++</font> world <font color=Black>++</font> <font color=Black>"!"</font>
 <font color="#2149c1">-- ^ Here is the comment</font></pre>
-<p>К сожалению на момент написания этих строк <code><font color=Green>Haddock</font></code> может включать в документацию лишь латинские символы. Комментарии могут простираться несколько строк:</p>
+<p>К сожалению, на момент написания этих строк, <code><font color=Green>Haddock</font></code> может включать в документацию лишь латинские символы. Комментарии могут простираться на несколько строк:</p>
 <pre><font color="#2149c1">-- | Here is the type.</font>
 <font color="#2149c1">-- It contains three elements.</font>
 <font color="#2149c1">-- That's it.</font>
@@ -321,7 +321,7 @@
    That's it.
  -}</font>
 <font color="#b2590f">data</font> <font color=Green>T</font> <font color="#b2590f">=</font> <font color=Green>A</font> <font color="#b2590f">|</font> <font color=Green>B</font> <font color="#b2590f">|</font> <font color=Green>C</font></pre>
-<p>Мы можем комментировать не только определение целиком, но и отдельные части. Например так мы можем пояснить отдельные аргументы у функции:</p>
+<p>Мы можем комментировать не только определение целиком, но и отдельные части. Например, так мы можем пояснить отдельные аргументы у функции:</p>
 <pre><font color=Black>add</font> <font color="#b2590f">::</font> <font color=Green>Num</font> a <font color="#b2590f">=&gt;</font> a   <font color="#2149c1">-- ^ The first argument</font>
              <font color="#b2590f">-&gt;</font> a   <font color="#2149c1">-- ^ The second argument   </font>
              <font color="#b2590f">-&gt;</font> a   <font color="#2149c1">-- ^ The return value   </font></pre>
@@ -372,9 +372,9 @@
 <p>Комментарии со звёздочкой создают раздел, а с двумя звёздочками – подраздел. Те определения, которые экспортируются за комментариями со звёздочкой попадут в один раздел или подраздел. Если сразу за комментарием со звёздочкой идёт комментарий со знаком “или”, то он будет помещён в самое начало раздела. В нём мы можем пояснить по какому принципу группируются определения в данном разделе.</p>
 <h3 id="разметка"><a href="#разметка">Разметка</a></h3>
 <p>С помощью специальных символов можно выделять различные элементы текста, например, ссылки, куски кода, названия определений или модулей. <code><font color=Green>Haddock</font></code> установит необходимые ссылки и выделит элемент в документации.</p>
-<p>При этом символы <code><font color="#b2590f">\</font></code>, <code><font color=Black>'</font></code>, <code><font color=Black>`</font></code>, <code><font color=Black>"</font></code>, <code><font color="#b2590f">@</font></code>, <code><font color=Black>&lt;</font></code> являются специальными, если вы хотите воспользоваться одним из специальных символов в тексте необходимо написать перед ним обратный слэш <code><font color="#b2590f">\</font></code>. Также символы для обозначения комментариев <code><font color=Black>*</font></code>, <code><font color="#b2590f">|</font></code>, <code><font color=Black>^</font></code> и <code><font color=Black>&gt;</font></code> являются специальными, если они расположены в самом начале строки.</p>
+<p>При этом символы <code><font color="#b2590f">\</font></code>, <code><font color=Black>'</font></code>, <code><font color=Black>`</font></code>, <code><font color=Black>"</font></code>, <code><font color="#b2590f">@</font></code>, <code><font color=Black>&lt;</font></code> являются специальными. Если вы хотите воспользоваться одним из специальных символов в тексте, необходимо написать перед ним обратный слэш <code><font color="#b2590f">\</font></code>. Также символы для обозначения комментариев <code><font color=Black>*</font></code>, <code><font color="#b2590f">|</font></code>, <code><font color=Black>^</font></code> и <code><font color=Black>&gt;</font></code> являются специальными, если они расположены в самом начале строки.</p>
 <h4 id="параграфы"><a href="#параграфы">Параграфы</a></h4>
-<p>Параграфы определяются по пустой сроке в комментарии. Так например мы можем разбить текст на два параграфа:</p>
+<p>Параграфы определяются по пустой строке в комментарии. Так, например, мы можем разбить текст на два параграфа:</p>
 <pre><font color="#2149c1">-- | The first paragraph goes here.</font>
 <font color="#2149c1">--</font>
 <font color="#2149c1">-- The second paragraph goes here.</font>
@@ -400,12 +400,12 @@
 <font color="#2149c1">-- &gt;&gt;&gt; print 1 &gt;&gt; print 2</font>
 <font color="#2149c1">-- 1</font>
 <font color="#2149c1">-- 2</font></pre>
-<p>Строки, которые идут сразу за строкой с символом <code><font color=Black>&gt;&gt;&gt;</font></code> помечаются как результат выполнения выражения в интерпретаторе.</p>
+<p>Строки, которые идут сразу за строкой с символом <code><font color=Black>&gt;&gt;&gt;</font></code>, помечаются как результат выполнения выражения в интерпретаторе.</p>
 <h4 id="имена-определений"><a href="#имена-определений">Имена определений</a></h4>
-<p>Для того чтобы выделить имя любого определения, будь то функция, тип или класс, необходимо заключить его в ординарные кавычки, как в <code><font color=Black>'T'</font></code>. При этом <code><font color=Green>Haddock</font></code> установит ссылку к определению и подсветит имя в тексте. Для того чтобы сослаться на определение из другого модуля необходимо написать его полное имя, то есть с приставкой имени модуля, например функция <code><font color=Black>fun</font></code>, определённая в модуле <code><font color=Green>M</font></code>, имеет полное имя <code><font color=Green>M</font><font color=Black>.</font>fun</code>, тогда в комментариях мы обозначаем её <code><font color=Black>'</font><font color=Green>M</font><font color=Black>.</font>fun'</code>.</p>
-<p>Ординарные кавычки часто используются в английском языке как апострофы, в таких сочетаниях как don’t, isn’t. Перед такими вхождениями ординарных кавычек можно не писать обратный слэш. <code><font color=Green>Haddock</font></code> сумеет отличить их от идентификатора.</p>
+<p>Для того чтобы выделить имя любого определения, будь то функция, тип или класс, необходимо заключить его в ординарные кавычки, как в <code><font color=Black>'T'</font></code>. При этом <code><font color=Green>Haddock</font></code> установит ссылку к определению и подсветит имя в тексте. Для того чтобы сослаться на определение из другого модуля, необходимо написать его полное имя, то есть с приставкой имени модуля, например, функция <code><font color=Black>fun</font></code>, определённая в модуле <code><font color=Green>M</font></code>, имеет полное имя <code><font color=Green>M</font><font color=Black>.</font>fun</code> – тогда в комментариях мы обозначаем её <code><font color=Black>'</font><font color=Green>M</font><font color=Black>.</font>fun'</code>.</p>
+<p>Ординарные кавычки часто используются в английском языке как апострофы, в таких сочетаниях как don’t, isn’t. Перед такими вхождениями ординарных кавычек можно не писать обратный слэш – <code><font color=Green>Haddock</font></code> сумеет отличить их от идентификатора.</p>
 <h4 id="курсив-и-моноширинный-шрифт"><a href="#курсив-и-моноширинный-шрифт">Курсив и моноширинный шрифт</a></h4>
-<p>Для выделения текста курсивом, он заключается в окружение <code><font color=Black>...</font></code>. Для написания текста моноширинным шрифтом, он заключается в окружение <code><font color=Black>@...@</font></code>.</p>
+<p>Для выделения текста курсивом он заключается в окружение <code><font color=Black>...</font></code>. Для написания текста моноширинным шрифтом он заключается в окружение <code><font color=Black>@...@</font></code>.</p>
 <h4 id="модули"><a href="#модули">Модули</a></h4>
 <p>Для обозначения модулей используются двойные кавычки, как в</p>
 <pre><font color="#2149c1">-- | This is a reference to the "Foo" module.</font></pre>
@@ -423,7 +423,7 @@
 <font color="#2149c1">--</font>
 <font color="#2149c1">--     2. second item</font></pre>
 <h4 id="список-определений"><a href="#список-определений">Список определений</a></h4>
-<p>Определения обозначаются квадратными скобками, например комментарий:</p>
+<p>Определения обозначаются квадратными скобками, например, комментарий:</p>
 <pre><font color="#2149c1">-- | This is a definition list:</font>
 <font color="#2149c1">--</font>
 <font color="#2149c1">--   [@foo@] The description of @foo@.</font>

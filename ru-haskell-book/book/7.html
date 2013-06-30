@@ -630,7 +630,7 @@ Data.Map&gt; v1 ! 3
 <font color="#b2590f">newtype</font> <font color=Green>Prod</font> a <font color="#b2590f">=</font> <font color=Green>Prod</font> <font color=Black>{</font> getProd <font color="#b2590f">::</font> a <font color=Black>}</font></pre>
 <p>В этом определении есть два новых элемента. Первый это ключевое слово  <code><font color="#b2590f">newtype</font></code>, а второй это фигурные скобки. Что всё это значит?</p>
 <h3 id="тип-обёртка-newtype"><a href="#тип-обёртка-newtype">Тип-обёртка newtype</a></h3>
-<p>Ключевое слово <code><font color="#b2590f">newtype</font></code> вводит новый тип-обёртку. Тип-обёртка может иметь только один конструктор, у которого лишь одни аргумент. Запись:</p>
+<p>Ключевое слово <code><font color="#b2590f">newtype</font></code> вводит новый тип-обёртку. Тип-обёртка может иметь только один конструктор, у которого лишь один аргумент. Запись:</p>
 <pre><font color="#b2590f">newtype</font> <font color=Green>Sum</font> a <font color="#b2590f">=</font> <font color=Green>Sum</font> a</pre>
 <p>Это тоже самое, что и</p>
 <pre><font color="#b2590f">data</font> <font color=Green>Sum</font> a <font color="#b2590f">=</font> <font color=Green>Sum</font> a</pre>

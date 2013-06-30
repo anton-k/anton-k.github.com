@@ -341,7 +341,7 @@
 <pre><font color=Black>beside</font> <font color="#b2590f">::</font> <font color=Green>Nat</font> <font color="#b2590f">-&gt;</font> <font color=Black>(</font><font color=Green>Nat</font><font color=Black>,</font> <font color=Green>Nat</font><font color=Black>)</font>
 <font color=Black>beside</font>  <font color=Green>Zero</font>       <font color="#b2590f">=</font> error <font color=Black>"undefined"</font>
 <font color=Black>beside</font>  x<font color="#b2590f">@</font><font color=Black>(</font><font color=Green>Succ</font> y<font color=Black>)</font> <font color="#b2590f">=</font> <font color=Black>(</font>y<font color=Black>,</font> <font color=Green>Succ</font> x<font color=Black>)</font></pre>
-<p>В выражении <code><font color=Black>x</font><font color="#b2590f">@</font><font color=Black>`</font><font color=Black>`</font><font color=Black>(</font><font color=Green>Succ</font> y<font color=Black>)</font></code> мы одновременно проводим разбор и даём имя всему значению.</p>
+<p>В выражении <code><font color=Black>x</font><font color="#b2590f">@</font><font color=Black>(</font><font color=Green>Succ</font> y<font color=Black>)</font></code> мы одновременно проводим разбор и даём имя всему значению.</p>
 <h3 id="case-выражения"><a href="#case-выражения">case-выражения</a></h3>
 <p>Оказывается декомпозицию можно проводить в любом выражении, для этого существуют  <code><font color="#b2590f">case</font></code>-выражения:</p>
 <pre><font color="#b2590f">data</font> <font color=Green>AnotherNat</font> <font color="#b2590f">=</font> <font color=Green>None</font> <font color="#b2590f">|</font> <font color=Green>One</font> <font color="#b2590f">|</font> <font color=Green>Two</font> <font color="#b2590f">|</font> <font color=Green>Many</font>
